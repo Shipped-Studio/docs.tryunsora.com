@@ -1,0 +1,1700 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Unsora API",
+    "version": "1.2.0",
+    "description": "Public API for Unsora integrations. Authenticate with Clerk JWT or uns_live_* API key. API keys are rate-limited to 60 requests/minute and support idempotency keys and job webhooks."
+  },
+  "servers": [
+    {
+      "url": "https://mpv2.tryunsora.com/api/v1",
+      "description": "Versioned API (recommended)"
+    },
+    {
+      "url": "http://localhost:8000/api/v1",
+      "description": "Local development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Clippings"
+    },
+    {
+      "name": "Connect"
+    },
+    {
+      "name": "Image Generations"
+    },
+    {
+      "name": "Influencer Studio"
+    },
+    {
+      "name": "Posts"
+    },
+    {
+      "name": "Thumbnails"
+    },
+    {
+      "name": "User"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Clerk session JWT or Unsora API key (uns_live_*)"
+      }
+    },
+    "schemas": {
+      "ConnectedAccountsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SocialAccount"
+            }
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ]
+      },
+      "CreatePostRequest": {
+        "type": "object",
+        "properties": {
+          "caption": {
+            "type": "string",
+            "description": "Post caption shown on connected platforms"
+          },
+          "mainCaption": {
+            "type": "string",
+            "description": "Legacy alias for caption"
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostAccountRef"
+            },
+            "minItems": 1,
+            "maxItems": 10
+          },
+          "media": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PostMediaVideo"
+              },
+              {
+                "$ref": "#/components/schemas/PostMediaSlideshow"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "video, slideshow, or null for text-only drafts. Legacy: array of {type, url} items."
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 with timezone. At least 2 minutes ahead. Omit for draft."
+          },
+          "scheduledFor": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Legacy alias for scheduled_at"
+          },
+          "timezone": {
+            "type": "string",
+            "description": "IANA timezone label stored with the post"
+          },
+          "external_id": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Idempotency key (alias for Idempotency-Key header on API key requests)"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/PostSettings"
+          }
+        },
+        "required": [
+          "accounts"
+        ]
+      },
+      "CreatePostResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PublicPostSummary"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "message"
+        ]
+      },
+      "CreditsResponse": {
+        "type": "object",
+        "properties": {
+          "credits": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "credits"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "PlanRequiredError": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "PLAN_REQUIRED"
+            ]
+          }
+        },
+        "required": [
+          "success",
+          "error",
+          "code"
+        ]
+      },
+      "PostAccountInput": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "accountId": {
+            "type": "string",
+            "description": "Legacy alias for id"
+          },
+          "customCaption": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "PostAccountLink": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "postId": {
+            "type": "string"
+          },
+          "accountId": {
+            "type": "string"
+          },
+          "customCaption": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "published": {
+            "type": "boolean"
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "account": {
+            "$ref": "#/components/schemas/PostLinkedAccount"
+          }
+        },
+        "required": [
+          "id",
+          "postId",
+          "accountId",
+          "published"
+        ]
+      },
+      "PostAccountRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account id from GET /public/accounts"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "PostDataResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PostRecord"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ]
+      },
+      "PostDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "PostLinkedAccount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "accountName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "accountUsername": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "profilePicture": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "provider"
+        ]
+      },
+      "PostListDataResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "posts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PostRecord"
+                }
+              },
+              "pagination": {
+                "$ref": "#/components/schemas/PostListPagination"
+              }
+            },
+            "required": [
+              "posts",
+              "pagination"
+            ]
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ]
+      },
+      "PostListPagination": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "totalPages": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "page",
+          "limit",
+          "total",
+          "totalPages"
+        ]
+      },
+      "PostMediaRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "postId": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PostMediaType"
+          },
+          "order": {
+            "type": "integer"
+          },
+          "assetId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "postId",
+          "type",
+          "order",
+          "assetId"
+        ]
+      },
+      "PostMediaSlideshow": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "slideshow"
+            ]
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "minItems": 1,
+            "maxItems": 35
+          }
+        },
+        "required": [
+          "type",
+          "urls"
+        ]
+      },
+      "PostMediaType": {
+        "type": "string",
+        "enum": [
+          "VIDEO",
+          "IMAGE"
+        ]
+      },
+      "PostMediaVideo": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "video"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "duration_sec": {
+            "type": "number"
+          },
+          "duration_seconds": {
+            "type": "number"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "bytes": {
+            "type": "number"
+          },
+          "size": {
+            "type": "number"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "mime_type": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string"
+          },
+          "cover_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional Instagram Reel cover image URL"
+          }
+        },
+        "required": [
+          "type",
+          "url"
+        ]
+      },
+      "PostRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PostType"
+          },
+          "mainCaption": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PostStatus"
+          },
+          "scheduledFor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scheduledTimezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "publishedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "media": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostMediaRecord"
+            }
+          },
+          "postAccounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostAccountLink"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "type",
+          "mainCaption",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "PostSettings": {
+        "type": "object",
+        "properties": {
+          "instagram": {
+            "$ref": "#/components/schemas/PostSettingsInstagram"
+          }
+        }
+      },
+      "PostSettingsInstagram": {
+        "type": "object",
+        "properties": {
+          "cover_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "PostStatus": {
+        "type": "string",
+        "enum": [
+          "DRAFT",
+          "SCHEDULED",
+          "PUBLISHING",
+          "PUBLISHED",
+          "FAILED"
+        ]
+      },
+      "PostType": {
+        "type": "string",
+        "enum": [
+          "VIDEO",
+          "IMAGE",
+          "CAROUSEL",
+          "TEXT"
+        ]
+      },
+      "PublicPostSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "scheduled",
+              "publishing",
+              "published",
+              "failed"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "video",
+              "image",
+              "slideshow",
+              "text"
+            ]
+          },
+          "caption": {
+            "type": "string"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "type",
+          "caption",
+          "scheduled_at",
+          "accounts"
+        ]
+      },
+      "SocialAccount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "providerAccountId": {
+            "type": "string"
+          },
+          "accountName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "accountUsername": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "profilePicture": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expiresAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "provider",
+          "providerAccountId",
+          "accountName",
+          "accountUsername",
+          "profilePicture",
+          "expiresAt"
+        ]
+      },
+      "UpdatePostRequest": {
+        "type": "object",
+        "properties": {
+          "mainCaption": {
+            "type": "string"
+          },
+          "scheduledFor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set null to clear schedule and revert to draft"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostAccountInput"
+            },
+            "minItems": 1
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/public/user/credits": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get current credits balance",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credits balance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/accounts": {
+      "get": {
+        "tags": [
+          "Connect"
+        ],
+        "summary": "Get accounts",
+        "description": "Returns social accounts connected to the authenticated user for scheduling posts.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connected accounts list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectedAccountsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/posts": {
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Create Post",
+        "description": "Create a draft or scheduled post for one or more connected accounts. Requires an active paid plan.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "Optional. Replays the original response for 24h when using an API key. Same as body external_id."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePostRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Idempotent replay of an earlier create",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePostResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Post created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Paid plan required or account not owned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/PlanRequiredError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "List Posts",
+        "description": "List posts for the authenticated user with optional filters.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/PostStatus"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/PostType"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated post list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostListDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/posts/{id}": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Get post",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing post ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Update post",
+        "description": "Update a draft or scheduled post. Published posts cannot be edited. Requires an active paid plan.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePostRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or post already published",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Paid plan required or account not owned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/PlanRequiredError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Delete post",
+        "description": "Delete a post. Requires an active paid plan.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostDeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing post ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Paid plan required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/image/status/{id}": {
+      "get": {
+        "tags": [
+          "Image Generations"
+        ],
+        "summary": "Poll image generation status",
+        "description": "Unified status endpoint for image generator, AI influencer, and thumbnail jobs. Poll until status is COMPLETED or FAILED.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Generation id returned from any image create endpoint"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current job status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "BASIC",
+                            "INFLUENCER",
+                            "THUMBNAIL"
+                          ]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "QUEUED",
+                            "PROCESSING",
+                            "COMPLETED",
+                            "FAILED"
+                          ]
+                        },
+                        "outputUrl": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "thumbnailUrl": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "error": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "completedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "type",
+                        "status"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Generation not found"
+          }
+        }
+      }
+    },
+    "/public/image-generations/create": {
+      "post": {
+        "tags": [
+          "Image Generations"
+        ],
+        "summary": "Create image generation job",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "Optional. Replays the original response for 24h when using an API key."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "ratio": {
+                    "type": "string"
+                  },
+                  "resolution": {
+                    "type": "string"
+                  },
+                  "callbackUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "HTTPS webhook URL notified when the job completes or fails"
+                  }
+                },
+                "required": [
+                  "prompt"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Job queued"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        }
+      }
+    },
+    "/public/influencer-studio/create": {
+      "post": {
+        "tags": [
+          "Influencer Studio"
+        ],
+        "summary": "Create AI influencer generation job",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "aspectRatio": {
+                    "type": "string"
+                  },
+                  "count": {
+                    "type": "integer"
+                  },
+                  "callbackUrl": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                },
+                "required": [
+                  "prompt"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Job queued"
+          }
+        }
+      }
+    },
+    "/public/thumbnails/create": {
+      "post": {
+        "tags": [
+          "Thumbnails"
+        ],
+        "summary": "Create thumbnail generation job",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "variations": {
+                    "type": "integer"
+                  },
+                  "context": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "youtube",
+                            "document"
+                          ]
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "callbackUrl": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Job queued"
+          }
+        }
+      }
+    },
+    "/public/clippings/create": {
+      "post": {
+        "tags": [
+          "Clippings"
+        ],
+        "summary": "Create AI clipping job",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "videoUrl": {
+                    "type": "string"
+                  },
+                  "targetDuration": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "integer"
+                  },
+                  "callbackUrl": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                },
+                "required": [
+                  "videoUrl"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Job queued"
+          }
+        }
+      }
+    }
+  }
+}

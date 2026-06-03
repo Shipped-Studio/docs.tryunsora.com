@@ -1,0 +1,100 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "docs",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "groups": [
+      {
+        "group": "API documentation",
+        "pages": ["get-started", "api-guide", "api-reference/introduction"]
+      },
+      {
+        "group": "User",
+        "pages": ["api-reference/user/credits"]
+      },
+      {
+        "group": "Accounts",
+        "pages": ["api-reference/accounts/get_accounts"]
+      },
+      {
+        "group": "Posts",
+        "pages": [
+          "api-reference/posts/create_post",
+          "api-reference/posts/list_posts",
+          "api-reference/posts/get_post",
+          "api-reference/posts/update_post",
+          "api-reference/posts/delete_post"
+        ]
+      },
+      {
+        "group": "Generation status",
+        "pages": ["api-reference/image/poll-status"]
+      },
+      {
+        "group": "Image generator",
+        "pages": [
+          "api-reference/image-generations/create",
+          "api-reference/image-generations/list",
+          "api-reference/image-generations/delete"
+        ]
+      },
+      {
+        "group": "AI influencer",
+        "pages": [
+          "api-reference/influencer-studio/create",
+          "api-reference/influencer-studio/list",
+          "api-reference/influencer-studio/delete"
+        ]
+      },
+      {
+        "group": "Thumbnail generator",
+        "pages": ["api-reference/thumbnails/create"]
+      },
+      {
+        "group": "Clipping",
+        "pages": ["api-reference/clippings/create"]
+      }
+    ]
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:hi@tryunsora.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://app.tryunsora.com"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/tryunsora",
+      "github": "https://github.com/tryunsora"
+    }
+  }
+}

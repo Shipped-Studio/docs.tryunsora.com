@@ -1,0 +1,57 @@
+---
+title: "Introduction"
+description: "Unsora public API reference"
+---
+
+Unsora exposes a public HTTP API for AI generation features and social scheduling.
+
+## Base URL
+
+```
+https://sadek.tryunsora.com/api/v1
+```
+
+Local development:
+
+```
+http://localhost:3000/api/v1
+```
+
+## Authentication
+
+Send a Clerk JWT or Unsora API key:
+
+```bash
+Authorization: Bearer uns_live_...
+```
+
+Create keys at `/api-keys` in the dashboard. See [Get started](/get-started) and [API guide](/api-guide).
+
+## Feature areas
+
+| Feature                             | Prefix                |
+| ----------------------------------- | --------------------- |
+| Image generator                     | `/image-generations`  |
+| AI influencer                       | `/influencer-studio`  |
+| Thumbnail generator (incl. YouTube) | `/thumbnails`         |
+| Clipping                            | `/clippings`          |
+| Social media scheduler              | `/posts`, `/accounts` |
+
+## OpenAPI
+
+OpenAPI source: `docs/api-reference/openapi.json`
+
+External tools can import:
+
+- `GET /api/v1/openapi.json`
+- `GET /api-docs/openapi.json`
+
+## Security scheme
+
+Protected endpoints declare:
+
+```json
+"security": [{ "bearerAuth": [] }]
+```
+
+`bearerAuth` accepts Clerk JWT or `uns_live_*` API keys.
