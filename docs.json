@@ -16,7 +16,10 @@
       },
       {
         "group": "User",
-        "pages": ["api-reference/user/credits"]
+        "pages": [
+          "api-reference/user/credits",
+          "api-reference/user/subscription"
+        ]
       },
       {
         "group": "Accounts",
