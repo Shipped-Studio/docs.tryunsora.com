@@ -36,6 +36,9 @@
     },
     {
       "name": "User"
+    },
+    {
+      "name": "Video Generations"
     }
   ],
   "components": {
@@ -1070,6 +1073,110 @@
         },
         "required": ["success", "generations"]
       },
+      "CreateVideoRequest": {
+        "type": "object",
+        "description": "Seedance 2.0 only (seedance_2.0, 1080p). Model is not selectable on the public API.",
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "functionMode": {
+            "type": "string",
+            "default": "omni_reference",
+            "enum": ["omni_reference", "first_last_frames"]
+          },
+          "ratio": {
+            "type": "string",
+            "default": "16:9",
+            "enum": ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"]
+          },
+          "duration": {
+            "type": "integer",
+            "default": 5,
+            "minimum": 4,
+            "maximum": 15
+          },
+          "image_files": {
+            "type": "array",
+            "items": { "type": "string", "format": "uri" },
+            "maxItems": 9
+          },
+          "video_files": {
+            "type": "array",
+            "items": { "type": "string", "format": "uri" },
+            "maxItems": 3
+          },
+          "audio_files": {
+            "type": "array",
+            "items": { "type": "string", "format": "uri" },
+            "maxItems": 3
+          },
+          "filePaths": {
+            "type": "array",
+            "items": { "type": "string", "format": "uri" },
+            "maxItems": 2,
+            "description": "first_last_frames: [first_frame_url, last_frame_url]"
+          }
+        },
+        "required": ["prompt"]
+      },
+      "CreateVideoResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "generation": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "status": {
+                "type": "string",
+                "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
+              }
+            },
+            "required": ["id", "status"]
+          },
+          "model": {
+            "type": "string",
+            "enum": ["seedance_2.0"]
+          },
+          "creditsDeducted": { "type": "number" },
+          "creditsRemaining": { "type": "number" }
+        },
+        "required": ["success", "generation", "model"]
+      },
+      "VideoStatusResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "model": { "type": "string", "enum": ["seedance_2.0"] },
+              "status": {
+                "type": "string",
+                "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
+              },
+              "outputUrl": {
+                "anyOf": [{ "type": "string", "format": "uri" }, { "type": "null" }]
+              },
+              "thumbnailUrl": {
+                "anyOf": [{ "type": "string", "format": "uri" }, { "type": "null" }]
+              },
+              "error": {
+                "anyOf": [{ "type": "string" }, { "type": "null" }]
+              },
+              "createdAt": { "type": "string", "format": "date-time" },
+              "updatedAt": { "type": "string", "format": "date-time" },
+              "completedAt": {
+                "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }]
+              }
+            },
+            "required": ["id", "model", "status"]
+          }
+        },
+        "required": ["success", "data"]
+      },
       "UpdatePostRequest": {
         "type": "object",
         "properties": {
@@ -1828,6 +1935,109 @@
           },
           "404": {
             "description": "Generation not found"
+          }
+        }
+      }
+    },
+    "/public/video/status/{id}": {
+      "get": {
+        "tags": ["Video Generations"],
+        "summary": "Poll video generation status",
+        "description": "Poll Seedance 2.0 video jobs created via POST /public/videos/create.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Generation id from POST /public/videos/create"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current job status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoStatusResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Video generation not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/videos/create": {
+      "post": {
+        "tags": ["Video Generations"],
+        "summary": "Create Seedance 2.0 video job",
+        "description": "Queues a Seedance 2.0 (seedance_2.0) video generation. Poll GET /public/video/status/{id} for completion.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "maxLength": 128 },
+            "description": "Optional. Replays the original response for 24h when using an API key."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVideoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Job queued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateVideoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded"
           }
         }
       }

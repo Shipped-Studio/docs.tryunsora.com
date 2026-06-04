@@ -30,7 +30,10 @@ See [Create image](/api-reference/image-generations/create) for a full request U
 
 `POST /public/image-generations/create`
 
-Poll with [Poll generation status](/api-reference/image/poll-status) (`GET /public/image/status/:id`) until `COMPLETED` or `FAILED`.
+Poll status until `COMPLETED` or `FAILED`:
+
+- Images / influencer / thumbnails → [Poll generation status](/api-reference/image/poll-status) (`GET /public/image/status/:id`)
+- Seedance 2.0 video → [Poll video status](/api-reference/video/poll-status) (`GET /public/video/status/:id`)
 
 ## Next steps
 

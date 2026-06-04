@@ -1,0 +1,140 @@
+---
+title: "Create video (Seedance 2.0)"
+description: "Queue a Seedance 2.0 video generation job and poll until complete."
+openapi: "POST /public/videos/create"
+---
+
+Creates a **Seedance 2.0** video (`seedance_2.0`, 1080p). Credits are charged when the job is queued. Poll [Poll video status](/api-reference/video/poll-status) with `generation.id` until `status` is `COMPLETED` or `FAILED`.
+
+## Headers
+
+| Header | Required | Description |
+| --- | --- | --- |
+| `Authorization` | Yes | `Bearer uns_live_*` API key or Clerk JWT |
+| `Idempotency-Key` | No | Max 128 chars. Replays the same response for 24h on API key requests |
+| `Content-Type` | Yes | `application/json` |
+
+## Request body
+
+<ParamField body="prompt" type="string" required>
+  Text prompt describing the video to generate.
+</ParamField>
+
+<ParamField body="functionMode" type="string">
+  Generation mode. Default: `omni_reference`.
+
+  | Value | Use when |
+  | --- | --- |
+  | `omni_reference` | Reference images, videos, and/or audio URLs |
+  | `first_last_frames` | Start/end frame images via `filePaths` |
+</ParamField>
+
+<ParamField body="ratio" type="string">
+  Aspect ratio. Default: `16:9`.
+
+  Allowed: `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16`
+</ParamField>
+
+<ParamField body="duration" type="integer">
+  Length in seconds (integer). Default: `5`. Allowed range: **4–15**.
+
+  Credit tiers are priced at **5**, **10**, and **15** seconds (see table below).
+</ParamField>
+
+<ParamField body="image_files" type="string[]">
+  **omni_reference only** — up to 9 public image URLs.
+</ParamField>
+
+<ParamField body="video_files" type="string[]">
+  **omni_reference only** — up to 3 public video URLs. Using video references increases credit cost.
+</ParamField>
+
+<ParamField body="audio_files" type="string[]">
+  **omni_reference only** — up to 3 public audio URLs.
+</ParamField>
+
+<ParamField body="filePaths" type="string[]">
+  **first_last_frames only** — up to 2 image URLs: `[first_frame, last_frame]`.
+</ParamField>
+
+## Credits (Seedance 2.0)
+
+| Duration | No `video_files` | With `video_files` |
+| --- | --- | --- |
+| 5s | 40 | 80 |
+| 10s | 80 | 140 |
+| 15s | 100 | 200 |
+
+## Async completion
+
+Poll `GET /public/video/status/{id}` — see [Poll video status](/api-reference/video/poll-status). No webhooks.
+
+## Response
+
+```json
+{
+  "success": true,
+  "generation": {
+    "id": "cm123abc",
+    "status": "QUEUED"
+  },
+  "model": "seedance_2.0",
+  "creditsDeducted": 40,
+  "creditsRemaining": 60
+}
+```
+
+## Examples
+
+<RequestExample>
+```bash Text-to-video theme={null}
+curl -X POST "https://sadek.tryunsora.com/api/v1/public/videos/create" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Slow cinematic drone shot over misty mountains at sunrise",
+    "ratio": "16:9",
+    "duration": 5
+  }'
+```
+
+```bash Omni reference theme={null}
+curl -X POST "https://sadek.tryunsora.com/api/v1/public/videos/create" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Character walks through neon alley, same outfit as reference",
+    "functionMode": "omni_reference",
+    "ratio": "9:16",
+    "duration": 10,
+    "image_files": ["https://cdn.example.com/ref.jpg"]
+  }'
+```
+
+```bash First / last frame theme={null}
+curl -X POST "https://sadek.tryunsora.com/api/v1/public/videos/create" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Smooth transition from day to night over the city skyline",
+    "functionMode": "first_last_frames",
+    "ratio": "16:9",
+    "duration": 5,
+    "filePaths": [
+      "https://cdn.example.com/frame-start.jpg",
+      "https://cdn.example.com/frame-end.jpg"
+    ]
+  }'
+```
+</RequestExample>
+
+## Errors
+
+| HTTP | When |
+| --- | --- |
+| `400` | Invalid prompt, mode, ratio, duration, or reference files |
+| `401` | Invalid auth |
+| `402` | Insufficient credits |
+| `404` | User not found |
+| `429` | Rate limit exceeded |
+| `500` | Server error |

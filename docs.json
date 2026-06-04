@@ -37,7 +37,14 @@
       },
       {
         "group": "Generation status",
-        "pages": ["api-reference/image/poll-status"]
+        "pages": [
+          "api-reference/image/poll-status",
+          "api-reference/video/poll-status"
+        ]
+      },
+      {
+        "group": "Video generator (Seedance 2.0)",
+        "pages": ["api-reference/video/create"]
       },
       {
         "group": "Image generator",

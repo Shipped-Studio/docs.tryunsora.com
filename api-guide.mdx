@@ -51,9 +51,11 @@ Credit consumption from API key requests is linked to the key in the audit log v
 All generation and scheduler jobs complete asynchronously. **Use polling only** — the public API does not accept callback or webhook URLs.
 
 1. `POST .../create` → receive job id(s) with `QUEUED` status
-2. `GET /public/image/status/:id` → poll every few seconds until `COMPLETED` or `FAILED`
+2. Poll until `COMPLETED` or `FAILED`:
+   - **Images / influencer / thumbnails** → `GET /public/image/status/:id`
+   - **Seedance 2.0 video** → `GET /public/video/status/:id`
 
-The status endpoint covers **image generator**, **AI influencer**, and **thumbnail** jobs (`type`: `BASIC`, `INFLUENCER`, `THUMBNAIL`).
+Image status `type` values: `BASIC`, `INFLUENCER`, `THUMBNAIL`. Video jobs are always `seedance_2.0` on the video status endpoint.
 
 ## OpenAPI
 

@@ -1,0 +1,61 @@
+---
+title: "Poll video status"
+description: "Poll Seedance 2.0 video jobs until complete."
+openapi: "GET /public/video/status/{id}"
+---
+
+Poll a **Seedance 2.0** video job created via [Create video](/api-reference/video/create). Use the `id` from the create response.
+
+**`GET /public/video/status/{id}`** — same pattern as image (`/public/image/status/{id}`).
+
+Poll every few seconds until `status` is `COMPLETED` or `FAILED`.
+
+## Path parameter
+
+<ParamField path="id" type="string" required>
+  Generation id from `POST /public/videos/create` (`generation.id`).
+</ParamField>
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cm123abc",
+    "model": "seedance_2.0",
+    "status": "COMPLETED",
+    "outputUrl": "https://files.tryunsora.com/....mp4",
+    "thumbnailUrl": "https://files.tryunsora.com/....jpg",
+    "error": null,
+    "createdAt": "2026-06-02T12:00:00.000Z",
+    "updatedAt": "2026-06-02T12:01:30.000Z",
+    "completedAt": "2026-06-02T12:01:30.000Z"
+  }
+}
+```
+
+| `status` | Meaning |
+| --- | --- |
+| `QUEUED` | Waiting to start |
+| `PROCESSING` | Rendering |
+| `COMPLETED` | `outputUrl` is ready |
+| `FAILED` | See `error` |
+
+## Example
+
+<RequestExample>
+```bash theme={null}
+curl "https://sadek.tryunsora.com/api/v1/public/video/status/GENERATION_ID" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY"
+```
+</RequestExample>
+
+## Errors
+
+| HTTP | When |
+| --- | --- |
+| `400` | Missing id |
+| `401` | Invalid auth |
+| `404` | User or generation not found |
+| `500` | Server error |
