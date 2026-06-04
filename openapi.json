@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://mpv2.tryunsora.com/api/v1",
+      "url": "https://sadek.tryunsora.com/api/v1",
       "description": "Versioned API (recommended)"
     },
     {
