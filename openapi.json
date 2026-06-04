@@ -3,7 +3,7 @@
   "info": {
     "title": "Unsora API",
     "version": "1.2.0",
-    "description": "Public API for Unsora integrations. Authenticate with Clerk JWT or uns_live_* API key. API keys are rate-limited to 60 requests/minute and support idempotency keys and job webhooks."
+    "description": "Public API for Unsora integrations. Authenticate with Clerk JWT or uns_live_* API key. API keys are rate-limited to 60 requests/minute and support idempotency keys. Async jobs complete via polling GET /public/image/status/{id}."
   },
   "servers": [
     {
@@ -923,6 +923,153 @@
           "expiresAt"
         ]
       },
+      "CreateImageGenerationRequest": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Text prompt for the image"
+          },
+          "model": {
+            "type": "string",
+            "default": "nano-banana-2",
+            "description": "Model key: nano-banana-2, nano-banana-pro, seedream-v5-lite, gpt-image-1.5, gpt-image-2"
+          },
+          "ratio": {
+            "type": "string",
+            "default": "auto",
+            "description": "Aspect ratio; allowed values depend on model"
+          },
+          "resolution": {
+            "type": "string",
+            "default": "2k",
+            "description": "Output size or quality; allowed values depend on model"
+          },
+          "referenceImageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Single reference image URL"
+          },
+          "referenceImageUrls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Multiple reference image URLs"
+          },
+          "nsfwChecker": {
+            "type": "boolean"
+          }
+        },
+        "required": ["prompt"]
+      },
+      "CreateImageGenerationResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "generation": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
+              }
+            },
+            "required": ["id", "status"]
+          },
+          "creditsDeducted": {
+            "type": "number"
+          },
+          "creditsRemaining": {
+            "type": "number"
+          }
+        },
+        "required": ["success", "generation"]
+      },
+      "CreateInfluencerStudioRequest": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "aspectRatio": {
+            "type": "string",
+            "default": "1:1",
+            "enum": ["1:1", "16:9", "9:16", "4:3", "3:4"]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 1
+          },
+          "cameraAngle": {
+            "type": "string",
+            "enum": ["pov", "portrait", "full-body", "close-up", "side-profile"]
+          },
+          "styleMode": {
+            "type": "string",
+            "enum": [
+              "ugc",
+              "casual_daylight",
+              "cozy_indoor",
+              "low_light_intimate",
+              "raw_flash",
+              "golden_hour",
+              "moody_night",
+              "car_selfie",
+              "mirror_selfie",
+              "luxury_influencer",
+              "cinematic",
+              "travel_content",
+              "beauty_closeup",
+              "party_night_out"
+            ]
+          },
+          "age": {
+            "type": "string",
+            "enum": ["teen", "young_adult", "adult", "middle_aged", "elderly"]
+          }
+        },
+        "required": ["prompt"]
+      },
+      "CreateInfluencerStudioResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "generations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
+                }
+              },
+              "required": ["id", "status"]
+            }
+          },
+          "creditsDeducted": {
+            "type": "number"
+          },
+          "creditsRemaining": {
+            "type": "number"
+          }
+        },
+        "required": ["success", "generations"]
+      },
       "UpdatePostRequest": {
         "type": "object",
         "properties": {
@@ -1713,36 +1860,41 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "prompt": {
-                    "type": "string"
-                  },
-                  "model": {
-                    "type": "string"
-                  },
-                  "ratio": {
-                    "type": "string"
-                  },
-                  "resolution": {
-                    "type": "string"
-                  },
-                  "callbackUrl": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "HTTPS webhook URL notified when the job completes or fails"
-                  }
-                },
-                "required": [
-                  "prompt"
-                ]
+                "$ref": "#/components/schemas/CreateImageGenerationRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Job queued"
+            "description": "Job queued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateImageGenerationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "429": {
             "description": "Rate limit exceeded"
@@ -1766,32 +1918,41 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "prompt": {
-                    "type": "string"
-                  },
-                  "aspectRatio": {
-                    "type": "string"
-                  },
-                  "count": {
-                    "type": "integer"
-                  },
-                  "callbackUrl": {
-                    "type": "string",
-                    "format": "uri"
-                  }
-                },
-                "required": [
-                  "prompt"
-                ]
+                "$ref": "#/components/schemas/CreateInfluencerStudioRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Job queued"
+            "description": "Job queued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateInfluencerStudioResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1837,10 +1998,6 @@
                         }
                       }
                     }
-                  },
-                  "callbackUrl": {
-                    "type": "string",
-                    "format": "uri"
                   }
                 }
               }
@@ -1880,10 +2037,6 @@
                   },
                   "limit": {
                     "type": "integer"
-                  },
-                  "callbackUrl": {
-                    "type": "string",
-                    "format": "uri"
                   }
                 },
                 "required": [
