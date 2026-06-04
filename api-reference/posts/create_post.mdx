@@ -48,8 +48,33 @@ Connect **Instagram** and **TikTok** via [Get accounts](/api-reference/accounts/
 </ParamField>
 
 <ParamField body="settings" type="object">
+  Optional publish options for **Instagram and TikTok only** (not Facebook, YouTube, etc.). You can also send `instagram` or `tiktok` at the **top level** of the body (same shape as below). Other keys under `settings` return `400`.
+
   <Expandable title="Instagram — settings.instagram">
-    <ParamField body="cover_url" type="string">Same as `media.cover_url`.</ParamField>
+    <ParamField body="cover_url" type="string">
+      Custom **Reel** cover image URL (JPG/PNG). Same as `media.cover_url`.
+    </ParamField>
+  </Expandable>
+
+  <Expandable title="TikTok — settings.tiktok">
+    <ParamField body="post_mode" type="string">
+      `DIRECT_POST` (default) or `MEDIA_UPLOAD` (inbox draft — user finishes in TikTok).
+    </ParamField>
+    <ParamField body="privacy_level" type="string">
+      e.g. `PUBLIC_TO_EVERYONE`, `SELF_ONLY`. Must match [creator info](https://developers.tiktok.com/doc/content-posting-api-reference-query-creator-info) for the account.
+    </ParamField>
+    <ParamField body="music_usage_confirmation" type="boolean">
+      Confirm music usage when TikTok requires it.
+    </ParamField>
+    <ParamField body="disable_comment" type="boolean" />
+    <ParamField body="disable_duet" type="boolean" />
+    <ParamField body="disable_stitch" type="boolean" />
+    <ParamField body="brand_content_toggle" type="boolean">Paid partnership (third-party brand).</ParamField>
+    <ParamField body="brand_organic_toggle" type="boolean">Promoting creator's own business.</ParamField>
+    <ParamField body="is_aigc" type="boolean">AI-generated content flag.</ParamField>
+    <ParamField body="auto_add_music" type="boolean">Slideshow only — TikTok adds background music.</ParamField>
+    <ParamField body="photo_cover_index" type="integer">Slideshow only — cover image index (0-based).</ParamField>
+    <ParamField body="video_cover_timestamp_ms" type="integer">Reel only — cover frame time in ms.</ParamField>
   </Expandable>
 </ParamField>
 
@@ -73,7 +98,26 @@ Only **`cover_url`** — a public image URL:
 }
 ```
 
-TikTok picks its own cover frame at publish time (not configurable via API).
+TikTok reel cover frame: optional `settings.tiktok.video_cover_timestamp_ms`.
+
+## Platform settings (optional)
+
+Supported providers: **Instagram**, **TikTok** — only `settings.instagram` and `settings.tiktok` (or top-level `instagram` / `tiktok`). Nothing is required; omit `settings` if you do not need them.
+
+<Tip>
+  Top-level `tiktok` / `instagram` keys work the same as `settings.tiktok` / `settings.instagram`.
+</Tip>
+
+```json
+"settings": {
+  "instagram": { "cover_url": "https://cdn.example.com/cover.jpg" },
+  "tiktok": {
+    "post_mode": "MEDIA_UPLOAD",
+    "privacy_level": "SELF_ONLY",
+    "music_usage_confirmation": true
+  }
+}
+```
 
 ## Response
 
@@ -138,6 +182,30 @@ curl -X POST "https://mvp2.tryunsora.com/api/v1/public/posts" \
       ]
     },
     "accounts": [{ "id": "YOUR_INSTAGRAM_ACCOUNT_ID" }]
+  }'
+```
+
+```bash TikTok slideshow + settings theme={null}
+curl -X POST "https://mvp2.tryunsora.com/api/v1/public/posts" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "caption": "3 outfits for the long weekend",
+    "media": {
+      "type": "slideshow",
+      "urls": [
+        "https://cdn.example.com/look-1.jpg",
+        "https://cdn.example.com/look-2.jpg",
+        "https://cdn.example.com/look-3.jpg"
+      ]
+    },
+    "accounts": [{ "id": "YOUR_TIKTOK_ACCOUNT_ID" }],
+    "tiktok": {
+      "post_mode": "MEDIA_UPLOAD",
+      "music_usage_confirmation": true,
+      "privacy_level": "SELF_ONLY"
+    },
+    "external_id": "tiktok-draft-001"
   }'
 ```
 </RequestExample>

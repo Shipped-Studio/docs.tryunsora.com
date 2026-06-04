@@ -118,7 +118,16 @@
             "description": "Idempotency key (alias for Idempotency-Key header on API key requests)"
           },
           "settings": {
-            "$ref": "#/components/schemas/PostSettings"
+            "$ref": "#/components/schemas/PostSettings",
+            "description": "Optional Instagram and TikTok publish options only. Same fields may be sent at the top level as `instagram` or `tiktok`."
+          },
+          "instagram": {
+            "$ref": "#/components/schemas/PostSettingsInstagram",
+            "description": "Optional alias for settings.instagram"
+          },
+          "tiktok": {
+            "$ref": "#/components/schemas/PostSettingsTiktok",
+            "description": "Optional alias for settings.tiktok"
           }
         },
         "required": [
@@ -621,18 +630,78 @@
       },
       "PostSettings": {
         "type": "object",
+        "description": "Optional publish options for Instagram and TikTok only. All fields are optional.",
+        "additionalProperties": false,
         "properties": {
           "instagram": {
             "$ref": "#/components/schemas/PostSettingsInstagram"
+          },
+          "tiktok": {
+            "$ref": "#/components/schemas/PostSettingsTiktok"
           }
         }
       },
       "PostSettingsInstagram": {
         "type": "object",
+        "description": "Instagram-only options (e.g. Reel cover).",
         "properties": {
           "cover_url": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "description": "Custom Reel cover image URL (JPG/PNG). Alias: coverUrl."
+          }
+        }
+      },
+      "PostSettingsTiktok": {
+        "type": "object",
+        "description": "TikTok-only options. Applied to each TikTok account on the post. Query creator_info for allowed privacy_level values.",
+        "properties": {
+          "post_mode": {
+            "type": "string",
+            "enum": ["DIRECT_POST", "MEDIA_UPLOAD"],
+            "description": "DIRECT_POST publishes immediately; MEDIA_UPLOAD sends to the TikTok inbox for the user to finish in-app."
+          },
+          "privacy_level": {
+            "type": "string",
+            "description": "Must match a value from TikTok creator_info (e.g. PUBLIC_TO_EVERYONE, SELF_ONLY)."
+          },
+          "music_usage_confirmation": {
+            "type": "boolean",
+            "description": "Confirm third-party music usage rights when required by TikTok."
+          },
+          "disable_comment": {
+            "type": "boolean"
+          },
+          "disable_duet": {
+            "type": "boolean"
+          },
+          "disable_stitch": {
+            "type": "boolean"
+          },
+          "brand_content_toggle": {
+            "type": "boolean",
+            "description": "Paid partnership promoting a third-party brand."
+          },
+          "brand_organic_toggle": {
+            "type": "boolean",
+            "description": "Promoting the creator's own business."
+          },
+          "is_aigc": {
+            "type": "boolean",
+            "description": "AI-generated content disclosure."
+          },
+          "auto_add_music": {
+            "type": "boolean",
+            "description": "Photo posts only — let TikTok add background music."
+          },
+          "photo_cover_index": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Slideshow only — zero-based index of the cover image."
+          },
+          "video_cover_timestamp_ms": {
+            "type": "integer",
+            "description": "Video reel only — frame timestamp for the cover thumbnail."
           }
         }
       },
