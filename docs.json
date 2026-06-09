@@ -44,7 +44,11 @@
       },
       {
         "group": "Video generator (Seedance 2.0)",
-        "pages": ["api-reference/video/create"]
+        "pages": [
+          "api-reference/video/create",
+          "api-reference/video/list",
+          "api-reference/video/delete"
+        ]
       },
       {
         "group": "Image generator",
