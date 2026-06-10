@@ -1841,6 +1841,11 @@
               "DURATION_180_300"
             ]
           },
+          "query": {
+            "type": "string",
+            "nullable": true,
+            "description": "Find Moments query the job was created with; null for regular viral-clip jobs."
+          },
           "limit": {
             "type": "integer",
             "nullable": true
@@ -3144,6 +3149,13 @@
                     ],
                     "default": "auto"
                   },
+                  "query": {
+                    "type": "string",
+                    "maxLength": 500,
+                    "nullable": true,
+                    "description": "Find Moments mode: natural-language description of the moments to extract (e.g. \"funny reactions\", \"product demos\", \"goal moments and key plays\"). When set, targetDuration is ignored. Omit to auto-detect the most viral clips.",
+                    "example": "funny reactions"
+                  },
                   "limit": {
                     "type": "integer",
                     "minimum": 1,
@@ -3280,7 +3292,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Submit a video for AI clipping. By default the AI auto-detects the most viral clips. Set query to switch to Find Moments mode: describe the moments you want in natural language (e.g. \"funny reactions\") and the AI extracts matching clips instead — targetDuration is ignored in that mode. Cost is charged per started minute of the source video either way."
       }
     },
     "/public/image-generations/all": {
