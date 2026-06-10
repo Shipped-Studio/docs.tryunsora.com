@@ -1177,6 +1177,59 @@
         },
         "required": ["success", "data"]
       },
+      "VideoGenerationSummary": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "model": { "type": "string", "enum": ["seedance_2.0"] },
+          "prompt": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
+          },
+          "ratio": { "type": "string" },
+          "duration": { "type": "integer" },
+          "creditsUsed": { "type": "integer" },
+          "error": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }]
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "outputAsset": { "type": "object", "additionalProperties": true },
+          "thumbnailAsset": { "type": "object", "additionalProperties": true }
+        },
+        "required": ["id", "model", "status", "createdAt"]
+      },
+      "VideoListResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "generations": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/VideoGenerationSummary" }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "currentPage": { "type": "integer" },
+              "totalPages": { "type": "integer" },
+              "totalCount": { "type": "integer" },
+              "limit": { "type": "integer" },
+              "hasNextPage": { "type": "boolean" },
+              "hasPreviousPage": { "type": "boolean" }
+            }
+          }
+        },
+        "required": ["success", "generations", "pagination"]
+      },
+      "DeleteVideoGenerationResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "message": { "type": "string" }
+        },
+        "required": ["success", "message"]
+      },
       "UpdatePostRequest": {
         "type": "object",
         "properties": {
@@ -2038,6 +2091,95 @@
           },
           "429": {
             "description": "Rate limit exceeded"
+          }
+        }
+      }
+    },
+    "/public/videos/all": {
+      "get": {
+        "tags": ["Video Generations"],
+        "summary": "List video generations",
+        "description": "Paginated list of Seedance 2.0 (seedance_2.0) video jobs for the authenticated user.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1, "minimum": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 12, "minimum": 1, "maximum": 100 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/VideoListResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/videos/{generationId}": {
+      "delete": {
+        "tags": ["Video Generations"],
+        "summary": "Delete video generation",
+        "description": "Permanently delete a Seedance 2.0 video generation owned by the authenticated user.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Generation id from POST /public/videos/create"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteVideoGenerationResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Video generation not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
           }
         }
       }
