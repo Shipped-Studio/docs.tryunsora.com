@@ -26,6 +26,9 @@
       "name": "Image Generations"
     },
     {
+      "name": "Music Generations"
+    },
+    {
       "name": "Influencer Studio"
     },
     {
@@ -994,6 +997,104 @@
           }
         },
         "required": ["success", "generation"]
+      },
+      "MusicGenerationRecord": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "status": { "type": "string" },
+          "lyrics": { "type": "string" },
+          "prompt": { "type": "string" },
+          "model": { "type": "string" },
+          "outputFormat": { "type": "string" },
+          "error": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "outputAsset": { "type": "object", "additionalProperties": true }
+        },
+        "required": ["id", "status", "createdAt"]
+      },
+      "CreateMusicGenerationRequest": {
+        "type": "object",
+        "properties": {
+          "lyrics": {
+            "type": "string",
+            "description": "Song lyrics (required for song models, up to 3000 chars)"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Style prompt — genre, mood, vocal style (up to 1024 chars)"
+          },
+          "model": {
+            "type": "string",
+            "default": "auto",
+            "description": "Model key: auto, mureka-9, mureka-8, mureka-o2, mureka-7.6, mureka-7.5"
+          },
+          "output_format": {
+            "type": "string",
+            "enum": ["mp3", "wav", "flac"],
+            "default": "mp3"
+          }
+        },
+        "required": ["prompt"]
+      },
+      "CreateMusicGenerationResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "generation": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "status": { "type": "string" }
+            },
+            "required": ["id", "status"]
+          },
+          "creditsDeducted": { "type": "number" },
+          "creditsRemaining": { "type": "number" }
+        },
+        "required": ["success", "generation", "creditsDeducted", "creditsRemaining"]
+      },
+      "MusicGenerationListResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "generations": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MusicGenerationRecord" }
+          },
+          "pagination": { "$ref": "#/components/schemas/PaginationMeta" }
+        },
+        "required": ["success", "generations", "pagination"]
+      },
+      "MusicGenerationGetResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "generation": { "$ref": "#/components/schemas/MusicGenerationRecord" }
+        },
+        "required": ["success", "generation"]
+      },
+      "MusicStatusResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "status": { "type": "string" },
+              "outputUrl": { "anyOf": [{ "type": "string", "format": "uri" }, { "type": "null" }] },
+              "error": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+              "createdAt": { "type": "string", "format": "date-time" },
+              "updatedAt": { "type": "string", "format": "date-time" },
+              "completedAt": { "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }] }
+            },
+            "required": ["id", "status"]
+          }
+        },
+        "required": ["success", "data"]
       },
       "CreateInfluencerStudioRequest": {
         "type": "object",
@@ -2378,6 +2479,177 @@
           },
           "429": {
             "description": "Rate limit exceeded"
+          }
+        }
+      }
+    },
+    "/public/music/status/{id}": {
+      "get": {
+        "tags": ["Music Generations"],
+        "summary": "Poll music generation status",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MusicStatusResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/music-generations/create": {
+      "post": {
+        "tags": ["Music Generations"],
+        "summary": "Create Mureka AI music generation job",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "maxLength": 128 },
+            "description": "Optional. Replays the original response for 24h when using an API key."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateMusicGenerationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Job queued",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreateMusicGenerationResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        }
+      }
+    },
+    "/public/music-generations/all": {
+      "get": {
+        "tags": ["Music Generations"],
+        "summary": "List music generations (paginated)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 12, "maximum": 100 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MusicGenerationListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/music-generations/{generationId}": {
+      "get": {
+        "tags": ["Music Generations"],
+        "summary": "Get one music generation",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generation record",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MusicGenerationGetResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Music Generations"],
+        "summary": "Delete a music generation",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessMessage" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
           }
         }
       }

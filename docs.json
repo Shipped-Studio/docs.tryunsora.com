@@ -40,6 +40,7 @@
         "pages": [
           "api-reference/image/poll-status",
           "api-reference/video/poll-status",
+          "api-reference/music/poll-status",
           "api-reference/clippings/poll-status"
         ]
       },
@@ -58,6 +59,15 @@
           "api-reference/image-generations/list",
           "api-reference/image-generations/get",
           "api-reference/image-generations/delete"
+        ]
+      },
+      {
+        "group": "Music generator",
+        "pages": [
+          "api-reference/music-generations/create",
+          "api-reference/music-generations/list",
+          "api-reference/music-generations/get",
+          "api-reference/music-generations/delete"
         ]
       },
       {
