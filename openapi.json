@@ -1230,6 +1230,134 @@
         },
         "required": ["success", "message"]
       },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "currentPage": { "type": "integer" },
+          "totalPages": { "type": "integer" },
+          "totalCount": { "type": "integer" },
+          "limit": { "type": "integer" },
+          "hasNextPage": { "type": "boolean" },
+          "hasPreviousPage": { "type": "boolean" }
+        }
+      },
+      "ImageGenerationRecord": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "status": { "type": "string" },
+          "prompt": { "type": "string" },
+          "model": { "type": "string" },
+          "error": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "outputAsset": { "type": "object", "additionalProperties": true },
+          "thumbnailAsset": { "type": "object", "additionalProperties": true }
+        },
+        "required": ["id", "status", "createdAt"]
+      },
+      "ImageGenerationListResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "generations": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ImageGenerationRecord" }
+          },
+          "pagination": { "$ref": "#/components/schemas/PaginationMeta" }
+        },
+        "required": ["success", "generations", "pagination"]
+      },
+      "ImageGenerationGetResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "generation": { "$ref": "#/components/schemas/ImageGenerationRecord" }
+        },
+        "required": ["success", "generation"]
+      },
+      "ThumbnailRecord": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "userId": { "type": "string" },
+          "title": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+          "description": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+          "image": { "type": "string" },
+          "link": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+          "jobId": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+          "status": { "type": "string" },
+          "error": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+          "completedAt": { "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "status", "createdAt"]
+      },
+      "ThumbnailListResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ThumbnailRecord" }
+          }
+        },
+        "required": ["success", "data"]
+      },
+      "ThumbnailGetResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/ThumbnailRecord" }
+        },
+        "required": ["success", "data"]
+      },
+      "ClippingJob": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "status": { "type": "string" },
+          "videoUrl": { "type": "string" },
+          "error": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "clips": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          }
+        },
+        "required": ["id", "status"]
+      },
+      "ClippingListResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ClippingJob" }
+          }
+        },
+        "required": ["success", "data"]
+      },
+      "ClippingGetResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/ClippingJob" }
+        },
+        "required": ["success", "data"]
+      },
+      "DeleteGenerationResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "message": { "type": "string" }
+        },
+        "required": ["success", "message"]
+      },
       "UpdatePostRequest": {
         "type": "object",
         "properties": {
@@ -2401,6 +2529,377 @@
         "responses": {
           "201": {
             "description": "Job queued"
+          }
+        }
+      }
+    },
+    "/public/image-generations/all": {
+      "get": {
+        "tags": ["Image Generations"],
+        "summary": "List image generations",
+        "description": "Paginated list of basic image generations for the authenticated user.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 12, "minimum": 1, "maximum": 100 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ImageGenerationListResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/public/image-generations/{generationId}": {
+      "get": {
+        "tags": ["Image Generations"],
+        "summary": "Get image generation",
+        "description": "Full image generation record including assets.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generation record",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ImageGenerationGetResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Image Generations"],
+        "summary": "Delete image generation",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteGenerationResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/public/influencer-studio/all": {
+      "get": {
+        "tags": ["Influencer Studio"],
+        "summary": "List influencer generations",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 100 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ImageGenerationListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/influencer-studio/{generationId}": {
+      "delete": {
+        "tags": ["Influencer Studio"],
+        "summary": "Delete influencer generation",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteGenerationResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/public/thumbnails": {
+      "get": {
+        "tags": ["Thumbnails"],
+        "summary": "List thumbnail generations",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ThumbnailListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/thumbnails/{generationId}": {
+      "get": {
+        "tags": ["Thumbnails"],
+        "summary": "Get thumbnail generation",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thumbnail record",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ThumbnailGetResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Thumbnails"],
+        "summary": "Delete thumbnail generation",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteGenerationResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/public/clippings/all": {
+      "get": {
+        "tags": ["Clippings"],
+        "summary": "List clipping jobs",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ClippingListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/clippings/status/{clippingId}": {
+      "get": {
+        "tags": ["Clippings"],
+        "summary": "Poll clipping job status",
+        "description": "Syncs with the clipping provider while the job is in progress, then returns the job with clips.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "clippingId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job with clips",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ClippingGetResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/public/clippings/{clippingId}": {
+      "get": {
+        "tags": ["Clippings"],
+        "summary": "Get clipping job",
+        "description": "Read-only view from the database without provider sync.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "clippingId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job with clips",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ClippingGetResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Clippings"],
+        "summary": "Delete clipping job",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "clippingId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteGenerationResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/public/clippings/{clippingId}/clips/{clipId}": {
+      "delete": {
+        "tags": ["Clippings"],
+        "summary": "Delete one clip",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "clippingId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "clipId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteGenerationResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
           }
         }
       }

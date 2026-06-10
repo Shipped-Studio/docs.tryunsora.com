@@ -1,0 +1,39 @@
+---
+title: "List clipping jobs"
+description: "All AI clipping jobs for the authenticated user."
+openapi: "GET /public/clippings/all"
+---
+
+**`GET /public/clippings/all`**
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "clip_job_123",
+      "status": "COMPLETED",
+      "videoUrl": "https://example.com/long-form.mp4",
+      "error": null,
+      "createdAt": "2026-06-02T12:00:00.000Z",
+      "updatedAt": "2026-06-02T12:05:00.000Z",
+      "clips": [
+        {
+          "id": "clip_1",
+          "order": 0,
+          "outputAsset": { "url": "https://files.tryunsora.com/....mp4" }
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Example
+
+```bash
+curl "https://sadek.tryunsora.com/api/v1/public/clippings/all" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY"
+```

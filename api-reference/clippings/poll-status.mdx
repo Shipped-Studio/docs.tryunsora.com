@@ -1,0 +1,33 @@
+---
+title: "Poll clipping status"
+description: "Sync with the provider and return the latest job state."
+openapi: "GET /public/clippings/status/{clippingId}"
+---
+
+Poll while a clipping job is **QUEUED** or **PROCESSING**. This endpoint syncs with the provider before responding.
+
+**`GET /public/clippings/status/{clippingId}`**
+
+<Note>
+  Alias: `GET /public/clippings/refresh/{clippingId}` behaves the same way.
+</Note>
+
+## Path parameter
+
+<ParamField path="clippingId" type="string" required>
+  Job id from [Create clipping job](/api-reference/clippings/create).
+</ParamField>
+
+## Example
+
+```bash
+curl "https://sadek.tryunsora.com/api/v1/public/clippings/status/CLIPPING_ID" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY"
+```
+
+## Errors
+
+| HTTP | When |
+| --- | --- |
+| `404` | User or job not found |
+| `500` | Provider sync failed |

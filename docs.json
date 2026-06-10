@@ -39,7 +39,8 @@
         "group": "Generation status",
         "pages": [
           "api-reference/image/poll-status",
-          "api-reference/video/poll-status"
+          "api-reference/video/poll-status",
+          "api-reference/clippings/poll-status"
         ]
       },
       {
@@ -55,6 +56,7 @@
         "pages": [
           "api-reference/image-generations/create",
           "api-reference/image-generations/list",
+          "api-reference/image-generations/get",
           "api-reference/image-generations/delete"
         ]
       },
@@ -68,11 +70,21 @@
       },
       {
         "group": "Thumbnail generator",
-        "pages": ["api-reference/thumbnails/create"]
+        "pages": [
+          "api-reference/thumbnails/create",
+          "api-reference/thumbnails/list",
+          "api-reference/thumbnails/get",
+          "api-reference/thumbnails/delete"
+        ]
       },
       {
         "group": "Clipping",
-        "pages": ["api-reference/clippings/create"]
+        "pages": [
+          "api-reference/clippings/create",
+          "api-reference/clippings/list",
+          "api-reference/clippings/get",
+          "api-reference/clippings/delete"
+        ]
       }
     ]
   },

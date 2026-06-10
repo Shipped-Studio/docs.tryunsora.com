@@ -1,0 +1,29 @@
+---
+title: "Delete thumbnail"
+description: "Permanently delete a thumbnail generation."
+openapi: "DELETE /public/thumbnails/{generationId}"
+---
+
+**`DELETE /public/thumbnails/{generationId}`**
+
+## Path parameter
+
+<ParamField path="generationId" type="string" required>
+  Thumbnail id from [Create](/api-reference/thumbnails/create) or [List](/api-reference/thumbnails/list).
+</ParamField>
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Generation deleted successfully"
+}
+```
+
+## Example
+
+```bash
+curl -X DELETE "https://sadek.tryunsora.com/api/v1/public/thumbnails/GENERATION_ID" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY"
+```
