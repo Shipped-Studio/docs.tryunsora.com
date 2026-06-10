@@ -1693,7 +1693,13 @@
             "type": "string"
           },
           "status": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "PROCESSING",
+              "COMPLETED",
+              "FAILED"
+            ]
           },
           "videoUrl": {
             "type": "string"
@@ -1719,9 +1725,14 @@
           "clips": {
             "type": "array",
             "items": {
-              "type": "object",
-              "additionalProperties": true
+              "$ref": "#/components/schemas/ClippingClip"
             }
+          },
+          "config": {
+            "$ref": "#/components/schemas/ClippingConfig"
+          },
+          "creditsUsed": {
+            "type": "integer"
           }
         },
         "required": [
@@ -1806,6 +1817,123 @@
             "minItems": 1
           }
         }
+      },
+      "ClippingConfig": {
+        "type": "object",
+        "description": "Job settings echoed back in resolved form: targetDuration as DURATION_*, ratio as RATIO_* (null when keeping the original ratio), captionStyle as the underlying template ID.",
+        "properties": {
+          "sourceLang": {
+            "type": "string",
+            "nullable": true
+          },
+          "targetLang": {
+            "type": "string",
+            "nullable": true
+          },
+          "targetDuration": {
+            "type": "string",
+            "enum": [
+              "DURATION_0_30",
+              "DURATION_0_90",
+              "DURATION_30_60",
+              "DURATION_60_90",
+              "DURATION_90_180",
+              "DURATION_180_300"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "nullable": true
+          },
+          "ratio": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "RATIO_9_16",
+              "RATIO_1_1",
+              "RATIO_4_5",
+              "RATIO_16_9",
+              null
+            ]
+          },
+          "enableCaption": {
+            "type": "boolean"
+          },
+          "captionStyle": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ClippingClip": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "description": "Clip index, ranked by virality (0 = highest)."
+          },
+          "title": {
+            "type": "string",
+            "description": "AI-generated clip title."
+          },
+          "startTime": {
+            "type": "number",
+            "description": "Start offset in the source video, seconds."
+          },
+          "endTime": {
+            "type": "number",
+            "description": "End offset in the source video, seconds."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Clip length in seconds."
+          },
+          "status": {
+            "type": "string"
+          },
+          "outputAsset": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true,
+            "description": "Rendered clip video. Contains the downloadable url once the job completes."
+          },
+          "thumbnailAsset": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true,
+            "description": "Clip thumbnail image."
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Extra AI output: tags, desc (suggested description), score (virality)."
+          }
+        }
+      },
+      "ClippingCreateResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ClippingJob"
+          },
+          "creditsDeducted": {
+            "type": "integer"
+          },
+          "creditsRemaining": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ]
       }
     }
   },
@@ -3092,7 +3220,65 @@
         },
         "responses": {
           "201": {
-            "description": "Job queued"
+            "description": "Job queued. Clips render asynchronously — poll GET /public/clippings/status/{clippingId} until status is COMPLETED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClippingCreateResponse"
+                },
+                "example": {
+                  "success": true,
+                  "data": {
+                    "id": "cmcl0x2ab0001abcd1234efgh",
+                    "status": "QUEUED",
+                    "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                    "config": {
+                      "sourceLang": null,
+                      "targetLang": null,
+                      "targetDuration": "DURATION_30_60",
+                      "limit": 5,
+                      "enableCaption": true,
+                      "captionStyle": "temp-7",
+                      "ratio": "RATIO_9_16"
+                    },
+                    "createdAt": "2026-06-10T12:00:00.000Z",
+                    "clips": [],
+                    "creditsUsed": 40
+                  },
+                  "creditsDeducted": 40,
+                  "creditsRemaining": 960
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input (bad videoUrl, targetDuration, limit, ratio, or captionStyle), or video length could not be determined.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "success": false,
+                  "error": "Invalid ratio. Use 9:16, 1:1, 4:5, 16:9, or original"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits. Cost is charged per started minute of the source video.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "success": false,
+                  "error": "Insufficient credits. Need 40, have 10",
+                  "creditsRemaining": 10
+                }
+              }
+            }
           }
         }
       }
