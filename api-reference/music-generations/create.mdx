@@ -6,6 +6,8 @@ openapi: "POST /public/music-generations/create"
 
 Creates a music generation job powered by [Mureka AI on WaveSpeed](https://wavespeed.ai/models/mureka-ai). Credits are deducted when the job is queued. Poll [Poll music status](/api-reference/music/poll-status) with the returned `generation.id` until `status` is `COMPLETED` or `FAILED`.
 
+For the dashboard UI (models, lyrics, playback, and the global player), see [Music generator](/guides/music-generator/overview) and [Playback & player](/guides/music-generator/playback).
+
 ## Headers
 
 | Header | Required | Description |
