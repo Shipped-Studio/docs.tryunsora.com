@@ -1286,6 +1286,11 @@
             },
             "maxItems": 2,
             "description": "first_last_frames: [first_frame_url, last_frame_url]"
+          },
+          "generate_audio": {
+            "type": "boolean",
+            "default": false,
+            "description": "Generate a soundtrack/audio for the video."
           }
         },
         "required": [
