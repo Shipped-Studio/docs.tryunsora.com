@@ -1,0 +1,190 @@
+---
+title: "Image models"
+description: "Aspect ratios, resolution tiers, and output sizes for each image generation model in Unsora."
+---
+
+Unsora supports five image models across Google, ByteDance, and OpenAI. Each model accepts different `ratio` and `resolution` values on the API and in the [Image generator](https://app.tryunsora.com/image-generator) dashboard.
+
+Use this page to pick the right model and output settings before you generate.
+
+## Quick reference
+
+| Model key | Display name | `ratio` | `resolution` | Credits | Max refs |
+| --- | --- | --- | --- | --- | --- |
+| `nano-banana-2` | Nano Banana 2 | 15 ratios + `auto` | `1k`, `2k`, `4k` | 5 | 14 |
+| `nano-banana-pro` | Nano Banana Pro | 9 ratios | `1k`, `2k`, `4k` | 5 (10 at `4k`) | 14 |
+| `seedream-v5-lite` | Seedream v5 Lite | 8 ratios | `basic`, `high` | 5 (10 at `high`) | 14 |
+| `gpt-image-1.5` | GPT Image 1.5 | — (size only) | `1024x1024`, `1024x1536`, `1536x1024` | 5–10 | — |
+| `gpt-image-2` | GPT Image 2 | 6 ratios + `auto` | `1k`, `2k`, `4k` | 5 / 10 / 20 | 16 |
+
+<Note>
+  Send `ratio` and `resolution` as separate fields in the API. For **GPT Image 1.5**, aspect ratio is determined by the `resolution` value (pixel dimensions), not a separate `ratio` field.
+</Note>
+
+---
+
+## Google Nano Banana 2
+
+**Model key:** `nano-banana-2`  
+**Best for:** Fast, high-quality generation with the widest aspect ratio support.
+
+### Aspect ratios
+
+| Value | Typical use |
+| --- | --- |
+| `auto` | Let the model choose (default) |
+| `1:1` | Square posts, avatars |
+| `16:9`, `9:16` | YouTube thumbnails, Stories, Reels |
+| `4:3`, `3:4` | Classic photo, Pinterest |
+| `3:2`, `2:3` | DSLR-style photo |
+| `4:5`, `5:4` | Instagram feed |
+| `21:9` | Ultrawide banners |
+| `1:4`, `4:1`, `1:8`, `8:1` | Tall or wide editorial layouts |
+
+### Resolution
+
+| Value | Short side (approx.) | Credits |
+| --- | --- | --- |
+| `1k` | ~1024 px | 5 |
+| `2k` | ~2048 px | 5 |
+| `4k` | ~4096 px | 5 |
+
+Output dimensions depend on both `ratio` and `resolution`. The short side maps to the resolution tier; the long side scales with the aspect ratio. Examples at `2k`:
+
+| `ratio` | Approx. output |
+| --- | --- |
+| `1:1` | 2048 × 2048 |
+| `16:9` | 3584 × 2048 |
+| `9:16` | 2048 × 3584 |
+| `4:3` | 2730 × 2048 |
+| `21:9` | 4778 × 2048 |
+
+---
+
+## Google Nano Banana Pro
+
+**Model key:** `nano-banana-pro`  
+**Best for:** Highest-fidelity Nano Banana output, especially at `4k`.
+
+### Aspect ratios
+
+`1:1`, `2:3`, `3:4`, `4:5`, `3:2`, `4:3`, `5:4`, `16:9`, `21:9`
+
+<Note>
+  Nano Banana Pro does **not** support `auto`. Omit `ratio` or pass an explicit value from the list above.
+</Note>
+
+### Resolution
+
+| Value | Short side (approx.) | Credits |
+| --- | --- | --- |
+| `1k` | ~1024 px | 5 |
+| `2k` | ~2048 px | 5 |
+| `4k` | ~4096 px | 10 |
+
+Dimension calculation matches Nano Banana 2: short side equals the resolution tier, long side scales with the aspect ratio.
+
+---
+
+## ByteDance Seedream v5 Lite
+
+**Model key:** `seedream-v5-lite`  
+**Best for:** Versatile generation with wide aspect ratio support and a quality tier instead of pixel-based resolution.
+
+### Aspect ratios
+
+`1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `2:3`, `3:2`, `21:9`
+
+### Quality (resolution field)
+
+Seedream uses quality tiers in the `resolution` parameter — not `1k` / `2k` / `4k`.
+
+| Value | Label in dashboard | Approx. output | Credits |
+| --- | --- | --- | --- |
+| `basic` | Basic (2K) | ~2K short side | 5 |
+| `high` | High (3K) | ~3K short side | 10 |
+
+---
+
+## OpenAI GPT Image 1.5
+
+**Model key:** `gpt-image-1.5`  
+**Best for:** Strong prompt following with fixed output sizes.
+
+GPT Image 1.5 does **not** use a separate `ratio` field. Pass pixel dimensions as `resolution`:
+
+| `resolution` | Aspect ratio | Dimensions | Credits |
+| --- | --- | --- | --- |
+| `1024x1024` | 1:1 (square) | 1024 × 1024 | 5 |
+| `1024x1536` | 2:3 (portrait) | 1024 × 1536 | 10 |
+| `1536x1024` | 3:2 (landscape) | 1536 × 1024 | 10 |
+
+```json
+{
+  "prompt": "Minimal product photo on white",
+  "model": "gpt-image-1.5",
+  "resolution": "1536x1024"
+}
+```
+
+---
+
+## OpenAI GPT Image 2
+
+**Model key:** `gpt-image-2`  
+**Best for:** Latest OpenAI image model with up to 4K output and reference-image editing.
+
+### Aspect ratios
+
+| Value | Typical use |
+| --- | --- |
+| `auto` | Let the model choose (default) |
+| `1:1` | Square |
+| `16:9`, `9:16` | Landscape / portrait video and social |
+| `4:3`, `3:4` | Classic photo |
+
+### Resolution
+
+| Value | Short side (approx.) | Credits |
+| --- | --- | --- |
+| `1k` | ~1024 px | 5 |
+| `2k` | ~2048 px | 10 |
+| `4k` | ~4096 px | 20 |
+
+### Model-specific behavior
+
+- When `ratio` is `auto`, output is capped at **`1k`** regardless of the `resolution` you send.
+- When `ratio` is `1:1` and `resolution` is `4k`, output is downgraded to **`2k`**.
+
+To get the highest resolution, set an explicit aspect ratio (not `auto`) and avoid `1:1` at `4k` if you need full 4K square output.
+
+---
+
+## Choosing settings
+
+| Goal | Suggested model | Settings |
+| --- | --- | --- |
+| Instagram feed | `nano-banana-2` | `ratio`: `4:5` or `1:1`, `resolution`: `2k` |
+| YouTube thumbnail | `nano-banana-2` or `nano-banana-pro` | `ratio`: `16:9`, `resolution`: `2k` or `4k` |
+| TikTok / Reels cover | Any with `9:16` | `ratio`: `9:16`, `resolution`: `2k` |
+| Print or large display | `nano-banana-pro` or `gpt-image-2` | `resolution`: `4k` |
+| Fixed-size OpenAI output | `gpt-image-1.5` | `resolution`: `1024x1024`, `1024x1536`, or `1536x1024` |
+| Image editing with references | `gpt-image-2` | Up to 16 reference images |
+
+## API access
+
+All models are available through [Create image](/api-reference/image-generations/create):
+
+```bash
+curl -X POST "https://sadek.tryunsora.com/api/v1/public/image-generations/create" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Editorial portrait, soft window light",
+    "model": "nano-banana-2",
+    "ratio": "3:4",
+    "resolution": "2k"
+  }'
+```
+
+Poll [Poll generation status](/api-reference/image/poll-status) until the job completes.

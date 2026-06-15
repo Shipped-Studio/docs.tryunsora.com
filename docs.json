@@ -13,6 +13,7 @@
       {
         "group": "Product guides",
         "pages": [
+          "guides/image-generator/models",
           "guides/music-generator/overview",
           "guides/music-generator/playback"
         ]
@@ -62,6 +63,7 @@
       {
         "group": "Image generator",
         "pages": [
+          "guides/image-generator/models",
           "api-reference/image-generations/create",
           "api-reference/image-generations/list",
           "api-reference/image-generations/get",
