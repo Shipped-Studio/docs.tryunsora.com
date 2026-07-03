@@ -11,13 +11,6 @@
   "navigation": {
     "groups": [
       {
-        "group": "Product guides",
-        "pages": [
-          "guides/music-generator/overview",
-          "guides/music-generator/playback"
-        ]
-      },
-      {
         "group": "API documentation",
         "pages": ["get-started", "api-guide", "api-reference/introduction"]
       },
@@ -52,7 +45,7 @@
         ]
       },
       {
-        "group": "Video generator (Seedance 2.0)",
+        "group": "Video generator",
         "pages": [
           "api-reference/video/create",
           "api-reference/video/list",
@@ -71,8 +64,6 @@
       {
         "group": "Music generator",
         "pages": [
-          "guides/music-generator/overview",
-          "guides/music-generator/playback",
           "api-reference/music-generations/create",
           "api-reference/music-generations/list",
           "api-reference/music-generations/get",

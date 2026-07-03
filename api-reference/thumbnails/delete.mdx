@@ -1,10 +1,10 @@
 ---
 title: "Delete thumbnail"
 description: "Permanently delete a thumbnail generation."
-openapi: "DELETE /public/thumbnails/{generationId}"
+openapi: "DELETE /thumbnails/{generationId}"
 ---
 
-**`DELETE /public/thumbnails/{generationId}`**
+**`DELETE /thumbnails/{generationId}`**
 
 ## Path parameter
 
@@ -24,6 +24,6 @@ openapi: "DELETE /public/thumbnails/{generationId}"
 ## Example
 
 ```bash
-curl -X DELETE "https://sadek.tryunsora.com/api/v1/public/thumbnails/GENERATION_ID" \
+curl -X DELETE "https://sadek.tryunsora.com/api/v1/thumbnails/GENERATION_ID" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY"
 ```

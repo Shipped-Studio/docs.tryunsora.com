@@ -1,7 +1,7 @@
 ---
 title: "Create image"
 description: "Queue an AI image generation job and poll until complete."
-openapi: "POST /public/image-generations/create"
+openapi: "POST /image-generations/create"
 ---
 
 Creates an image generation job. Credits are deducted when the job is queued. Poll [Poll generation status](/api-reference/image/poll-status) with the returned `generation.id` until `status` is `COMPLETED` or `FAILED`.
@@ -74,7 +74,7 @@ Poll [Poll generation status](/api-reference/image/poll-status) with `generation
 
 <RequestExample>
 ```bash Basic theme={null}
-curl -X POST "https://sadek.tryunsora.com/api/v1/public/image-generations/create" \
+curl -X POST "https://sadek.tryunsora.com/api/v1/image-generations/create" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -86,7 +86,7 @@ curl -X POST "https://sadek.tryunsora.com/api/v1/public/image-generations/create
 ```
 
 ```bash With references theme={null}
-curl -X POST "https://sadek.tryunsora.com/api/v1/public/image-generations/create" \
+curl -X POST "https://sadek.tryunsora.com/api/v1/image-generations/create" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

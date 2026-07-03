@@ -1,7 +1,7 @@
 ---
 title: "Create song"
 description: "Queue a Mureka AI music generation job and poll until complete."
-openapi: "POST /public/music-generations/create"
+openapi: "POST /music-generations/create"
 ---
 
 Creates a music generation job powered by [Mureka AI on WaveSpeed](https://wavespeed.ai/models/mureka-ai). Credits are deducted when the job is queued. Poll [Poll music status](/api-reference/music/poll-status) with the returned `generation.id` until `status` is `COMPLETED` or `FAILED`.
@@ -65,7 +65,7 @@ Poll [Poll music status](/api-reference/music/poll-status) with `generation.id` 
 
 <RequestExample>
 ```bash Basic theme={null}
-curl -X POST "https://sadek.tryunsora.com/api/v1/public/music-generations/create" \
+curl -X POST "https://sadek.tryunsora.com/api/v1/music-generations/create" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

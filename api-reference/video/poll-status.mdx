@@ -1,19 +1,19 @@
 ---
 title: "Poll video status"
-description: "Poll Seedance 2.0 video jobs until complete."
-openapi: "GET /public/video/status/{id}"
+description: "Poll video generation jobs until complete."
+openapi: "GET /video/status/{id}"
 ---
 
-Poll a **Seedance 2.0** video job created via [Create video](/api-reference/video/create). Use the `id` from the create response.
+Poll a video job created via [Create video](/api-reference/video/create). Use the `id` from the create response.
 
-**`GET /public/video/status/{id}`** — same pattern as image (`/public/image/status/{id}`).
+**`GET /video/status/{id}`** — same pattern as image (`/image/status/{id}`).
 
 Poll every few seconds until `status` is `COMPLETED` or `FAILED`.
 
 ## Path parameter
 
 <ParamField path="id" type="string" required>
-  Generation id from `POST /public/videos/create` (`generation.id`).
+  Generation id from `POST /videos/create` (`generation.id`).
 </ParamField>
 
 ## Response
@@ -46,7 +46,7 @@ Poll every few seconds until `status` is `COMPLETED` or `FAILED`.
 
 <RequestExample>
 ```bash theme={null}
-curl "https://sadek.tryunsora.com/api/v1/public/video/status/GENERATION_ID" \
+curl "https://sadek.tryunsora.com/api/v1/video/status/GENERATION_ID" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY"
 ```
 </RequestExample>

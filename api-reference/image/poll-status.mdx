@@ -1,7 +1,7 @@
 ---
 title: "Poll generation status"
 description: "Check status for image, influencer, and thumbnail jobs"
-openapi: "GET /public/image/status/{id}"
+openapi: "GET /image/status/{id}"
 ---
 
 Unified polling endpoint for **image generator**, **AI influencer**, and **thumbnail** jobs.
@@ -9,7 +9,7 @@ Unified polling endpoint for **image generator**, **AI influencer**, and **thumb
 Use the `id` returned from any create response. Poll every few seconds until `status` is `COMPLETED` or `FAILED`.
 
 ```bash
-curl "https://mvp2.tryunsora.com/api/v1/public/image/status/GENERATION_ID" \
+curl "https://mvp2.tryunsora.com/api/v1/image/status/GENERATION_ID" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY"
 ```
 

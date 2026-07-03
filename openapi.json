@@ -3,7 +3,7 @@
   "info": {
     "title": "Unsora API",
     "version": "1.2.0",
-    "description": "Public API for Unsora integrations. Authenticate with Clerk JWT or uns_live_* API key. API keys are rate-limited to 60 requests/minute and support idempotency keys. Async jobs complete via polling GET /public/image/status/{id}."
+    "description": "Public API for Unsora integrations. Authenticate with Clerk JWT or uns_live_* API key. API keys are rate-limited to 60 requests/minute and support idempotency keys. Async jobs complete via polling GET /image/status/{id}."
   },
   "servers": [
     {
@@ -374,7 +374,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Account id from GET /public/accounts"
+            "description": "Account id from GET /accounts"
           }
         },
         "required": [
@@ -1018,18 +1018,52 @@
         "type": "object",
         "additionalProperties": true,
         "properties": {
-          "id": { "type": "string" },
-          "status": { "type": "string" },
-          "lyrics": { "type": "string" },
-          "prompt": { "type": "string" },
-          "model": { "type": "string" },
-          "outputFormat": { "type": "string" },
-          "error": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" },
-          "outputAsset": { "type": "object", "additionalProperties": true }
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "lyrics": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "outputFormat": {
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "outputAsset": {
+            "type": "object",
+            "additionalProperties": true
+          }
         },
-        "required": ["id", "status", "createdAt"]
+        "required": [
+          "id",
+          "status",
+          "createdAt"
+        ]
       },
       "CreateMusicGenerationRequest": {
         "type": "object",
@@ -1049,68 +1083,156 @@
           },
           "output_format": {
             "type": "string",
-            "enum": ["mp3", "wav", "flac"],
+            "enum": [
+              "mp3",
+              "wav",
+              "flac"
+            ],
             "default": "mp3"
           }
         },
-        "required": ["prompt"]
+        "required": [
+          "prompt"
+        ]
       },
       "CreateMusicGenerationResponse": {
         "type": "object",
         "properties": {
-          "success": { "type": "boolean" },
+          "success": {
+            "type": "boolean"
+          },
           "generation": {
             "type": "object",
             "properties": {
-              "id": { "type": "string" },
-              "status": { "type": "string" }
+              "id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
             },
-            "required": ["id", "status"]
+            "required": [
+              "id",
+              "status"
+            ]
           },
-          "creditsDeducted": { "type": "number" },
-          "creditsRemaining": { "type": "number" }
+          "creditsDeducted": {
+            "type": "number"
+          },
+          "creditsRemaining": {
+            "type": "number"
+          }
         },
-        "required": ["success", "generation", "creditsDeducted", "creditsRemaining"]
+        "required": [
+          "success",
+          "generation",
+          "creditsDeducted",
+          "creditsRemaining"
+        ]
       },
       "MusicGenerationListResponse": {
         "type": "object",
         "properties": {
-          "success": { "type": "boolean" },
+          "success": {
+            "type": "boolean"
+          },
           "generations": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/MusicGenerationRecord" }
+            "items": {
+              "$ref": "#/components/schemas/MusicGenerationRecord"
+            }
           },
-          "pagination": { "$ref": "#/components/schemas/PaginationMeta" }
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
         },
-        "required": ["success", "generations", "pagination"]
+        "required": [
+          "success",
+          "generations",
+          "pagination"
+        ]
       },
       "MusicGenerationGetResponse": {
         "type": "object",
         "properties": {
-          "success": { "type": "boolean" },
-          "generation": { "$ref": "#/components/schemas/MusicGenerationRecord" }
+          "success": {
+            "type": "boolean"
+          },
+          "generation": {
+            "$ref": "#/components/schemas/MusicGenerationRecord"
+          }
         },
-        "required": ["success", "generation"]
+        "required": [
+          "success",
+          "generation"
+        ]
       },
       "MusicStatusResponse": {
         "type": "object",
         "properties": {
-          "success": { "type": "boolean" },
+          "success": {
+            "type": "boolean"
+          },
           "data": {
             "type": "object",
             "properties": {
-              "id": { "type": "string" },
-              "status": { "type": "string" },
-              "outputUrl": { "anyOf": [{ "type": "string", "format": "uri" }, { "type": "null" }] },
-              "error": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
-              "createdAt": { "type": "string", "format": "date-time" },
-              "updatedAt": { "type": "string", "format": "date-time" },
-              "completedAt": { "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }] }
+              "id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "outputUrl": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "error": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "completedAt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
             },
-            "required": ["id", "status"]
+            "required": [
+              "id",
+              "status"
+            ]
           }
         },
-        "required": ["success", "data"]
+        "required": [
+          "success",
+          "data"
+        ]
       },
       "CreateInfluencerStudioRequest": {
         "type": "object",
@@ -1223,10 +1345,72 @@
       },
       "CreateVideoRequest": {
         "type": "object",
-        "description": "Seedance 2.0 only (seedance_2.0, 1080p). Model is not selectable on the public API.",
+        "description": "Create a video generation. `model` selects the video model; Seedance models use functionMode/image_files/video_files/audio_files/filePaths, all other models use image/end_image/reference_images/sound/negative_prompt.",
         "properties": {
           "prompt": {
             "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "default": "seedance-2.0",
+            "enum": [
+              "kling-standard",
+              "kling-pro",
+              "veo",
+              "veo-fast",
+              "veo-lite",
+              "sora-2",
+              "sora-2-pro",
+              "wan",
+              "seedance-2.0",
+              "seedance-2.0-fast"
+            ],
+            "description": "Video model to generate with. See the model table in the docs for durations, ratios and features."
+          },
+          "duration": {
+            "type": "integer",
+            "default": 5,
+            "description": "Video length in seconds. Valid range depends on the model: Kling Standard 1-15, Kling Pro 3-15, Veo 3.1 (all) 4-8, Sora 2 / Sora 2 Pro 4-20, Wan 2.6 5-15, Seedance 2.0 (both) 4-15."
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "default": "16:9",
+            "description": "Aspect ratio (alias: `ratio`). Kling: 16:9, 1:1, 9:16. Veo: 16:9, 9:16. Seedance: 21:9, 16:9, 4:3, 1:1, 3:4, 9:16."
+          },
+          "ratio": {
+            "type": "string",
+            "description": "Alias for aspect_ratio."
+          },
+          "negative_prompt": {
+            "type": "string",
+            "description": "What to avoid in the video. Supported by Kling, Veo and Wan models."
+          },
+          "resolution": {
+            "type": "string",
+            "description": "Output resolution (720p or 1080p) for Wan 2.6. Seedance output resolution is fixed (2.0: 1080p, 2.0 Fast: 720p)."
+          },
+          "sound": {
+            "type": "boolean",
+            "default": false,
+            "description": "Generate audio. Supported by Kling v3 and Veo 3.1 models (increases credit cost)."
+          },
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "description": "Start image URL for image-to-video (non-Seedance models)."
+          },
+          "end_image": {
+            "type": "string",
+            "format": "uri",
+            "description": "End image URL (non-Seedance models that support it)."
+          },
+          "reference_images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Reference image URLs (Veo 3.1 reference mode)."
           },
           "functionMode": {
             "type": "string",
@@ -1234,25 +1418,8 @@
             "enum": [
               "omni_reference",
               "first_last_frames"
-            ]
-          },
-          "ratio": {
-            "type": "string",
-            "default": "16:9",
-            "enum": [
-              "21:9",
-              "16:9",
-              "4:3",
-              "1:1",
-              "3:4",
-              "9:16"
-            ]
-          },
-          "duration": {
-            "type": "integer",
-            "default": 5,
-            "minimum": 4,
-            "maximum": 15
+            ],
+            "description": "Seedance models only."
           },
           "image_files": {
             "type": "array",
@@ -1260,7 +1427,8 @@
               "type": "string",
               "format": "uri"
             },
-            "maxItems": 9
+            "maxItems": 9,
+            "description": "Seedance omni_reference only."
           },
           "video_files": {
             "type": "array",
@@ -1268,7 +1436,8 @@
               "type": "string",
               "format": "uri"
             },
-            "maxItems": 3
+            "maxItems": 3,
+            "description": "Seedance omni_reference only. Using video references increases credit cost."
           },
           "audio_files": {
             "type": "array",
@@ -1276,7 +1445,8 @@
               "type": "string",
               "format": "uri"
             },
-            "maxItems": 3
+            "maxItems": 3,
+            "description": "Seedance omni_reference only."
           },
           "filePaths": {
             "type": "array",
@@ -1285,12 +1455,12 @@
               "format": "uri"
             },
             "maxItems": 2,
-            "description": "first_last_frames: [first_frame_url, last_frame_url]"
+            "description": "Seedance first_last_frames: [first_frame_url, last_frame_url]"
           },
           "generate_audio": {
             "type": "boolean",
             "default": false,
-            "description": "Generate a soundtrack/audio for the video."
+            "description": "Seedance only — generate a soundtrack/audio for the video."
           }
         },
         "required": [
@@ -2049,7 +2219,7 @@
     }
   },
   "paths": {
-    "/public/user/credits": {
+    "/user/credits": {
       "get": {
         "tags": [
           "User"
@@ -2084,7 +2254,7 @@
         }
       }
     },
-    "/public/user/subscription": {
+    "/user/subscription": {
       "get": {
         "tags": [
           "User"
@@ -2140,7 +2310,7 @@
         }
       }
     },
-    "/public/accounts": {
+    "/accounts": {
       "get": {
         "tags": [
           "Connect"
@@ -2196,7 +2366,7 @@
         }
       }
     },
-    "/public/posts": {
+    "/posts": {
       "post": {
         "tags": [
           "Posts"
@@ -2414,7 +2584,7 @@
         }
       }
     },
-    "/public/posts/{id}": {
+    "/posts/{id}": {
       "get": {
         "tags": [
           "Posts"
@@ -2674,7 +2844,7 @@
         }
       }
     },
-    "/public/image/status/{id}": {
+    "/image/status/{id}": {
       "get": {
         "tags": [
           "Image Generations"
@@ -2778,13 +2948,13 @@
         }
       }
     },
-    "/public/video/status/{id}": {
+    "/video/status/{id}": {
       "get": {
         "tags": [
           "Video Generations"
         ],
         "summary": "Poll video generation status",
-        "description": "Poll Seedance 2.0 video jobs created via POST /public/videos/create.",
+        "description": "Poll video jobs created via POST /videos/create.",
         "security": [
           {
             "bearerAuth": []
@@ -2798,7 +2968,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Generation id from POST /public/videos/create"
+            "description": "Generation id from POST /videos/create"
           }
         ],
         "responses": {
@@ -2835,13 +3005,13 @@
         }
       }
     },
-    "/public/videos/create": {
+    "/videos/create": {
       "post": {
         "tags": [
           "Video Generations"
         ],
-        "summary": "Create Seedance 2.0 video job",
-        "description": "Queues a Seedance 2.0 (seedance_2.0) video generation. Poll GET /public/video/status/{id} for completion.",
+        "summary": "Create video generation",
+        "description": "Queue a video generation with any supported video model (Kling v3, Veo 3.1, Sora 2, Wan 2.6, Seedance 2.0).",
         "security": [
           {
             "bearerAuth": []
@@ -2906,7 +3076,7 @@
         }
       }
     },
-    "/public/videos/all": {
+    "/videos/all": {
       "get": {
         "tags": [
           "Video Generations"
@@ -2937,6 +3107,15 @@
               "minimum": 1,
               "maximum": 100
             }
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by video model key (e.g. seedance-2.0, veo, kling-pro). Defaults to all video models."
           }
         ],
         "responses": {
@@ -2973,7 +3152,7 @@
         }
       }
     },
-    "/public/videos/{generationId}": {
+    "/videos/{generationId}": {
       "delete": {
         "tags": [
           "Video Generations"
@@ -2993,7 +3172,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Generation id from POST /public/videos/create"
+            "description": "Generation id from POST /videos/create"
           }
         ],
         "responses": {
@@ -3030,7 +3209,7 @@
         }
       }
     },
-    "/public/image-generations/create": {
+    "/image-generations/create": {
       "post": {
         "tags": [
           "Image Generations"
@@ -3100,17 +3279,25 @@
         }
       }
     },
-    "/public/music/status/{id}": {
+    "/music/status/{id}": {
       "get": {
-        "tags": ["Music Generations"],
+        "tags": [
+          "Music Generations"
+        ],
         "summary": "Poll music generation status",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3118,7 +3305,9 @@
             "description": "Status",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/MusicStatusResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/MusicStatusResponse"
+                }
               }
             }
           },
@@ -3126,24 +3315,35 @@
             "description": "Not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
         }
       }
     },
-    "/public/music-generations/create": {
+    "/music-generations/create": {
       "post": {
-        "tags": ["Music Generations"],
+        "tags": [
+          "Music Generations"
+        ],
         "summary": "Create Mureka AI music generation job",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "Idempotency-Key",
             "in": "header",
             "required": false,
-            "schema": { "type": "string", "maxLength": 128 },
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
             "description": "Optional. Replays the original response for 24h when using an API key."
           }
         ],
@@ -3151,7 +3351,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateMusicGenerationRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/CreateMusicGenerationRequest"
+              }
             }
           }
         },
@@ -3160,7 +3362,9 @@
             "description": "Job queued",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CreateMusicGenerationResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/CreateMusicGenerationResponse"
+                }
               }
             }
           },
@@ -3168,7 +3372,9 @@
             "description": "Validation error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -3176,7 +3382,9 @@
             "description": "Insufficient credits",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -3186,38 +3394,69 @@
         }
       }
     },
-    "/public/music-generations/all": {
+    "/music-generations/all": {
       "get": {
-        "tags": ["Music Generations"],
+        "tags": [
+          "Music Generations"
+        ],
         "summary": "List music generations (paginated)",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 12, "maximum": 100 } }
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 12,
+              "maximum": 100
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Paginated list",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/MusicGenerationListResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationListResponse"
+                }
               }
             }
           }
         }
       }
     },
-    "/public/music-generations/{generationId}": {
+    "/music-generations/{generationId}": {
       "get": {
-        "tags": ["Music Generations"],
+        "tags": [
+          "Music Generations"
+        ],
         "summary": "Get one music generation",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "generationId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3225,7 +3464,9 @@
             "description": "Generation record",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/MusicGenerationGetResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationGetResponse"
+                }
               }
             }
           },
@@ -3233,22 +3474,32 @@
             "description": "Not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
         }
       },
       "delete": {
-        "tags": ["Music Generations"],
+        "tags": [
+          "Music Generations"
+        ],
         "summary": "Delete a music generation",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "generationId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3256,7 +3507,9 @@
             "description": "Deleted",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/SuccessMessage" }
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
               }
             }
           },
@@ -3264,14 +3517,16 @@
             "description": "Not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
         }
       }
     },
-    "/public/influencer-studio/create": {
+    "/influencer-studio/create": {
       "post": {
         "tags": [
           "Influencer Studio"
@@ -3326,7 +3581,7 @@
         }
       }
     },
-    "/public/thumbnails/create": {
+    "/thumbnails/create": {
       "post": {
         "tags": [
           "Thumbnails"
@@ -3380,7 +3635,7 @@
         }
       }
     },
-    "/public/clippings/create": {
+    "/clippings/create": {
       "post": {
         "tags": [
           "Clippings"
@@ -3509,7 +3764,7 @@
         },
         "responses": {
           "201": {
-            "description": "Job queued. Clips render asynchronously — poll GET /public/clippings/status/{clippingId} until status is COMPLETED.",
+            "description": "Job queued. Clips render asynchronously — poll GET /clippings/status/{clippingId} until status is COMPLETED.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3573,7 +3828,7 @@
         "description": "Submit a video for AI clipping. By default the AI auto-detects the most viral clips. Set query to switch to Find Moments mode: describe the moments you want in natural language (e.g. \"funny reactions\") and the AI extracts matching clips instead — targetDuration is ignored in that mode. Cost is charged per started minute of the source video either way."
       }
     },
-    "/public/image-generations/all": {
+    "/image-generations/all": {
       "get": {
         "tags": [
           "Image Generations"
@@ -3640,7 +3895,7 @@
         }
       }
     },
-    "/public/image-generations/{generationId}": {
+    "/image-generations/{generationId}": {
       "get": {
         "tags": [
           "Image Generations"
@@ -3729,7 +3984,7 @@
         }
       }
     },
-    "/public/influencer-studio/all": {
+    "/influencer-studio/all": {
       "get": {
         "tags": [
           "Influencer Studio"
@@ -3775,7 +4030,7 @@
         }
       }
     },
-    "/public/influencer-studio/{generationId}": {
+    "/influencer-studio/{generationId}": {
       "delete": {
         "tags": [
           "Influencer Studio"
@@ -3820,7 +4075,7 @@
         }
       }
     },
-    "/public/thumbnails": {
+    "/thumbnails": {
       "get": {
         "tags": [
           "Thumbnails"
@@ -3845,7 +4100,7 @@
         }
       }
     },
-    "/public/thumbnails/{generationId}": {
+    "/thumbnails/{generationId}": {
       "get": {
         "tags": [
           "Thumbnails"
@@ -3933,7 +4188,7 @@
         }
       }
     },
-    "/public/clippings/all": {
+    "/clippings/all": {
       "get": {
         "tags": [
           "Clippings"
@@ -3958,7 +4213,7 @@
         }
       }
     },
-    "/public/clippings/status/{clippingId}": {
+    "/clippings/status/{clippingId}": {
       "get": {
         "tags": [
           "Clippings"
@@ -4004,7 +4259,7 @@
         }
       }
     },
-    "/public/clippings/{clippingId}": {
+    "/clippings/{clippingId}": {
       "get": {
         "tags": [
           "Clippings"
@@ -4093,7 +4348,7 @@
         }
       }
     },
-    "/public/clippings/{clippingId}/clips/{clipId}": {
+    "/clippings/{clippingId}/clips/{clipId}": {
       "delete": {
         "tags": [
           "Clippings"

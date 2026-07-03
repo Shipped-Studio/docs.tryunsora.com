@@ -1,12 +1,12 @@
 ---
 title: "List generations"
 description: "Paginated list of basic image generations for the authenticated user."
-openapi: "GET /public/image-generations/all"
+openapi: "GET /image-generations/all"
 ---
 
 Returns **basic** image generations for the authenticated user, newest first.
 
-**`GET /public/image-generations/all`**
+**`GET /image-generations/all`**
 
 ## Query parameters
 
@@ -49,7 +49,7 @@ Returns **basic** image generations for the authenticated user, newest first.
 ## Example
 
 ```bash
-curl "https://sadek.tryunsora.com/api/v1/public/image-generations/all?page=1&limit=12" \
+curl "https://sadek.tryunsora.com/api/v1/image-generations/all?page=1&limit=12" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY"
 ```
 

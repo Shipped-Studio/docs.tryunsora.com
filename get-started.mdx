@@ -28,20 +28,20 @@ Most generation endpoints are async:
 
 See [Create image](/api-reference/image-generations/create) for a full request URL and playground. Path:
 
-`POST /public/image-generations/create`
+`POST /image-generations/create`
 
 Poll status until `COMPLETED` or `FAILED`:
 
-- Images / influencer / thumbnails → [Poll generation status](/api-reference/image/poll-status) (`GET /public/image/status/:id`)
-- Seedance 2.0 video → [Poll video status](/api-reference/video/poll-status) (`GET /public/video/status/:id`)
-- Music → [Poll music status](/api-reference/music/poll-status) (`GET /public/music/status/:id`)
+- Images / influencer / thumbnails → [Poll generation status](/api-reference/image/poll-status) (`GET /image/status/:id`)
+- Video (all models) → [Poll video status](/api-reference/video/poll-status) (`GET /video/status/:id`)
+- Music → [Poll music status](/api-reference/music/poll-status) (`GET /music/status/:id`)
 
 In the dashboard, open [Music generator](/guides/music-generator/overview) to create songs with lyrics and use the [global player](/guides/music-generator/playback) while you work in other tools.
 
 Manage video jobs:
 
-- [List video generations](/api-reference/video/list) (`GET /public/videos/all`)
-- [Delete video generation](/api-reference/video/delete) (`DELETE /public/videos/:generationId`)
+- [List video generations](/api-reference/video/list) (`GET /videos/all`)
+- [Delete video generation](/api-reference/video/delete) (`DELETE /videos/:generationId`)
 
 ## Next steps
 

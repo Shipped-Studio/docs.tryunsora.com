@@ -1,7 +1,7 @@
 ---
 title: "Poll music status"
 description: "Check status for music generation jobs"
-openapi: "GET /public/music/status/{id}"
+openapi: "GET /music/status/{id}"
 ---
 
 Poll music generation jobs created via [Create song](/api-reference/music-generations/create).
@@ -9,7 +9,7 @@ Poll music generation jobs created via [Create song](/api-reference/music-genera
 Use the `id` returned from the create response. Poll every few seconds until `status` is `COMPLETED` or `FAILED`.
 
 ```bash
-curl "https://sadek.tryunsora.com/api/v1/public/music/status/GENERATION_ID" \
+curl "https://sadek.tryunsora.com/api/v1/music/status/GENERATION_ID" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY"
 ```
 

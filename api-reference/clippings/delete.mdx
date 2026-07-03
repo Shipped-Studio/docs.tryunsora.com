@@ -1,10 +1,10 @@
 ---
 title: "Delete clipping job"
 description: "Permanently delete a clipping job and its clips."
-openapi: "DELETE /public/clippings/{clippingId}"
+openapi: "DELETE /clippings/{clippingId}"
 ---
 
-**`DELETE /public/clippings/{clippingId}`**
+**`DELETE /clippings/{clippingId}`**
 
 ## Path parameter
 
@@ -24,6 +24,6 @@ openapi: "DELETE /public/clippings/{clippingId}"
 ## Example
 
 ```bash
-curl -X DELETE "https://sadek.tryunsora.com/api/v1/public/clippings/CLIPPING_ID" \
+curl -X DELETE "https://sadek.tryunsora.com/api/v1/clippings/CLIPPING_ID" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY"
 ```

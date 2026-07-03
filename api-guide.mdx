@@ -14,7 +14,7 @@ Send **either**:
 Authorization: Bearer uns_live_...
 ```
 
-That is enough to call the public feature APIs under `/api/v1/public/*`. Both resolve to the same user account (credits, jobs, scheduler data).
+That is enough to call the public feature APIs under `/api/v1/*`. Both resolve to the same user account (credits, jobs, scheduler data).
 
 Create and revoke keys at `/api-keys` (Clerk sign-in required for key management only).
 
@@ -52,15 +52,15 @@ All generation and scheduler jobs complete asynchronously. **Use polling only** 
 
 1. `POST .../create` → receive job id(s) with `QUEUED` status
 2. Poll until `COMPLETED` or `FAILED`:
-   - **Images / influencer / thumbnails** → `GET /public/image/status/:id`
-   - **Seedance 2.0 video** → `GET /public/video/status/:id`
-   - **Music (Mureka AI)** → `GET /public/music/status/:id` — see [Poll music status](/api-reference/music/poll-status)
+   - **Images / influencer / thumbnails** → `GET /image/status/:id`
+   - **Video (all models)** → `GET /video/status/:id`
+   - **Music (Mureka AI)** → `GET /music/status/:id` — see [Poll music status](/api-reference/music/poll-status)
 
 Image status `type` values: `BASIC`, `INFLUENCER`, `THUMBNAIL`. Video jobs are always `seedance_2.0` on the video status endpoint.
 
-List or delete Seedance jobs with `GET /public/videos/all` and `DELETE /public/videos/:generationId` — see [List video generations](/api-reference/video/list) and [Delete video generation](/api-reference/video/delete).
+List or delete video jobs with `GET /videos/all` and `DELETE /videos/:generationId` — see [List video generations](/api-reference/video/list) and [Delete video generation](/api-reference/video/delete).
 
-Music jobs use `GET /public/music/status/:id`. List or delete with [List music generations](/api-reference/music-generations/list) and [Delete music generation](/api-reference/music-generations/delete). Dashboard users can also manage songs at [Music generator](/guides/music-generator/overview).
+Music jobs use `GET /music/status/:id`. List or delete with [List music generations](/api-reference/music-generations/list) and [Delete music generation](/api-reference/music-generations/delete). Dashboard users can also manage songs at [Music generator](/guides/music-generator/overview).
 
 ## OpenAPI
 

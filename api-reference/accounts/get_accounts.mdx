@@ -1,13 +1,13 @@
 ---
 title: "Get accounts"
 description: "List Instagram and TikTok accounts connected for scheduling"
-openapi: "GET /public/accounts"
+openapi: "GET /accounts"
 ---
 
 Returns social accounts connected to the authenticated user. Use each account `id` when calling [Create Post](/api-reference/posts/create_post).
 
 ```bash
-curl "https://mvp2.tryunsora.com/api/v1/public/accounts" \
+curl "https://mvp2.tryunsora.com/api/v1/accounts" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY"
 ```
 

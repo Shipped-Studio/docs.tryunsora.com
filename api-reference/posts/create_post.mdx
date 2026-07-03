@@ -1,7 +1,7 @@
 ---
 title: "Create Post"
 description: "Schedule or save Instagram and TikTok reels and slideshows."
-openapi: "POST /public/posts"
+openapi: "POST /posts"
 ---
 
 Schedule a post for later or save it as a **draft**. Publishing runs through Unsora when the post is published from the scheduler.
@@ -140,7 +140,7 @@ Supported providers: **Instagram**, **TikTok** — only `settings.instagram` and
 
 <RequestExample>
 ```bash Instagram reel with cover theme={null}
-curl -X POST "https://mvp2.tryunsora.com/api/v1/public/posts" \
+curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -155,7 +155,7 @@ curl -X POST "https://mvp2.tryunsora.com/api/v1/public/posts" \
 ```
 
 ```bash TikTok reel theme={null}
-curl -X POST "https://mvp2.tryunsora.com/api/v1/public/posts" \
+curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -169,7 +169,7 @@ curl -X POST "https://mvp2.tryunsora.com/api/v1/public/posts" \
 ```
 
 ```bash Slideshow theme={null}
-curl -X POST "https://mvp2.tryunsora.com/api/v1/public/posts" \
+curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -186,7 +186,7 @@ curl -X POST "https://mvp2.tryunsora.com/api/v1/public/posts" \
 ```
 
 ```bash TikTok slideshow + settings theme={null}
-curl -X POST "https://mvp2.tryunsora.com/api/v1/public/posts" \
+curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

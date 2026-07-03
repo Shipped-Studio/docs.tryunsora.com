@@ -1,12 +1,12 @@
 ---
 title: "Get generation"
 description: "Fetch a single music generation by ID."
-openapi: "GET /public/music-generations/{generationId}"
+openapi: "GET /music-generations/{generationId}"
 ---
 
 Returns one music generation record including `outputAsset` when complete.
 
-**`GET /public/music-generations/{generationId}`**
+**`GET /music-generations/{generationId}`**
 
 ## Path parameters
 
@@ -17,6 +17,6 @@ Returns one music generation record including `outputAsset` when complete.
 ## Example
 
 ```bash
-curl "https://sadek.tryunsora.com/api/v1/public/music-generations/cm123abc" \
+curl "https://sadek.tryunsora.com/api/v1/music-generations/cm123abc" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY"
 ```

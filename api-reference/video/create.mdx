@@ -1,10 +1,32 @@
 ---
-title: "Create video (Seedance 2.0)"
-description: "Queue a Seedance 2.0 video generation job and poll until complete."
-openapi: "POST /public/videos/create"
+title: "Create video"
+description: "Queue a video generation job with any supported model and poll until complete."
+openapi: "POST /videos/create"
 ---
 
-Creates a **Seedance 2.0** video (`seedance_2.0`, 1080p). Credits are charged when the job is queued. Poll [Poll video status](/api-reference/video/poll-status) with `generation.id` until `status` is `COMPLETED` or `FAILED`.
+Creates a video generation with any supported video model. Credits are charged when the job is queued. Poll [Poll video status](/api-reference/video/poll-status) with `generation.id` until `status` is `COMPLETED` or `FAILED`.
+
+## Supported models
+
+Pass the model key in the `model` body field. Default: `seedance-2.0`.
+
+| Model key | Name | Duration | Aspect ratios | Sound |
+| --- | --- | --- | --- | --- |
+| `kling-standard` | Kling v3.0 Standard | 1–15s | `16:9`, `1:1`, `9:16` | ✅ `sound` |
+| `kling-pro` | Kling v3.0 Pro | 3–15s | `16:9`, `1:1`, `9:16` | ✅ `sound` |
+| `veo` | Google Veo 3.1 | 4–8s | `16:9`, `9:16` | ✅ `sound` |
+| `veo-fast` | Google Veo 3.1 Fast | 4–8s | `16:9`, `9:16` | ✅ `sound` |
+| `veo-lite` | Google Veo 3.1 Lite | 4–8s | `16:9`, `9:16` | ✅ `sound` |
+| `sora-2` | OpenAI Sora 2 | 4–20s | `16:9`, `9:16` | — |
+| `sora-2-pro` | OpenAI Sora 2 Pro | 4–20s | `16:9`, `9:16` | — |
+| `wan` | Alibaba Wan 2.6 | 5–15s | `16:9`, `9:16` | — |
+| `seedance-2.0` | Seedance 2.0 (1080p) | 4–15s | `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` | `generate_audio` |
+| `seedance-2.0-fast` | Seedance 2.0 Fast (720p) | 4–15s | `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` | `generate_audio` |
+
+Two parameter styles:
+
+- **Seedance models** (`seedance-2.0`, `seedance-2.0-fast`) use `functionMode` with `image_files` / `video_files` / `audio_files` / `filePaths`.
+- **All other models** use `image` / `end_image` / `reference_images` plus `sound`, `negative_prompt`, and (Wan only) `resolution`.
 
 ## Headers
 
@@ -20,6 +42,46 @@ Creates a **Seedance 2.0** video (`seedance_2.0`, 1080p). Credits are charged wh
   Text prompt describing the video to generate.
 </ParamField>
 
+<ParamField body="model" type="string">
+  Video model key from the table above. Default: `seedance-2.0`.
+</ParamField>
+
+<ParamField body="duration" type="integer">
+  Length in seconds (integer). Default: `5`. The valid range depends on the model (see table above).
+</ParamField>
+
+<ParamField body="aspect_ratio" type="string">
+  Aspect ratio. Default: `16:9`. Alias: `ratio`. Valid values depend on the model (see table above).
+</ParamField>
+
+### Kling / Veo / Sora / Wan parameters
+
+<ParamField body="negative_prompt" type="string">
+  What to avoid in the video. Supported by Kling, Veo, and Wan models.
+</ParamField>
+
+<ParamField body="sound" type="boolean">
+  Generate audio with the video. Default: `false`. Supported by Kling v3 and Veo 3.1 models — increases credit cost.
+</ParamField>
+
+<ParamField body="resolution" type="string">
+  **Wan 2.6 only** — `720p` (default) or `1080p`. Seedance resolution is fixed by the model variant.
+</ParamField>
+
+<ParamField body="image" type="string">
+  Start image URL for image-to-video.
+</ParamField>
+
+<ParamField body="end_image" type="string">
+  End image URL, for models that support start/end frames.
+</ParamField>
+
+<ParamField body="reference_images" type="string[]">
+  Reference image URLs (Veo 3.1 reference mode).
+</ParamField>
+
+### Seedance parameters
+
 <ParamField body="functionMode" type="string">
   Generation mode. Default: `omni_reference`.
 
@@ -27,18 +89,6 @@ Creates a **Seedance 2.0** video (`seedance_2.0`, 1080p). Credits are charged wh
   | --- | --- |
   | `omni_reference` | Reference images, videos, and/or audio URLs |
   | `first_last_frames` | Start/end frame images via `filePaths` |
-</ParamField>
-
-<ParamField body="ratio" type="string">
-  Aspect ratio. Default: `16:9`.
-
-  Allowed: `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16`
-</ParamField>
-
-<ParamField body="duration" type="integer">
-  Length in seconds (integer). Default: `5`. Allowed range: **4–15**.
-
-  Credit tiers are priced at **5**, **10**, and **15** seconds (see table below).
 </ParamField>
 
 <ParamField body="image_files" type="string[]">
@@ -61,17 +111,24 @@ Creates a **Seedance 2.0** video (`seedance_2.0`, 1080p). Credits are charged wh
   Generate a soundtrack/audio for the video. Default: `false`.
 </ParamField>
 
-## Credits (Seedance 2.0)
+## Credits
 
-| Duration | No `video_files` | With `video_files` |
-| --- | --- | --- |
-| 5s | 40 | 80 |
-| 10s | 80 | 140 |
-| 15s | 100 | 200 |
+| Model | Pricing |
+| --- | --- |
+| `kling-standard` | 5s: 20 · 10s: 35 · 15s: 50 — with `sound`: 25 / 50 / 75 |
+| `kling-pro` | 5s: 45 · 10s: 85 · 15s: 125 — with `sound`: 65 / 125 / 190 |
+| `veo` | 9 credits/second — with `sound`: 18 credits/second |
+| `veo-fast` | 4.5 credits/second — with `sound`: 6.75 credits/second (rounded up) |
+| `veo-lite` | 3.6 credits/second (rounded up) |
+| `sora-2` | 4s: 20 · 8s: 35 · 12s: 50 · 16s: 65 · 20s: 80 |
+| `sora-2-pro` | 4s: 50 · 8s: 95 · 12s: 145 · 16s: 190 · 20s: 240 |
+| `wan` | 720p — 5s: 20 · 10s: 40 · 15s: 60; 1080p — 5s: 30 · 10s: 60 · 15s: 90 |
+| `seedance-2.0` | 5s: 40 · 10s: 80 · 15s: 100 — with `video_files`: 80 / 140 / 200 |
+| `seedance-2.0-fast` | 5s: 20 · 10s: 40 · 15s: 60 — with `video_files`: 40 / 80 / 100 |
 
 ## Async completion
 
-Poll `GET /public/video/status/{id}` — see [Poll video status](/api-reference/video/poll-status). No webhooks.
+Poll `GET /video/status/{id}` — see [Poll video status](/api-reference/video/poll-status). No webhooks.
 
 ## Response
 
@@ -82,7 +139,7 @@ Poll `GET /public/video/status/{id}` — see [Poll video status](/api-reference/
     "id": "cm123abc",
     "status": "QUEUED"
   },
-  "model": "seedance_2.0",
+  "model": "seedance-2.0",
   "creditsDeducted": 40,
   "creditsRemaining": 60
 }
@@ -91,43 +148,64 @@ Poll `GET /public/video/status/{id}` — see [Poll video status](/api-reference/
 ## Examples
 
 <RequestExample>
-```bash Text-to-video theme={null}
-curl -X POST "https://sadek.tryunsora.com/api/v1/public/videos/create" \
+```bash Text-to-video (Seedance) theme={null}
+curl -X POST "https://sadek.tryunsora.com/api/v1/videos/create" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "Slow cinematic drone shot over misty mountains at sunrise",
-    "ratio": "16:9",
+    "aspect_ratio": "16:9",
     "duration": 5
   }'
 ```
 
-```bash Omni reference theme={null}
-curl -X POST "https://sadek.tryunsora.com/api/v1/public/videos/create" \
+```bash Veo 3.1 with sound theme={null}
+curl -X POST "https://sadek.tryunsora.com/api/v1/videos/create" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "prompt": "Character walks through neon alley, same outfit as reference",
-    "functionMode": "omni_reference",
-    "ratio": "9:16",
-    "duration": 10,
-    "image_files": ["https://cdn.example.com/ref.jpg"]
+    "model": "veo",
+    "prompt": "A barista pours latte art in a cozy cafe, ambient chatter",
+    "aspect_ratio": "16:9",
+    "duration": 8,
+    "sound": true
   }'
 ```
 
-```bash First / last frame theme={null}
-curl -X POST "https://sadek.tryunsora.com/api/v1/public/videos/create" \
+```bash Kling Pro image-to-video theme={null}
+curl -X POST "https://sadek.tryunsora.com/api/v1/videos/create" \
   -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "prompt": "Smooth transition from day to night over the city skyline",
-    "functionMode": "first_last_frames",
-    "ratio": "16:9",
-    "duration": 5,
-    "filePaths": [
-      "https://cdn.example.com/frame-start.jpg",
-      "https://cdn.example.com/frame-end.jpg"
-    ]
+    "model": "kling-pro",
+    "prompt": "The character turns and smiles at the camera",
+    "image": "https://cdn.example.com/start.jpg",
+    "duration": 5
+  }'
+```
+
+```bash Sora 2 theme={null}
+curl -X POST "https://sadek.tryunsora.com/api/v1/videos/create" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "sora-2",
+    "prompt": "A golden retriever surfs a small wave at sunset, slow motion",
+    "duration": 8
+  }'
+```
+
+```bash Seedance omni reference theme={null}
+curl -X POST "https://sadek.tryunsora.com/api/v1/videos/create" \
+  -H "Authorization: Bearer uns_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "seedance-2.0",
+    "prompt": "Character walks through neon alley, same outfit as reference",
+    "functionMode": "omni_reference",
+    "aspect_ratio": "9:16",
+    "duration": 10,
+    "image_files": ["https://cdn.example.com/ref.jpg"]
   }'
 ```
 </RequestExample>
@@ -136,7 +214,7 @@ curl -X POST "https://sadek.tryunsora.com/api/v1/public/videos/create" \
 
 | HTTP | When |
 | --- | --- |
-| `400` | Invalid prompt, mode, ratio, duration, or reference files |
+| `400` | Invalid model, prompt, mode, ratio, duration, or reference files |
 | `401` | Invalid auth |
 | `402` | Insufficient credits |
 | `404` | User not found |
