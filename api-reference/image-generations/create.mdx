@@ -23,7 +23,7 @@ Creates an image generation job. Credits are deducted when the job is queued. Po
 <ParamField body="model" type="string">
   Model key. Default: `nano-banana-2`.
 
-  | `model` | Display name | `resolution` values | `ratio` |
+  | `model` | Display name | `resolution` values | `aspect` |
   | --- | --- | --- | --- |
   | `nano-banana-2` | Google Nano Banana 2 | `1k`, `2k`, `4k` | `auto`, `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`, `4:5`, `5:4`, `21:9`, `1:4`, `4:1`, `1:8`, `8:1` |
   | `nano-banana-pro` | Google Nano Banana Pro | `1k`, `2k`, `4k` | `1:1`, `2:3`, `3:4`, `4:5`, `3:2`, `4:3`, `5:4`, `16:9`, `21:9` |
@@ -32,7 +32,7 @@ Creates an image generation job. Credits are deducted when the job is queued. Po
   | `gpt-image-2` | OpenAI GPT Image 2 | `1k`, `2k`, `4k` | `auto`, `1:1`, `9:16`, `16:9`, `4:3`, `3:4` |
 </ParamField>
 
-<ParamField body="ratio" type="string">
+<ParamField body="aspect" type="string">
   Aspect ratio. Must be allowed for the chosen `model`. Default: `auto` (where supported).
 </ParamField>
 
@@ -40,12 +40,8 @@ Creates an image generation job. Credits are deducted when the job is queued. Po
   Output size or quality tier. Must match the chosen `model` (see table above). Default: `2k` for most models.
 </ParamField>
 
-<ParamField body="referenceImageUrl" type="string">
-  Single reference image URL (public HTTPS). Use for style or subject guidance.
-</ParamField>
-
-<ParamField body="referenceImageUrls" type="string[]">
-  Multiple reference image URLs. Max count depends on model (up to 14–16). If both `referenceImageUrl` and `referenceImageUrls` are sent, the array wins.
+<ParamField body="referenceImages" type="string[]">
+  Reference image URLs (public HTTPS). Use for style or subject guidance. Max count depends on model (up to 14–16).
 </ParamField>
 
 <ParamField body="nsfwChecker" type="boolean">
@@ -80,7 +76,7 @@ curl -X POST "https://sadek.tryunsora.com/api/v1/image-generations/create" \
   -d '{
     "prompt": "Product photo on marble, soft studio light",
     "model": "nano-banana-2",
-    "ratio": "1:1",
+    "aspect": "1:1",
     "resolution": "2k"
   }'
 ```
@@ -92,9 +88,9 @@ curl -X POST "https://sadek.tryunsora.com/api/v1/image-generations/create" \
   -d '{
     "prompt": "Same character, new outfit, editorial look",
     "model": "gpt-image-2",
-    "ratio": "9:16",
+    "aspect": "9:16",
     "resolution": "2k",
-    "referenceImageUrls": [
+    "referenceImages": [
       "https://cdn.example.com/ref-1.jpg"
     ]
   }'
