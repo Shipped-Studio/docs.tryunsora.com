@@ -1,38 +1,18 @@
-# Mintlify Starter Kit
+# Unsora Docs
 
-Use the starter kit to get your docs deployed and ready to customize.
+The official documentation and API reference for [Unsora](https://app.tryunsora.com) — AI video, image, music, thumbnail, influencer, and clipping generation.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
-
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
-
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
-
-## AI-assisted writing
-
-Set up your AI coding tool to work with Mintlify:
-
-```bash
-npx skills add https://mintlify.com/docs
-```
-
-This command installs Mintlify's documentation skill for your configured AI tools like Claude Code, Cursor, Windsurf, and others. The skill includes component reference, writing standards, and workflow guidance.
-
-See the [AI tools guides](/ai-tools) for tool-specific setup.
+Built with [Mintlify](https://mintlify.com).
 
 ## Development
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview documentation changes locally:
 
 ```
 npm i -g mint
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+Run the following command at the root of the docs (where `docs.json` lives):
 
 ```
 mint dev
@@ -40,16 +20,21 @@ mint dev
 
 View your local preview at `http://localhost:3000`.
 
+## Structure
+
+- `docs.json` — navigation, theme, logo, and site config
+- `get-started.mdx`, `api-guide.mdx` — guides
+- `api-reference/` — endpoint reference pages
+- `openapi.json` — OpenAPI spec that powers the API playground
+- `logo/`, `images/`, `favicon.svg` — branding assets
+
 ## Publishing changes
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+Pushing to the default branch deploys to Mintlify automatically (via the Mintlify GitHub app). The public docs are served at `docs.tryunsora.com` through a Vercel rewrite proxy — see `vercel.json`.
 
 ## Need help?
 
-### Troubleshooting
-
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
-
-### Resources
+- If the dev server won't start: run `mint update` to get the latest CLI.
+- If a page 404s: make sure you're running in a folder with a valid `docs.json`.
 - [Mintlify documentation](https://mintlify.com/docs)
+- Support: hi@tryunsora.com
