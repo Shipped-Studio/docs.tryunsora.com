@@ -41,10 +41,8 @@ Creates **AI influencer** image job(s). Each image in `count` is a separate gene
   Allowed: `ugc`, `casual_daylight`, `cozy_indoor`, `low_light_intimate`, `raw_flash`, `golden_hour`, `moody_night`, `car_selfie`, `mirror_selfie`, `luxury_influencer`, `cinematic`, `travel_content`, `beauty_closeup`, `party_night_out`
 </ParamField>
 
-<ParamField body="age" type="string">
-  Optional age band for the subject.
-
-  Allowed: `teen`, `young_adult`, `adult`, `middle_aged`, `elderly`
+<ParamField body="age" type="integer">
+  Optional subject age in years. Min `18`, max `70`.
 </ParamField>
 
 ## Async completion
@@ -78,8 +76,8 @@ curl -X POST "https://sadek.tryunsora.com/api/v1/influencer-studio/create" \
   -d '{
     "prompt": "Fitness creator in athleisure, gym mirror selfie, natural light",
     "aspectRatio": "9:16",
-    "styleMode": "ugc",
-    "cameraAngle": "mirror_selfie"
+    "styleMode": "mirror_selfie",
+    "cameraAngle": "pov"
   }'
 ```
 
@@ -92,7 +90,7 @@ curl -X POST "https://sadek.tryunsora.com/api/v1/influencer-studio/create" \
     "aspectRatio": "4:3",
     "count": 3,
     "styleMode": "golden_hour",
-    "age": "young_adult"
+    "age": 25
   }'
 ```
 </RequestExample>

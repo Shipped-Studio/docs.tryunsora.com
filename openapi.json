@@ -1282,14 +1282,10 @@
             ]
           },
           "age": {
-            "type": "string",
-            "enum": [
-              "teen",
-              "young_adult",
-              "adult",
-              "middle_aged",
-              "elderly"
-            ]
+            "type": "integer",
+            "minimum": 18,
+            "maximum": 70,
+            "description": "Subject age in years."
           }
         },
         "required": [
