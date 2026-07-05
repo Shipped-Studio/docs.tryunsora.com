@@ -26,11 +26,11 @@ View your local preview at `http://localhost:3000`.
 - `get-started.mdx`, `api-guide.mdx` — guides
 - `api-reference/` — endpoint reference pages
 - `openapi.json` — OpenAPI spec that powers the API playground
-- `logo/`, `images/`, `favicon.svg` — branding assets
+- `logo/`, `images/`, `favicon.png` — branding assets
 
 ## Publishing changes
 
-Pushing to the default branch deploys to Mintlify automatically (via the Mintlify GitHub app). The public docs are served at `docs.tryunsora.com` through a Vercel rewrite proxy — see `vercel.json`.
+Pushing to the default branch deploys to Mintlify automatically (via the Mintlify GitHub app). The public docs are served at `tryunsora.com/docs`, proxied to the Mintlify deployment (`unsora.mintlify.app`) by a rewrite in the landing app's `next.config.ts`.
 
 ## Need help?
 

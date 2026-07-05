@@ -7,12 +7,8 @@
   },
   "servers": [
     {
-      "url": "https://sadek.tryunsora.com/api/v1",
+      "url": "https://mvp.tryunsora.com/api/v1",
       "description": "Versioned API (recommended)"
-    },
-    {
-      "url": "http://localhost:8000/api/v1",
-      "description": "Local development"
     }
   ],
   "tags": [
@@ -66,10 +62,7 @@
             }
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       },
       "CreatePostRequest": {
         "type": "object",
@@ -136,9 +129,7 @@
             "description": "Optional alias for settings.tiktok"
           }
         },
-        "required": [
-          "accounts"
-        ]
+        "required": ["accounts"]
       },
       "CreatePostResponse": {
         "type": "object",
@@ -153,11 +144,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "success",
-          "data",
-          "message"
-        ]
+        "required": ["success", "data", "message"]
       },
       "CreditsResponse": {
         "type": "object",
@@ -166,9 +153,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "credits"
-        ]
+        "required": ["credits"]
       },
       "SubscriptionData": {
         "type": "object",
@@ -227,12 +212,7 @@
             ]
           }
         },
-        "required": [
-          "plan",
-          "status",
-          "isActive",
-          "isCancelled"
-        ]
+        "required": ["plan", "status", "isActive", "isCancelled"]
       },
       "SubscriptionResponse": {
         "type": "object",
@@ -244,10 +224,7 @@
             "$ref": "#/components/schemas/SubscriptionData"
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -265,34 +242,24 @@
             "type": "string"
           }
         },
-        "required": [
-          "error"
-        ]
+        "required": ["error"]
       },
       "PlanRequiredError": {
         "type": "object",
         "properties": {
           "success": {
             "type": "boolean",
-            "enum": [
-              false
-            ]
+            "enum": [false]
           },
           "error": {
             "type": "string"
           },
           "code": {
             "type": "string",
-            "enum": [
-              "PLAN_REQUIRED"
-            ]
+            "enum": ["PLAN_REQUIRED"]
           }
         },
-        "required": [
-          "success",
-          "error",
-          "code"
-        ]
+        "required": ["success", "error", "code"]
       },
       "PostAccountInput": {
         "type": "object",
@@ -362,12 +329,7 @@
             "$ref": "#/components/schemas/PostLinkedAccount"
           }
         },
-        "required": [
-          "id",
-          "postId",
-          "accountId",
-          "published"
-        ]
+        "required": ["id", "postId", "accountId", "published"]
       },
       "PostAccountRef": {
         "type": "object",
@@ -377,9 +339,7 @@
             "description": "Account id from GET /accounts"
           }
         },
-        "required": [
-          "id"
-        ]
+        "required": ["id"]
       },
       "PostDataResponse": {
         "type": "object",
@@ -394,10 +354,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       },
       "PostDeleteResponse": {
         "type": "object",
@@ -409,10 +366,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "success",
-          "message"
-        ]
+        "required": ["success", "message"]
       },
       "PostLinkedAccount": {
         "type": "object",
@@ -455,10 +409,7 @@
             ]
           }
         },
-        "required": [
-          "id",
-          "provider"
-        ]
+        "required": ["id", "provider"]
       },
       "PostListDataResponse": {
         "type": "object",
@@ -479,16 +430,10 @@
                 "$ref": "#/components/schemas/PostListPagination"
               }
             },
-            "required": [
-              "posts",
-              "pagination"
-            ]
+            "required": ["posts", "pagination"]
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       },
       "PostListPagination": {
         "type": "object",
@@ -506,12 +451,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "page",
-          "limit",
-          "total",
-          "totalPages"
-        ]
+        "required": ["page", "limit", "total", "totalPages"]
       },
       "PostMediaRecord": {
         "type": "object",
@@ -532,22 +472,14 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "postId",
-          "type",
-          "order",
-          "assetId"
-        ]
+        "required": ["id", "postId", "type", "order", "assetId"]
       },
       "PostMediaSlideshow": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "slideshow"
-            ]
+            "enum": ["slideshow"]
           },
           "urls": {
             "type": "array",
@@ -559,26 +491,18 @@
             "maxItems": 35
           }
         },
-        "required": [
-          "type",
-          "urls"
-        ]
+        "required": ["type", "urls"]
       },
       "PostMediaType": {
         "type": "string",
-        "enum": [
-          "VIDEO",
-          "IMAGE"
-        ]
+        "enum": ["VIDEO", "IMAGE"]
       },
       "PostMediaVideo": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "video"
-            ]
+            "enum": ["video"]
           },
           "url": {
             "type": "string",
@@ -617,10 +541,7 @@
             "description": "Optional Instagram Reel cover image URL"
           }
         },
-        "required": [
-          "type",
-          "url"
-        ]
+        "required": ["type", "url"]
       },
       "PostRecord": {
         "type": "object",
@@ -743,10 +664,7 @@
         "properties": {
           "post_mode": {
             "type": "string",
-            "enum": [
-              "DIRECT_POST",
-              "MEDIA_UPLOAD"
-            ],
+            "enum": ["DIRECT_POST", "MEDIA_UPLOAD"],
             "description": "DIRECT_POST publishes immediately; MEDIA_UPLOAD sends to the TikTok inbox for the user to finish in-app."
           },
           "privacy_level": {
@@ -795,22 +713,11 @@
       },
       "PostStatus": {
         "type": "string",
-        "enum": [
-          "DRAFT",
-          "SCHEDULED",
-          "PUBLISHING",
-          "PUBLISHED",
-          "FAILED"
-        ]
+        "enum": ["DRAFT", "SCHEDULED", "PUBLISHING", "PUBLISHED", "FAILED"]
       },
       "PostType": {
         "type": "string",
-        "enum": [
-          "VIDEO",
-          "IMAGE",
-          "CAROUSEL",
-          "TEXT"
-        ]
+        "enum": ["VIDEO", "IMAGE", "CAROUSEL", "TEXT"]
       },
       "PublicPostSummary": {
         "type": "object",
@@ -820,22 +727,11 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "draft",
-              "scheduled",
-              "publishing",
-              "published",
-              "failed"
-            ]
+            "enum": ["draft", "scheduled", "publishing", "published", "failed"]
           },
           "type": {
             "type": "string",
-            "enum": [
-              "video",
-              "image",
-              "slideshow",
-              "text"
-            ]
+            "enum": ["video", "image", "slideshow", "text"]
           },
           "caption": {
             "type": "string"
@@ -966,9 +862,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "prompt"
-        ]
+        "required": ["prompt"]
       },
       "CreateImageGenerationResponse": {
         "type": "object",
@@ -984,18 +878,10 @@
               },
               "status": {
                 "type": "string",
-                "enum": [
-                  "QUEUED",
-                  "PROCESSING",
-                  "COMPLETED",
-                  "FAILED"
-                ]
+                "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
               }
             },
-            "required": [
-              "id",
-              "status"
-            ]
+            "required": ["id", "status"]
           },
           "creditsDeducted": {
             "type": "number"
@@ -1004,10 +890,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "success",
-          "generation"
-        ]
+        "required": ["success", "generation"]
       },
       "MusicGenerationRecord": {
         "type": "object",
@@ -1054,11 +937,7 @@
             "additionalProperties": true
           }
         },
-        "required": [
-          "id",
-          "status",
-          "createdAt"
-        ]
+        "required": ["id", "status", "createdAt"]
       },
       "CreateMusicGenerationRequest": {
         "type": "object",
@@ -1078,17 +957,11 @@
           },
           "output_format": {
             "type": "string",
-            "enum": [
-              "mp3",
-              "wav",
-              "flac"
-            ],
+            "enum": ["mp3", "wav", "flac"],
             "default": "mp3"
           }
         },
-        "required": [
-          "prompt"
-        ]
+        "required": ["prompt"]
       },
       "CreateMusicGenerationResponse": {
         "type": "object",
@@ -1106,10 +979,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "id",
-              "status"
-            ]
+            "required": ["id", "status"]
           },
           "creditsDeducted": {
             "type": "number"
@@ -1141,11 +1011,7 @@
             "$ref": "#/components/schemas/PaginationMeta"
           }
         },
-        "required": [
-          "success",
-          "generations",
-          "pagination"
-        ]
+        "required": ["success", "generations", "pagination"]
       },
       "MusicGenerationGetResponse": {
         "type": "object",
@@ -1157,10 +1023,7 @@
             "$ref": "#/components/schemas/MusicGenerationRecord"
           }
         },
-        "required": [
-          "success",
-          "generation"
-        ]
+        "required": ["success", "generation"]
       },
       "MusicStatusResponse": {
         "type": "object",
@@ -1218,16 +1081,10 @@
                 ]
               }
             },
-            "required": [
-              "id",
-              "status"
-            ]
+            "required": ["id", "status"]
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       },
       "CreateInfluencerStudioRequest": {
         "type": "object",
@@ -1238,13 +1095,7 @@
           "aspectRatio": {
             "type": "string",
             "default": "1:1",
-            "enum": [
-              "1:1",
-              "16:9",
-              "9:16",
-              "4:3",
-              "3:4"
-            ]
+            "enum": ["1:1", "16:9", "9:16", "4:3", "3:4"]
           },
           "count": {
             "type": "integer",
@@ -1254,13 +1105,7 @@
           },
           "cameraAngle": {
             "type": "string",
-            "enum": [
-              "pov",
-              "portrait",
-              "full-body",
-              "close-up",
-              "side-profile"
-            ]
+            "enum": ["pov", "portrait", "full-body", "close-up", "side-profile"]
           },
           "styleMode": {
             "type": "string",
@@ -1288,9 +1133,7 @@
             "description": "Subject age in years."
           }
         },
-        "required": [
-          "prompt"
-        ]
+        "required": ["prompt"]
       },
       "CreateInfluencerStudioResponse": {
         "type": "object",
@@ -1308,18 +1151,10 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "QUEUED",
-                    "PROCESSING",
-                    "COMPLETED",
-                    "FAILED"
-                  ]
+                  "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
                 }
               },
-              "required": [
-                "id",
-                "status"
-              ]
+              "required": ["id", "status"]
             }
           },
           "creditsDeducted": {
@@ -1329,10 +1164,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "success",
-          "generations"
-        ]
+        "required": ["success", "generations"]
       },
       "CreateVideoRequest": {
         "type": "object",
@@ -1423,9 +1255,7 @@
             "description": "Seedance only — generate a soundtrack/audio for the video."
           }
         },
-        "required": [
-          "prompt"
-        ]
+        "required": ["prompt"]
       },
       "CreateVideoResponse": {
         "type": "object",
@@ -1441,24 +1271,14 @@
               },
               "status": {
                 "type": "string",
-                "enum": [
-                  "QUEUED",
-                  "PROCESSING",
-                  "COMPLETED",
-                  "FAILED"
-                ]
+                "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
               }
             },
-            "required": [
-              "id",
-              "status"
-            ]
+            "required": ["id", "status"]
           },
           "model": {
             "type": "string",
-            "enum": [
-              "seedance_2.0"
-            ]
+            "enum": ["seedance_2.0"]
           },
           "creditsDeducted": {
             "type": "number"
@@ -1467,11 +1287,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "success",
-          "generation",
-          "model"
-        ]
+        "required": ["success", "generation", "model"]
       },
       "VideoStatusResponse": {
         "type": "object",
@@ -1487,18 +1303,11 @@
               },
               "model": {
                 "type": "string",
-                "enum": [
-                  "seedance_2.0"
-                ]
+                "enum": ["seedance_2.0"]
               },
               "status": {
                 "type": "string",
-                "enum": [
-                  "QUEUED",
-                  "PROCESSING",
-                  "COMPLETED",
-                  "FAILED"
-                ]
+                "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
               },
               "outputUrl": {
                 "anyOf": [
@@ -1552,17 +1361,10 @@
                 ]
               }
             },
-            "required": [
-              "id",
-              "model",
-              "status"
-            ]
+            "required": ["id", "model", "status"]
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       },
       "VideoGenerationSummary": {
         "type": "object",
@@ -1572,21 +1374,14 @@
           },
           "model": {
             "type": "string",
-            "enum": [
-              "seedance_2.0"
-            ]
+            "enum": ["seedance_2.0"]
           },
           "prompt": {
             "type": "string"
           },
           "status": {
             "type": "string",
-            "enum": [
-              "QUEUED",
-              "PROCESSING",
-              "COMPLETED",
-              "FAILED"
-            ]
+            "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
           },
           "ratio": {
             "type": "string"
@@ -1624,12 +1419,7 @@
             "additionalProperties": true
           }
         },
-        "required": [
-          "id",
-          "model",
-          "status",
-          "createdAt"
-        ]
+        "required": ["id", "model", "status", "createdAt"]
       },
       "VideoListResponse": {
         "type": "object",
@@ -1667,11 +1457,7 @@
             }
           }
         },
-        "required": [
-          "success",
-          "generations",
-          "pagination"
-        ]
+        "required": ["success", "generations", "pagination"]
       },
       "DeleteVideoGenerationResponse": {
         "type": "object",
@@ -1683,10 +1469,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "success",
-          "message"
-        ]
+        "required": ["success", "message"]
       },
       "PaginationMeta": {
         "type": "object",
@@ -1754,11 +1537,7 @@
             "additionalProperties": true
           }
         },
-        "required": [
-          "id",
-          "status",
-          "createdAt"
-        ]
+        "required": ["id", "status", "createdAt"]
       },
       "ImageGenerationListResponse": {
         "type": "object",
@@ -1776,11 +1555,7 @@
             "$ref": "#/components/schemas/PaginationMeta"
           }
         },
-        "required": [
-          "success",
-          "generations",
-          "pagination"
-        ]
+        "required": ["success", "generations", "pagination"]
       },
       "ImageGenerationGetResponse": {
         "type": "object",
@@ -1792,10 +1567,7 @@
             "$ref": "#/components/schemas/ImageGenerationRecord"
           }
         },
-        "required": [
-          "success",
-          "generation"
-        ]
+        "required": ["success", "generation"]
       },
       "ThumbnailRecord": {
         "type": "object",
@@ -1882,11 +1654,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "id",
-          "status",
-          "createdAt"
-        ]
+        "required": ["id", "status", "createdAt"]
       },
       "ThumbnailListResponse": {
         "type": "object",
@@ -1901,10 +1669,7 @@
             }
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       },
       "ThumbnailGetResponse": {
         "type": "object",
@@ -1916,10 +1681,7 @@
             "$ref": "#/components/schemas/ThumbnailRecord"
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       },
       "ClippingJob": {
         "type": "object",
@@ -1930,12 +1692,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "QUEUED",
-              "PROCESSING",
-              "COMPLETED",
-              "FAILED"
-            ]
+            "enum": ["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
           },
           "videoUrl": {
             "type": "string"
@@ -1971,10 +1728,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "id",
-          "status"
-        ]
+        "required": ["id", "status"]
       },
       "ClippingListResponse": {
         "type": "object",
@@ -1989,10 +1743,7 @@
             }
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       },
       "ClippingGetResponse": {
         "type": "object",
@@ -2004,10 +1755,7 @@
             "$ref": "#/components/schemas/ClippingJob"
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       },
       "DeleteGenerationResponse": {
         "type": "object",
@@ -2019,10 +1767,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "success",
-          "message"
-        ]
+        "required": ["success", "message"]
       },
       "UpdatePostRequest": {
         "type": "object",
@@ -2089,13 +1834,7 @@
           "ratio": {
             "type": "string",
             "nullable": true,
-            "enum": [
-              "RATIO_9_16",
-              "RATIO_1_1",
-              "RATIO_4_5",
-              "RATIO_16_9",
-              null
-            ]
+            "enum": ["RATIO_9_16", "RATIO_1_1", "RATIO_4_5", "RATIO_16_9", null]
           },
           "enableCaption": {
             "type": "boolean"
@@ -2171,19 +1910,14 @@
             "type": "integer"
           }
         },
-        "required": [
-          "success",
-          "data"
-        ]
+        "required": ["success", "data"]
       }
     }
   },
   "paths": {
     "/user/credits": {
       "get": {
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "summary": "Get current credits balance",
         "security": [
           {
@@ -2216,9 +1950,7 @@
     },
     "/user/subscription": {
       "get": {
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "summary": "Get subscription",
         "description": "Returns the authenticated user's plan and Stripe subscription snapshot.",
         "security": [
@@ -2272,9 +2004,7 @@
     },
     "/accounts": {
       "get": {
-        "tags": [
-          "Connect"
-        ],
+        "tags": ["Connect"],
         "summary": "Get accounts",
         "description": "Returns social accounts connected to the authenticated user for scheduling posts.",
         "security": [
@@ -2328,9 +2058,7 @@
     },
     "/posts": {
       "post": {
-        "tags": [
-          "Posts"
-        ],
+        "tags": ["Posts"],
         "summary": "Create Post",
         "description": "Create a draft or scheduled post for one or more connected accounts. Requires an active paid plan.",
         "security": [
@@ -2441,9 +2169,7 @@
         }
       },
       "get": {
-        "tags": [
-          "Posts"
-        ],
+        "tags": ["Posts"],
         "summary": "List Posts",
         "description": "List posts for the authenticated user with optional filters.",
         "security": [
@@ -2546,9 +2272,7 @@
     },
     "/posts/{id}": {
       "get": {
-        "tags": [
-          "Posts"
-        ],
+        "tags": ["Posts"],
         "summary": "Get post",
         "security": [
           {
@@ -2619,9 +2343,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Posts"
-        ],
+        "tags": ["Posts"],
         "summary": "Update post",
         "description": "Update a draft or scheduled post. Published posts cannot be edited. Requires an active paid plan.",
         "security": [
@@ -2720,9 +2442,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Posts"
-        ],
+        "tags": ["Posts"],
         "summary": "Delete post",
         "description": "Delete a post. Requires an active paid plan.",
         "security": [
@@ -2806,9 +2526,7 @@
     },
     "/image/status/{id}": {
       "get": {
-        "tags": [
-          "Image Generations"
-        ],
+        "tags": ["Image Generations"],
         "summary": "Poll image generation status",
         "description": "Unified status endpoint for image generator, AI influencer, and thumbnail jobs. Poll until status is COMPLETED or FAILED.",
         "security": [
@@ -2846,11 +2564,7 @@
                         },
                         "type": {
                           "type": "string",
-                          "enum": [
-                            "BASIC",
-                            "INFLUENCER",
-                            "THUMBNAIL"
-                          ]
+                          "enum": ["BASIC", "INFLUENCER", "THUMBNAIL"]
                         },
                         "status": {
                           "type": "string",
@@ -2887,17 +2601,10 @@
                           "nullable": true
                         }
                       },
-                      "required": [
-                        "id",
-                        "type",
-                        "status"
-                      ]
+                      "required": ["id", "type", "status"]
                     }
                   },
-                  "required": [
-                    "success",
-                    "data"
-                  ]
+                  "required": ["success", "data"]
                 }
               }
             }
@@ -2910,9 +2617,7 @@
     },
     "/video/status/{id}": {
       "get": {
-        "tags": [
-          "Video Generations"
-        ],
+        "tags": ["Video Generations"],
         "summary": "Poll video generation status",
         "description": "Poll video jobs created via POST /videos/create.",
         "security": [
@@ -2967,9 +2672,7 @@
     },
     "/videos/create": {
       "post": {
-        "tags": [
-          "Video Generations"
-        ],
+        "tags": ["Video Generations"],
         "summary": "Create video generation",
         "description": "Queue a video generation with any supported video model (Kling v3, Veo 3.1, Sora 2, Wan 2.6, Seedance 2.0).",
         "security": [
@@ -3038,9 +2741,7 @@
     },
     "/videos/all": {
       "get": {
-        "tags": [
-          "Video Generations"
-        ],
+        "tags": ["Video Generations"],
         "summary": "List video generations",
         "description": "Paginated list of Seedance 2.0 (seedance_2.0) video jobs for the authenticated user.",
         "security": [
@@ -3114,9 +2815,7 @@
     },
     "/videos/{generationId}": {
       "delete": {
-        "tags": [
-          "Video Generations"
-        ],
+        "tags": ["Video Generations"],
         "summary": "Delete video generation",
         "description": "Permanently delete a Seedance 2.0 video generation owned by the authenticated user.",
         "security": [
@@ -3171,9 +2870,7 @@
     },
     "/image-generations/create": {
       "post": {
-        "tags": [
-          "Image Generations"
-        ],
+        "tags": ["Image Generations"],
         "summary": "Create image generation job",
         "security": [
           {
@@ -3241,9 +2938,7 @@
     },
     "/music/status/{id}": {
       "get": {
-        "tags": [
-          "Music Generations"
-        ],
+        "tags": ["Music Generations"],
         "summary": "Poll music generation status",
         "security": [
           {
@@ -3286,9 +2981,7 @@
     },
     "/music-generations/create": {
       "post": {
-        "tags": [
-          "Music Generations"
-        ],
+        "tags": ["Music Generations"],
         "summary": "Create Mureka AI music generation job",
         "security": [
           {
@@ -3356,9 +3049,7 @@
     },
     "/music-generations/all": {
       "get": {
-        "tags": [
-          "Music Generations"
-        ],
+        "tags": ["Music Generations"],
         "summary": "List music generations (paginated)",
         "security": [
           {
@@ -3400,9 +3091,7 @@
     },
     "/music-generations/{generationId}": {
       "get": {
-        "tags": [
-          "Music Generations"
-        ],
+        "tags": ["Music Generations"],
         "summary": "Get one music generation",
         "security": [
           {
@@ -3443,9 +3132,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Music Generations"
-        ],
+        "tags": ["Music Generations"],
         "summary": "Delete a music generation",
         "security": [
           {
@@ -3488,9 +3175,7 @@
     },
     "/influencer-studio/create": {
       "post": {
-        "tags": [
-          "Influencer Studio"
-        ],
+        "tags": ["Influencer Studio"],
         "summary": "Create AI influencer generation job",
         "security": [
           {
@@ -3543,9 +3228,7 @@
     },
     "/thumbnails/create": {
       "post": {
-        "tags": [
-          "Thumbnails"
-        ],
+        "tags": ["Thumbnails"],
         "summary": "Create thumbnail generation job",
         "security": [
           {
@@ -3572,10 +3255,7 @@
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": [
-                            "youtube",
-                            "document"
-                          ]
+                          "enum": ["youtube", "document"]
                         },
                         "content": {
                           "type": "string"
@@ -3597,9 +3277,7 @@
     },
     "/clippings/create": {
       "post": {
-        "tags": [
-          "Clippings"
-        ],
+        "tags": ["Clippings"],
         "summary": "Create AI clipping job",
         "security": [
           {
@@ -3657,13 +3335,7 @@
                   },
                   "ratio": {
                     "type": "string",
-                    "enum": [
-                      "9:16",
-                      "1:1",
-                      "4:5",
-                      "16:9",
-                      "original"
-                    ],
+                    "enum": ["9:16", "1:1", "4:5", "16:9", "original"],
                     "default": "original",
                     "description": "Output aspect ratio. AI reframe keeps the main subject centered when cropping. Use 9:16 for TikTok/Reels/Shorts, 1:1 or 4:5 for feed posts, 16:9 for YouTube. Omit or use original to keep the source ratio."
                   },
@@ -3715,9 +3387,7 @@
                     "default": "classic-yellow"
                   }
                 },
-                "required": [
-                  "videoUrl"
-                ]
+                "required": ["videoUrl"]
               }
             }
           }
@@ -3790,9 +3460,7 @@
     },
     "/image-generations/all": {
       "get": {
-        "tags": [
-          "Image Generations"
-        ],
+        "tags": ["Image Generations"],
         "summary": "List image generations",
         "description": "Paginated list of basic image generations for the authenticated user.",
         "security": [
@@ -3857,9 +3525,7 @@
     },
     "/image-generations/{generationId}": {
       "get": {
-        "tags": [
-          "Image Generations"
-        ],
+        "tags": ["Image Generations"],
         "summary": "Get image generation",
         "description": "Full image generation record including assets.",
         "security": [
@@ -3901,9 +3567,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Image Generations"
-        ],
+        "tags": ["Image Generations"],
         "summary": "Delete image generation",
         "security": [
           {
@@ -3946,9 +3610,7 @@
     },
     "/influencer-studio/all": {
       "get": {
-        "tags": [
-          "Influencer Studio"
-        ],
+        "tags": ["Influencer Studio"],
         "summary": "List influencer generations",
         "security": [
           {
@@ -3992,9 +3654,7 @@
     },
     "/influencer-studio/{generationId}": {
       "delete": {
-        "tags": [
-          "Influencer Studio"
-        ],
+        "tags": ["Influencer Studio"],
         "summary": "Delete influencer generation",
         "security": [
           {
@@ -4037,9 +3697,7 @@
     },
     "/thumbnails": {
       "get": {
-        "tags": [
-          "Thumbnails"
-        ],
+        "tags": ["Thumbnails"],
         "summary": "List thumbnail generations",
         "security": [
           {
@@ -4062,9 +3720,7 @@
     },
     "/thumbnails/{generationId}": {
       "get": {
-        "tags": [
-          "Thumbnails"
-        ],
+        "tags": ["Thumbnails"],
         "summary": "Get thumbnail generation",
         "security": [
           {
@@ -4105,9 +3761,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Thumbnails"
-        ],
+        "tags": ["Thumbnails"],
         "summary": "Delete thumbnail generation",
         "security": [
           {
@@ -4150,9 +3804,7 @@
     },
     "/clippings/all": {
       "get": {
-        "tags": [
-          "Clippings"
-        ],
+        "tags": ["Clippings"],
         "summary": "List clipping jobs",
         "security": [
           {
@@ -4175,9 +3827,7 @@
     },
     "/clippings/status/{clippingId}": {
       "get": {
-        "tags": [
-          "Clippings"
-        ],
+        "tags": ["Clippings"],
         "summary": "Poll clipping job status",
         "description": "Syncs with the clipping provider while the job is in progress, then returns the job with clips.",
         "security": [
@@ -4221,9 +3871,7 @@
     },
     "/clippings/{clippingId}": {
       "get": {
-        "tags": [
-          "Clippings"
-        ],
+        "tags": ["Clippings"],
         "summary": "Get clipping job",
         "description": "Read-only view from the database without provider sync.",
         "security": [
@@ -4265,9 +3913,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Clippings"
-        ],
+        "tags": ["Clippings"],
         "summary": "Delete clipping job",
         "security": [
           {
@@ -4310,9 +3956,7 @@
     },
     "/clippings/{clippingId}/clips/{clipId}": {
       "delete": {
-        "tags": [
-          "Clippings"
-        ],
+        "tags": ["Clippings"],
         "summary": "Delete one clip",
         "security": [
           {
