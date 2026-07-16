@@ -15,6 +15,33 @@ Schedule a post for later or save it as a **draft**. Publishing runs through Uns
 
 Connect **Instagram** and **TikTok** via [Get accounts](/api-reference/accounts/get_accounts).
 
+## Media requirements
+
+Make sure media matches each platform's rules **before** creating the post.
+Media that violates them fails at publish time: the post ends up `FAILED`
+(or `PARTIALLY_PUBLISHED`) with the platform's error on the affected
+account — fix the media and create a new post, or use
+[Retry post](/api-reference/posts/retry) for accounts that failed for other
+reasons.
+
+| Placement | Allowed aspect ratio | Recommended size |
+| --- | --- | --- |
+| Instagram feed image / carousel item | **4:5 to 1.91:1** | 1080×1350, 1080×1080, 1080×566 |
+| Instagram Reel (video) | 9:16 recommended | 1080×1920 |
+| TikTok slideshow / video | 9:16 recommended | 1080×1920 |
+
+<Warning>
+Instagram rejects feed/carousel images outside **4:5 – 1.91:1** (e.g. 9:16
+images). When posting the same slideshow to Instagram **and** TikTok, use
+4:5 images (both platforms accept them) — or create separate posts per
+platform.
+</Warning>
+
+Images should be **JPEG** — Instagram's API only accepts JPEG, and TikTok
+photo posts accept JPEG/WebP. PNG images posted to TikTok are converted to
+JPEG automatically at publish time. Videos should be MP4/MOV (H.264 + AAC)
+at a publicly reachable URL.
+
 ## Before you post
 
 1. Active **paid plan** + API key or Clerk JWT.
@@ -209,6 +236,21 @@ curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
   }'
 ```
 </RequestExample>
+
+## Post lifecycle
+
+`DRAFT` → `SCHEDULED` → `PUBLISHING` → one of:
+
+| Status | Meaning |
+| --- | --- |
+| `PUBLISHED` | Every account published |
+| `PARTIALLY_PUBLISHED` | Some accounts published, some failed |
+| `FAILED` | No account published |
+
+For `FAILED` or `PARTIALLY_PUBLISHED` posts, call
+[Retry post](/api-reference/posts/retry) — it re-attempts only the failed
+accounts and never double-posts. Per-account results (including
+`publishedUrl` and `error`) are on each post's `postAccounts`.
 
 ## Errors
 
