@@ -4,7 +4,7 @@ description: "Turn a script into natural speech with ElevenLabs Eleven v3."
 openapi: "POST /voiceovers/create"
 ---
 
-Converts a script into natural speech using [ElevenLabs Eleven v3 on WaveSpeed](https://wavespeed.ai/models/elevenlabs/eleven-v3). Credits are deducted when the job is queued. Poll [Poll voiceover status](/api-reference/voiceovers/poll-status) with the returned `generation.id` until `status` is `COMPLETED` or `FAILED`.
+Converts a script into natural speech using ElevenLabs Eleven v3. Credits are deducted when the job is queued. Poll [Poll voiceover status](/api-reference/voiceovers/poll-status) with the returned `generation.id` until `status` is `COMPLETED` or `FAILED`.
 
 Pick a voice first with [List voices](/api-reference/voiceovers/voices) — every voice ships a preview clip so you can choose by ear.
 
@@ -24,7 +24,11 @@ Pick a voice first with [List voices](/api-reference/voiceovers/voices) — ever
 </ParamField>
 
 <ParamField body="voice_id" type="string" required>
-  Voice to use — one of the 20 ids from [List voices](/api-reference/voiceovers/voices), e.g. `Aria`, `George`, `Sarah`.
+  Voice to use. One of: `Aria`, `Roger`, `Sarah`, `Laura`, `Charlie`, `George`,
+  `Callum`, `River`, `Liam`, `Charlotte`, `Alice`, `Matilda`, `Will`, `Jessica`,
+  `Eric`, `Chris`, `Brian`, `Daniel`, `Lily`, `Bill`.
+
+  See [List voices](/api-reference/voiceovers/voices) for descriptions and preview clips of each voice.
 </ParamField>
 
 <ParamField body="stability" type="number">
