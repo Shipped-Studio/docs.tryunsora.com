@@ -42,6 +42,7 @@
           "api-reference/image/poll-status",
           "api-reference/video/poll-status",
           "api-reference/music/poll-status",
+          "api-reference/voiceovers/poll-status",
           "api-reference/clippings/poll-status"
         ]
       },
@@ -69,6 +70,15 @@
           "api-reference/music-generations/list",
           "api-reference/music-generations/get",
           "api-reference/music-generations/delete"
+        ]
+      },
+      {
+        "group": "Voiceover",
+        "pages": [
+          "api-reference/voiceovers/voices",
+          "api-reference/voiceovers/create",
+          "api-reference/voiceovers/list",
+          "api-reference/voiceovers/delete"
         ]
       },
       {

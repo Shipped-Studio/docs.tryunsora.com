@@ -55,12 +55,15 @@ All generation and scheduler jobs complete asynchronously. **Use polling only** 
    - **Images / influencer / thumbnails** → `GET /image/status/:id`
    - **Video (all models)** → `GET /video/status/:id`
    - **Music (Mureka AI)** → `GET /music/status/:id` — see [Poll music status](/api-reference/music/poll-status)
+   - **Voiceover (ElevenLabs Eleven v3)** → `GET /voiceovers/status/:id` — see [Poll voiceover status](/api-reference/voiceovers/poll-status)
 
 Image status `type` values: `BASIC`, `INFLUENCER`, `THUMBNAIL`. Video jobs are always `seedance_2.0` on the video status endpoint.
 
 List or delete video jobs with `GET /videos/all` and `DELETE /videos/:generationId` — see [List video generations](/api-reference/video/list) and [Delete video generation](/api-reference/video/delete).
 
 Music jobs use `GET /music/status/:id`. List or delete with [List music generations](/api-reference/music-generations/list) and [Delete music generation](/api-reference/music-generations/delete). Dashboard users can also manage songs at [Music generator](/guides/music-generator/overview).
+
+Voiceover jobs use `GET /voiceovers/status/:id`. Pick a voice with [List voices](/api-reference/voiceovers/voices) — each voice includes a preview clip — then create with [Create voiceover](/api-reference/voiceovers/create).
 
 ## OpenAPI
 
