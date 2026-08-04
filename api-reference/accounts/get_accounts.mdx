@@ -1,10 +1,14 @@
 ---
 title: "Get accounts"
-description: "List Instagram and TikTok accounts connected for scheduling"
+description: "List social accounts connected for scheduling"
 openapi: "GET /accounts"
 ---
 
 Returns social accounts connected to the authenticated user. Use each account `id` when calling [Create Post](/api-reference/posts/create_post).
+
+Supported platforms: **YouTube, TikTok, Instagram, Facebook, LinkedIn,
+Bluesky, Threads, Pinterest**. Each account's `provider` field identifies its
+platform — YouTube accounts have provider `google`.
 
 ```bash
 curl "https://mvp2.tryunsora.com/api/v1/accounts" \

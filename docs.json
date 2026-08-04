@@ -15,6 +15,15 @@
         "pages": ["get-started", "api-guide", "api-reference/introduction"]
       },
       {
+        "group": "CLI",
+        "pages": [
+          "cli/quickstart",
+          "cli/generate",
+          "cli/uploads",
+          "cli/social-posting"
+        ]
+      },
+      {
         "group": "User",
         "pages": [
           "api-reference/user/credits",
@@ -106,6 +115,16 @@
           "api-reference/clippings/get",
           "api-reference/clippings/delete"
         ]
+      },
+      {
+        "group": "Uploads",
+        "pages": [
+          "api-reference/uploads/create",
+          "api-reference/uploads/signed-url",
+          "api-reference/uploads/complete",
+          "api-reference/uploads/list",
+          "api-reference/uploads/delete"
+        ]
       }
     ]
   },
@@ -140,8 +159,8 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/tryunsora",
-      "github": "https://github.com/tryunsora"
+      "x": "https://x.com/unsora_ai",
+      "github": "https://github.com/Shipped-Studio/docs.tryunsora.com"
     }
   }
 }

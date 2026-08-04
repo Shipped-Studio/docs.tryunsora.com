@@ -41,6 +41,9 @@
     },
     {
       "name": "Voiceover"
+    },
+    {
+      "name": "Uploads"
     }
   ],
   "components": {
@@ -71,6 +74,52 @@
         "required": [
           "error"
         ]
+      },
+      "UploadAsset": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Public URL of the stored file."
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "VIDEO",
+              "AUDIO",
+              "DOCUMENT"
+            ]
+          },
+          "fileSize": {
+            "type": "integer",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "UploadAssetResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "#/components/schemas/UploadAsset"
+          }
+        }
       },
       "SuccessMessage": {
         "type": "object",
@@ -655,7 +704,9 @@
               "sora-2-pro",
               "wan",
               "seedance-2.0",
-              "seedance-2.0-fast"
+              "seedance-2.0-fast",
+              "seedance-2.0-mini",
+              "gemini-omni-flash"
             ],
             "default": "seedance-2.0",
             "description": "Video model to generate with."
@@ -698,7 +749,7 @@
               "type": "string",
               "format": "uri"
             },
-            "description": "Reference image URLs (Veo 3.1 reference mode; Seedance omni reference, up to 9)."
+            "description": "Reference image URLs (Veo 3.1 reference mode; Seedance omni reference, up to 9; Gemini Omni Flash reference-to-video, up to 4)."
           },
           "referenceVideos": {
             "type": "array",
@@ -2792,7 +2843,7 @@
         "tags": [
           "Video"
         ],
-        "summary": "Create a video generation (Kling v3, Veo 3.1, Sora 2, Wan 2.6, Seedance 2.0)",
+        "summary": "Create a video generation (Kling v3, Veo 3.1, Sora 2, Wan 2.6, Seedance 2.0, Gemini Omni Flash)",
         "security": [
           {
             "bearerAuth": []
@@ -3978,6 +4029,310 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uploads": {
+      "post": {
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Upload media from a URL or base64 payload",
+        "description": "Imports a file into your media library. Pass either `url` (public http(s) URL, max 200MB — the server fetches the bytes) or `base64` (raw base64 or a data: URL, for small files; the request body is capped at 10MB). The file is stored and recorded as an upload asset; the returned `url` can be used anywhere a media URL is accepted (post media, reference images, clipping input). For large local files use the signed-URL flow: POST /uploads/signed-url, then PUT the bytes, then POST /uploads/complete.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "Public http(s) URL to import (max 200MB)."
+                  },
+                  "base64": {
+                    "type": "string",
+                    "description": "Base64 file contents (raw or data: URL). Requires fileName."
+                  },
+                  "fileName": {
+                    "type": "string",
+                    "description": "Stored file name (required with base64, optional with url)."
+                  },
+                  "contentType": {
+                    "type": "string",
+                    "description": "MIME type override, e.g. image/png."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Uploaded asset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadAssetResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "List your uploaded media",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 12,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated uploads",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "uploads": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/UploadAsset"
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "total": {
+                              "type": "integer"
+                            },
+                            "totalPages": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uploads/signed-url": {
+      "post": {
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Mint a signed direct-upload URL (large files)",
+        "description": "Mints a short-lived signed URL so the file bytes go directly to storage without passing through the API (use for files too large for POST /uploads). Flow: 1) call this with fileName; 2) PUT the file bytes to `uploadUrl` with the correct Content-Type header; 3) POST /uploads/complete with the returned `blobName` to register the file in your media library.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "fileName"
+                ],
+                "properties": {
+                  "fileName": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signed upload URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "uploadUrl": {
+                          "type": "string",
+                          "description": "PUT the file bytes here."
+                        },
+                        "token": {
+                          "type": "string"
+                        },
+                        "publicUrl": {
+                          "type": "string",
+                          "description": "Public URL the file will have after upload."
+                        },
+                        "blobName": {
+                          "type": "string",
+                          "description": "Pass to POST /uploads/complete."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uploads/complete": {
+      "post": {
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Register a direct-uploaded file as an asset",
+        "description": "Call after PUTting the file bytes to a signed upload URL. Verifies the object exists in storage and records it in your media library. blobName must come from your own /uploads/signed-url response.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "blobName"
+                ],
+                "properties": {
+                  "blobName": {
+                    "type": "string"
+                  },
+                  "fileName": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registered asset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadAssetResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Upload not found in storage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uploads/{assetId}": {
+      "delete": {
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Delete an uploaded asset",
+        "description": "Deletes the asset record and removes the stored file.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted"
           },
           "404": {
             "description": "Not found",

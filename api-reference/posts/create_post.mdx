@@ -1,10 +1,14 @@
 ---
 title: "Create Post"
-description: "Schedule or save Instagram and TikTok reels and slideshows."
+description: "Schedule or publish posts to YouTube, TikTok, Instagram, Facebook, LinkedIn, Bluesky, Threads, and Pinterest."
 openapi: "POST /posts"
 ---
 
 Schedule a post for later or save it as a **draft**. Publishing runs through Unsora when the post is published from the scheduler.
+
+Posts can target any connected account on: **YouTube, TikTok, Instagram,
+Facebook, LinkedIn, Bluesky, Threads, Pinterest** (up to 10 accounts per
+post, mixed platforms allowed).
 
 ## Supported content
 
@@ -13,7 +17,10 @@ Schedule a post for later or save it as a **draft**. Publishing runs through Uns
 | `video` | Instagram Reel, TikTok Reel | `video` |
 | `slideshow` | Instagram carousel, TikTok photo post | `slideshow` |
 
-Connect **Instagram** and **TikTok** via [Get accounts](/api-reference/accounts/get_accounts).
+Connect accounts in the Unsora app, then list them via
+[Get accounts](/api-reference/accounts/get_accounts). Note: **YouTube accepts
+video posts only**; text-only posts work on Facebook, LinkedIn, Bluesky, and
+Threads.
 
 ## Media requirements
 
@@ -55,7 +62,9 @@ at a publicly reachable URL.
 </ParamField>
 
 <ParamField body="accounts" type="array" required>
-  `[{ "id": "<account-uuid>" }]` — up to 10 accounts.
+  `[{ "id": "<account-uuid>" }]` — up to 10 accounts. Each account object also
+  accepts optional `title` (YouTube video title / Pinterest pin title) and
+  `customCaption` (overrides `caption` for that account only).
 </ParamField>
 
 <ParamField body="media" type="object | null">
@@ -75,7 +84,7 @@ at a publicly reachable URL.
 </ParamField>
 
 <ParamField body="settings" type="object">
-  Optional publish options for **Instagram and TikTok only** (not Facebook, YouTube, etc.). You can also send `instagram` or `tiktok` at the **top level** of the body (same shape as below). Other keys under `settings` return `400`.
+  Optional publish options for **Instagram, TikTok, YouTube, and Pinterest**. You can also send `instagram`, `tiktok`, `youtube`, or `pinterest` at the **top level** of the body (same shape as below). Other keys under `settings` return `400`.
 
   <Expandable title="Instagram — settings.instagram">
     <ParamField body="cover_url" type="string">
@@ -103,6 +112,21 @@ at a publicly reachable URL.
     <ParamField body="photo_cover_index" type="integer">Slideshow only — cover image index (0-based).</ParamField>
     <ParamField body="video_cover_timestamp_ms" type="integer">Reel only — cover frame time in ms.</ParamField>
   </Expandable>
+
+  <Expandable title="YouTube — settings.youtube">
+    <ParamField body="privacy_status" type="string">
+      `public` (default), `private`, or `unlisted`.
+    </ParamField>
+    <ParamField body="tags" type="string[]">Video tags.</ParamField>
+    <ParamField body="category_id" type="string">YouTube category id.</ParamField>
+    <ParamField body="made_for_kids" type="boolean">COPPA made-for-kids flag.</ParamField>
+  </Expandable>
+
+  <Expandable title="Pinterest — settings.pinterest">
+    <ParamField body="board_id" type="string">
+      Board to pin to. Defaults to the account's first board.
+    </ParamField>
+  </Expandable>
 </ParamField>
 
 <ParamField body="scheduled_at" type="string">
@@ -129,10 +153,10 @@ TikTok reel cover frame: optional `settings.tiktok.video_cover_timestamp_ms`.
 
 ## Platform settings (optional)
 
-Supported providers: **Instagram**, **TikTok** — only `settings.instagram` and `settings.tiktok` (or top-level `instagram` / `tiktok`). Nothing is required; omit `settings` if you do not need them.
+Supported providers: **Instagram**, **TikTok**, **YouTube**, **Pinterest** — via `settings.<provider>` (or the same keys at the top level of the body). Nothing is required; omit `settings` if you do not need them. YouTube video titles and Pinterest pin titles go on the **account object** (`accounts[].title`), not in `settings`.
 
 <Tip>
-  Top-level `tiktok` / `instagram` keys work the same as `settings.tiktok` / `settings.instagram`.
+  Top-level `tiktok` / `instagram` / `youtube` / `pinterest` keys work the same as their `settings.*` equivalents.
 </Tip>
 
 ```json
@@ -142,7 +166,12 @@ Supported providers: **Instagram**, **TikTok** — only `settings.instagram` and
     "post_mode": "MEDIA_UPLOAD",
     "privacy_level": "SELF_ONLY",
     "music_usage_confirmation": true
-  }
+  },
+  "youtube": {
+    "privacy_status": "unlisted",
+    "tags": ["ai", "shorts"]
+  },
+  "pinterest": { "board_id": "1234567890" }
 }
 ```
 
