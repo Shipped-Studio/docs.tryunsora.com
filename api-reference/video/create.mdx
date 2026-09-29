@@ -6,6 +6,8 @@ openapi: "POST /videos/create"
 
 Creates a video generation with any supported video model. Credits are charged when the job is queued. Poll [Poll video status](/api-reference/video/poll-status) with `generation.id` until `status` is `COMPLETED` or `FAILED`.
 
+Not sure [which video model to use](https://tryunsora.com/tools/ai-video-generator)? Start with the comparison, then pick a key below.
+
 ## Supported models
 
 Pass the model key in the `model` body field. Default: `seedance-2.0`.
