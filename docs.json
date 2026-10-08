@@ -24,6 +24,12 @@
         ]
       },
       {
+        "group": "Integrations",
+        "pages": [
+          "integrations/claude"
+        ]
+      },
+      {
         "group": "User",
         "pages": [
           "api-reference/user/credits",

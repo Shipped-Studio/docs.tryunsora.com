@@ -1,0 +1,124 @@
+---
+title: "Claude connector"
+description: "Connect Unsora Scheduler to Claude to clip long videos into shorts and schedule or publish posts to your social accounts from a conversation."
+---
+
+The **Unsora Scheduler** connector lets Claude work with your Unsora account.
+Claude can turn a long video into short clips, then draft, schedule, or publish
+posts to the social accounts you've connected to Unsora. It can also show how
+your published posts are performing.
+
+The connector works in Claude on the web, Claude Desktop, Claude mobile, and
+Claude Code.
+
+## What you need
+
+- An Unsora account. Sign up at [tryunsora.com](https://tryunsora.com).
+- At least one social account connected in the
+  [Unsora web app](https://app.tryunsora.com). Supported platforms are YouTube,
+  TikTok, Instagram, Facebook, LinkedIn, Pinterest, Threads, Bluesky, X, and
+  Google Business Profile.
+- A paid Unsora plan to schedule or publish posts.
+- Unsora credits for clipping. Reading posts, accounts, and analytics is free.
+
+## Connect Unsora to Claude
+
+1. In Claude, open **Settings** > **Connectors** and select **Browse connectors**.
+2. Search for **Unsora Scheduler** and select **Connect**.
+3. Sign in to Unsora and approve access.
+
+Claude now lists the Unsora tools in any conversation. Turn the connector on or
+off per conversation from the **+** menu > **Connectors**.
+
+<Note>
+  On Team and Enterprise plans, an organization Owner may need to enable the
+  connector before members can use it.
+</Note>
+
+### Add it by URL
+
+If you don't see the connector in the directory, add it as a custom connector:
+
+1. Open **Settings** > **Connectors** and select **Add custom connector**.
+2. Enter `https://claude-mcp.tryunsora.com/mcp` as the URL.
+3. Select **Add**, then **Connect**, and sign in to Unsora.
+
+For Claude Code, run:
+
+```bash
+claude mcp add --transport http unsora-scheduler https://claude-mcp.tryunsora.com/mcp
+```
+
+Then run `/mcp` in Claude Code and choose **Authenticate**.
+
+## Example prompts
+
+- "Turn this podcast into five 9:16 clips with captions: https://example.com/episode-42.mp4"
+- "Show my scheduled posts for this week."
+- "Schedule my latest clip to TikTok and Instagram tomorrow at 9am with the caption 'New episode out now'."
+- "How did my posts perform over the last 30 days?"
+- "My post from yesterday failed on Instagram. Retry it."
+
+In Claude on the web and on desktop, results such as clips, posts, the post
+composer, and analytics appear as interactive panels in the conversation.
+
+## What Claude can do
+
+| Tool | What it does | Changes data |
+| ---- | ------------ | ------------ |
+| `create_clipping` | Clips a long video into short clips | Yes, spends credits |
+| `wait_for_clipping` | Checks a clipping job until it finishes | No |
+| `get_accounts` | Lists your connected social accounts | No |
+| `get_credits` / `get_subscription` | Shows your plan and credit balance | No |
+| `compose_post` | Opens a post composer you finish yourself | Yes, when you submit it |
+| `create_post` | Saves a draft, schedules, or publishes a post | Yes |
+| `publish_post` | Publishes a draft or scheduled post now | Yes |
+| `update_post` | Edits or reschedules a draft or scheduled post | Yes |
+| `retry_post` | Retries the accounts that failed on a post | Yes |
+| `delete_post` | Deletes a post from Unsora | Yes |
+| `get_post` / `list_posts` | Reads your posts and their status | No |
+| `get_post_analytics` | Shows views, likes, comments, and shares | No |
+| `upload_file` | Imports media from a public URL into your library | Yes |
+| `list_uploads` / `list_generations` | Browses your uploads and past results | No |
+| `delete_generation` | Permanently deletes an item from your library | Yes |
+
+Claude asks for your approval before running tools that change data, unless
+you've allowed them to run without asking. Deleting a post in Unsora doesn't
+remove content that's already published on a platform.
+
+## Troubleshooting
+
+**Claude says the connector isn't authorized.** Open **Settings** >
+**Connectors**, select **Unsora Scheduler**, and choose **Disconnect**. Then
+connect again and sign in.
+
+**A post fails with "requires an active paid plan".** Scheduling and publishing
+need a paid plan. Check your plan at
+[app.tryunsora.com](https://app.tryunsora.com).
+
+**An account is missing.** Claude only sees accounts connected in the Unsora web
+app. Connect the account there, then ask Claude again.
+
+**A post is rejected with an `issues` list.** The media or caption breaks a
+platform rule, such as video length, image count, or caption length. Ask Claude
+to adjust the post, or fix it in the composer.
+
+**A post is partly published.** Ask Claude to retry it. Retrying only re-attempts
+the accounts that failed and never posts twice to the same account.
+
+**Clipping can't read my video.** The video must be at a public URL. To use a
+file from your computer, upload it in the Unsora web app first, then ask Claude
+to clip it from your library.
+
+## Data and privacy
+
+The connector reads and writes only your Unsora account data, through the
+Unsora API, using the account you sign in with. It doesn't read your Claude
+conversation history or files. See the
+[Unsora privacy policy](https://tryunsora.com/privacy) for how data is
+collected, used, and retained.
+
+## Support
+
+Email [support@tryunsora.com](mailto:support@tryunsora.com) or visit
+[tryunsora.com/help](https://tryunsora.com/help).
