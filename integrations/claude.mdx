@@ -1,30 +1,34 @@
 ---
-title: "Claude connector"
-description: "Connect Unsora Scheduler to Claude to clip long videos into shorts and schedule or publish posts to your social accounts from a conversation."
+title: "ClipCast for Claude"
+description: "Turn long videos, podcasts, and streams into short clips from a Claude conversation with ClipCast by Unsora, then post them to your social accounts."
 ---
 
-The **Unsora Scheduler** connector lets Claude work with your Unsora account.
-Claude can turn a long video into short clips, then draft, schedule, or publish
-posts to the social accounts you've connected to Unsora. It can also show how
-your published posts are performing.
+**ClipCast** turns long videos into short clips from a Claude conversation.
+Give Claude a podcast, stream, webinar, or interview, and ClipCast finds the
+best moments and cuts them into Shorts, Reels, and TikToks, with captions if
+you want them. Ask for specific moments in plain language, such as "every time
+we talk about pricing".
 
-The connector works in Claude on the web, Claude Desktop, Claude mobile, and
-Claude Code.
+When your clips are ready, Claude can post them for you: publish now, schedule
+for later, or send one clip to several platforms at once. It can also show how
+your posted clips are performing.
+
+ClipCast works in Claude on the web, Claude Desktop, Claude mobile, and Claude
+Code.
 
 ## What you need
 
 - An Unsora account. Sign up at [tryunsora.com](https://tryunsora.com).
-- At least one social account connected in the
-  [Unsora web app](https://app.tryunsora.com). Supported platforms are YouTube,
-  TikTok, Instagram, Facebook, LinkedIn, Pinterest, Threads, Bluesky, X, and
-  Google Business Profile.
-- A paid Unsora plan to schedule or publish posts.
-- Unsora credits for clipping. Reading posts, accounts, and analytics is free.
+- Unsora credits for clipping.
+- To post clips: a paid Unsora plan and at least one social account connected
+  in the [Unsora web app](https://app.tryunsora.com). Supported platforms are
+  YouTube, TikTok, Instagram, Facebook, LinkedIn, Pinterest, Threads, Bluesky,
+  X, and Google Business Profile.
 
-## Connect Unsora to Claude
+## Connect ClipCast to Claude
 
 1. In Claude, open **Settings** > **Connectors** and select **Browse connectors**.
-2. Search for **Unsora Scheduler** and select **Connect**.
+2. Search for **ClipCast** and select **Connect**.
 3. Sign in to Unsora and approve access.
 
 Claude now lists the Unsora tools in any conversation. Turn the connector on or
@@ -46,7 +50,7 @@ If you don't see the connector in the directory, add it as a custom connector:
 For Claude Code, run:
 
 ```bash
-claude mcp add --transport http unsora-scheduler https://claude-mcp.tryunsora.com/mcp
+claude mcp add --transport http clipcast https://claude-mcp.tryunsora.com/mcp
 ```
 
 Then run `/mcp` in Claude Code and choose **Authenticate**.
@@ -54,13 +58,14 @@ Then run `/mcp` in Claude Code and choose **Authenticate**.
 ## Example prompts
 
 - "Turn this podcast into five 9:16 clips with captions: https://example.com/episode-42.mp4"
-- "Show my scheduled posts for this week."
-- "Schedule my latest clip to TikTok and Instagram tomorrow at 9am with the caption 'New episode out now'."
-- "How did my posts perform over the last 30 days?"
-- "My post from yesterday failed on Instagram. Retry it."
+- "Find every moment where we talk about pricing in this webinar and clip them: https://example.com/webinar.mp4"
+- "Cut this stream into 30-second highlights for YouTube Shorts: https://www.youtube.com/watch?v=VIDEO_ID"
+- "Post the second clip to TikTok and Instagram tomorrow at 9am with the caption 'New episode out now'."
+- "How did my clips perform over the last 30 days?"
 
-In Claude on the web and on desktop, results such as clips, posts, the post
-composer, and analytics appear as interactive panels in the conversation.
+In Claude on the web and on desktop, your clips play in an interactive preview
+right in the conversation. Posts, the post composer, and analytics appear the
+same way.
 
 ## What Claude can do
 
@@ -89,7 +94,7 @@ remove content that's already published on a platform.
 ## Troubleshooting
 
 **Claude says the connector isn't authorized.** Open **Settings** >
-**Connectors**, select **Unsora Scheduler**, and choose **Disconnect**. Then
+**Connectors**, select **ClipCast**, and choose **Disconnect**. Then
 connect again and sign in.
 
 **A post fails with "requires an active paid plan".** Scheduling and publishing
