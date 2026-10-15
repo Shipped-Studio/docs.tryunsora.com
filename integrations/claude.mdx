@@ -1,38 +1,43 @@
 ---
-title: "ClipCast for Claude"
-description: "Turn long videos, podcasts, and streams into short clips from a Claude conversation with ClipCast by Unsora, then post them to your social accounts."
+title: "Unsora for Claude"
+description: "Connect Unsora to Claude to turn long videos, podcasts, and streams into short clips, then post or schedule them to your social accounts."
 ---
 
-**ClipCast** turns long videos into short clips from a Claude conversation.
-Give Claude a podcast, stream, webinar, or interview, and ClipCast finds the
-best moments and cuts them into Shorts, Reels, and TikToks, with captions if
-you want them. Ask for specific moments in plain language, such as "every time
-we talk about pricing".
+The Unsora connector lets Claude turn long videos into short clips and post
+them for you. Give Claude a podcast, stream, webinar, or interview, and Unsora
+finds the strongest moments and cuts them into Shorts, Reels, and TikToks,
+reframed to the aspect ratio you choose and with captions if you want them. You
+can also ask for specific moments in plain language, such as "every time we
+talk about pricing".
 
-When your clips are ready, Claude can post them for you: publish now, schedule
-for later, or send one clip to several platforms at once. It can also show how
-your posted clips are performing.
+When your clips are ready, Claude can post them for you. You can publish now,
+schedule for later, or send one clip to several platforms at once. Claude can
+also show you how your posts are performing.
 
-ClipCast works in Claude on the web, Claude Desktop, Claude mobile, and Claude
-Code.
+The connector works in Claude on the web, Claude Desktop, Claude mobile, and
+Claude Code.
 
 ## What you need
 
 - An Unsora account. Sign up at [tryunsora.com](https://tryunsora.com).
 - Unsora credits for clipping.
-- To post clips: a paid Unsora plan and at least one social account connected
-  in the [Unsora web app](https://app.tryunsora.com). Supported platforms are
+- To post clips, you need a paid Unsora plan and at least one social account
+  connected in the [Unsora web app](https://app.tryunsora.com). Unsora supports
   YouTube, TikTok, Instagram, Facebook, LinkedIn, Pinterest, Threads, Bluesky,
   X, and Google Business Profile.
 
-## Connect ClipCast to Claude
+<Warning>
+  Only clip videos you own or have permission to use.
+</Warning>
+
+## Connect Unsora to Claude
 
 1. In Claude, open **Settings** > **Connectors** and select **Browse connectors**.
-2. Search for **ClipCast** and select **Connect**.
-3. Sign in to Unsora and approve access.
+2. Search for **Unsora** and select **Connect**.
+3. Sign in to your Unsora account and approve access.
 
-Claude now lists the Unsora tools in any conversation. Turn the connector on or
-off per conversation from the **+** menu > **Connectors**.
+Unsora's tools are now available in your conversations. To turn the connector
+on or off for a conversation, open the **+** menu and select **Connectors**.
 
 <Note>
   On Team and Enterprise plans, an organization Owner may need to enable the
@@ -41,89 +46,200 @@ off per conversation from the **+** menu > **Connectors**.
 
 ### Add it by URL
 
-If you don't see the connector in the directory, add it as a custom connector:
+If Unsora isn't listed in the directory, add it as a custom connector:
 
 1. Open **Settings** > **Connectors** and select **Add custom connector**.
-2. Enter `https://clipcast.tryunsora.com/mcp` as the URL.
+2. Enter `https://claude-mcp.tryunsora.com/mcp` as the URL.
 3. Select **Add**, then **Connect**, and sign in to Unsora.
 
-For Claude Code, run:
+### Claude Code
+
+Run:
 
 ```bash
-claude mcp add --transport http clipcast https://clipcast.tryunsora.com/mcp
+claude mcp add --transport http unsora https://claude-mcp.tryunsora.com/mcp
 ```
 
-Then run `/mcp` in Claude Code and choose **Authenticate**.
+Then run `/mcp` in Claude Code, select **unsora**, and choose
+**Authenticate**.
 
 ## Example prompts
 
-- "Turn this podcast into five 9:16 clips with captions: https://example.com/episode-42.mp4"
-- "Find every moment where we talk about pricing in this webinar and clip them: https://example.com/webinar.mp4"
-- "Cut this stream into 30-second highlights for YouTube Shorts: https://www.youtube.com/watch?v=VIDEO_ID"
-- "Post the second clip to TikTok and Instagram tomorrow at 9am with the caption 'New episode out now'."
-- "How did my clips perform over the last 30 days?"
+- "Clip this podcast into five 30-second vertical clips with captions: https://www.youtube.com/watch?v=VIDEO_ID"
+- "Find every moment where we talk about pricing in this webinar and make 9:16 clips: https://example.com/webinar.mp4"
+- "Cut this stream into highlights for YouTube Shorts."
+- "Schedule the second clip to TikTok and Instagram tomorrow at 9am with the caption 'Pricing, explained in 30 seconds'."
+- "How did my posts do over the last 30 days?"
 
-In Claude on the web and on desktop, your clips play in an interactive preview
-right in the conversation. Posts, the post composer, and analytics appear the
-same way.
+In Claude on the web and in Claude Desktop, Unsora shows interactive panels in
+the conversation. You can watch clips play, finish a post in the composer, and
+browse your posts, library, and analytics.
 
-## What Claude can do
+## Add a video
 
-| Tool | What it does | Changes data |
-| ---- | ------------ | ------------ |
-| `create_clipping` | Clips a long video into short clips | Yes, spends credits |
-| `wait_for_clipping` | Checks a clipping job until it finishes | No |
-| `get_accounts` | Lists your connected social accounts | No |
-| `get_credits` / `get_subscription` | Shows your plan and credit balance | No |
-| `compose_post` | Opens a post composer you finish yourself | Yes, when you submit it |
-| `create_post` | Saves a draft, schedules, or publishes a post | Yes |
-| `publish_post` | Publishes a draft or scheduled post now | Yes |
-| `update_post` | Edits or reschedules a draft or scheduled post | Yes |
-| `retry_post` | Retries the accounts that failed on a post | Yes |
-| `delete_post` | Deletes a post from Unsora | Yes |
-| `get_post` / `list_posts` | Reads your posts and their status | No |
-| `get_post_analytics` | Shows views, likes, comments, and shares | No |
-| `upload_file` | Imports media from a public URL into your library | Yes |
-| `list_uploads` / `list_generations` | Browses your uploads and past results | No |
-| `delete_generation` | Permanently deletes an item from your library | Yes |
+Claude can clip a video from any of these sources:
 
-Claude asks for your approval before running tools that change data, unless
-you've allowed them to run without asking. Deleting a post in Unsora doesn't
-remove content that's already published on a platform.
+- **A YouTube link or a direct video file URL**, such as a link to an `.mp4`
+  file. Page links from TikTok, Instagram, or Vimeo don't work. Download those
+  videos and upload the file instead.
+- **A file on your computer.** Ask Claude to open your Unsora library, then
+  select **Upload** in the library panel. The file goes straight to Unsora's
+  storage through a one-time upload link, and Claude never reads the file
+  itself.
+- **A file in your Unsora library.** Ask Claude to use a clip or upload you
+  already have.
+
+In Claude Code, Claude can upload a local file for you with a one-time upload
+link.
+
+## Choose clip settings
+
+Clipping spends credits, so Claude confirms these settings before it starts:
+
+| Setting | Options |
+| ------- | ------- |
+| Aspect ratio | 9:16 for Shorts, Reels, and TikTok; 1:1 or 4:5 for feed posts; 16:9 for YouTube; or the original ratio. Unsora reframes the video to keep the speaker in the center. |
+| Captions | Off, or on with a caption style such as `classic-yellow`, `bold-white`, or `white-card` |
+| Number of clips | 1 to 20 |
+| Clip length | Under 30 seconds, 30–60 seconds, 60–90 seconds, 90 seconds to 3 minutes, over 3 minutes, or automatic |
+| Moments to find | Optional. Describe the moments you want instead of choosing a length. |
+
+Long videos take several minutes to process. The clips panel updates by
+itself, and you can ask Claude to check the job at any time.
+
+## Post and schedule clips
+
+Claude creates one post for each clip. For each post, you choose the caption,
+the accounts, and when to publish:
+
+- **Publish now.** Unsora posts the clip to your accounts right away.
+- **Schedule.** Unsora publishes the clip at the time you set.
+- **Save as a draft.** You can finish the post later.
+
+Where Claude can show panels, it opens the post composer with your caption,
+clip, accounts, and time already filled in. You can set options for each
+platform there, such as the YouTube title and visibility, TikTok privacy, or a
+Pinterest board, before you post.
+
+If a post fails on some accounts, ask Claude to retry it. Unsora only retries
+the accounts that failed and never posts twice to an account that succeeded.
+
+## Tools
+
+The connector provides these tools. Claude asks for your approval before it
+runs a tool that changes data, unless you've allowed that tool to run without
+asking.
+
+| Tool | What it does | Type |
+| ---- | ------------ | ---- |
+| `create_clipping` | Cuts a long video into short clips. Spends credits. | Write |
+| `wait_for_clipping` | Checks a clipping job until it finishes | Read-only |
+| `list_clips` | Lists your past clipping jobs and their clips | Read-only |
+| `get_credits` | Shows your credit balance | Read-only |
+| `get_subscription` | Shows your plan and whether posting is enabled | Read-only |
+| `get_accounts` | Lists your connected social accounts | Read-only |
+| `compose_post` | Opens the post composer, which you finish yourself | Write |
+| `create_post` | Saves a draft, schedules a post, or publishes it now | Write |
+| `publish_post` | Publishes a draft or scheduled post now | Write |
+| `update_post` | Edits or reschedules a draft or scheduled post | Write, overwrites |
+| `retry_post` | Retries only the accounts that failed on a post | Write |
+| `delete_post` | Deletes a post from Unsora | Destructive |
+| `get_post` / `list_posts` | Reads your posts and their publishing status | Read-only |
+| `get_post_analytics` | Shows views, likes, comments, and shares over 7 to 90 days | Read-only |
+| `list_uploads` | Lists your uploaded files and opens the **Upload** panel | Read-only |
+| `upload_file` | Imports a file from a public URL (up to 200 MB) into your library | Write |
+| `create_upload_url` / `complete_upload` | Uploads a local file through a one-time link | Write |
+| `delete_library_item` | Permanently deletes a clipping job or uploaded file | Destructive |
+
+The interactive panels also use three read-only helper tools that Claude
+doesn't call directly. `clipping_status` updates clipping progress,
+`pinterest_boards` lists your Pinterest boards, and `tiktok_creator_info`
+loads your TikTok posting options.
+
+Every tool declares MCP annotations (`readOnlyHint`, `destructiveHint`, and
+`openWorldHint`), so Claude can tell read-only tools apart from tools that
+change your data or publish outside Unsora.
+
+<Note>
+  Deleting a post in Unsora doesn't remove content that's already published on
+  a platform. Deleting a clip or upload from your library can't be undone.
+</Note>
+
+## Security and permissions
+
+This section is for IT admins who review the connector.
+
+- **Remote server only.** The connector is a hosted MCP server at
+  `https://claude-mcp.tryunsora.com/mcp`, using the Streamable HTTP transport.
+  It doesn't install or run any code on your computer.
+- **OAuth sign-in.** Each user signs in with their own Unsora account through
+  OAuth 2.1, and Claude registers itself as an OAuth client automatically. The
+  connector requests the `openid`, `profile`, `email`, `public_metadata`,
+  `private_metadata`, and `offline_access` scopes. These identify the user's
+  Unsora account and keep the connection signed in.
+- **Scoped to one account.** The connector can only read and change data in the
+  Unsora account the user signed in with. It uses the same Unsora API and
+  permissions as the [Unsora web app](https://app.tryunsora.com).
+- **No posting without a request.** Unsora publishes only to the social
+  accounts the user chooses, at the time the user asks for. Users connect and
+  manage their social accounts in the Unsora web app, not in Claude.
+- **API keys.** As an alternative to OAuth, you can send an Unsora API key in
+  the `Authorization: Bearer` header. Treat API keys like passwords. See
+  [Get started](/get-started) to create one.
+- **Revoking access.** To disconnect, open **Settings** > **Connectors** in
+  Claude, select **Unsora**, and choose **Disconnect**. To revoke an API key,
+  delete it in the Unsora dashboard.
+
+### Data the connector sends to Unsora
+
+When you use the connector, Claude sends Unsora the details needed for each
+request:
+
+- video links and files you upload
+- clip settings
+- captions
+- the accounts you choose
+- schedule times
+
+Unsora doesn't receive your conversation history or any files you share with
+Claude in the conversation. See the
+[privacy policy](https://tryunsora.com/privacy) to learn how Unsora collects,
+uses, and keeps data, and read the [terms of service](https://tryunsora.com/terms).
 
 ## Troubleshooting
 
-**Claude says the connector isn't authorized.** Open **Settings** >
-**Connectors**, select **ClipCast**, and choose **Disconnect**. Then
-connect again and sign in.
+**Sign-in doesn't finish, or Claude says the connector isn't authorized.**
+Open **Settings** > **Connectors**, select **Unsora**, and choose
+**Disconnect**. Then connect again and finish the Unsora sign-in in the window
+that opens.
+
+**Claude says the video link isn't supported.** Clipping only accepts YouTube
+links and direct video file URLs. For TikTok, Instagram, or Vimeo videos,
+download the file and upload it with the library's **Upload** button.
+
+**Clips are still processing.** Long videos take several minutes. The clips
+panel updates by itself. You can also ask Claude to check the job again.
+
+**Clipping fails because you're out of credits.** Ask Claude to check your
+credits, or check them at [app.tryunsora.com](https://app.tryunsora.com).
 
 **A post fails with "requires an active paid plan".** Scheduling and publishing
 need a paid plan. Check your plan at
 [app.tryunsora.com](https://app.tryunsora.com).
 
-**An account is missing.** Claude only sees accounts connected in the Unsora web
-app. Connect the account there, then ask Claude again.
+**An account is missing.** Claude only sees the accounts you connected in the
+Unsora web app. Connect the account there, then ask Claude again.
 
-**A post is rejected with an `issues` list.** The media or caption breaks a
-platform rule, such as video length, image count, or caption length. Ask Claude
-to adjust the post, or fix it in the composer.
+**A post is rejected with a list of issues.** The media or caption breaks a
+platform rule, such as the video length, file size, image count, or caption
+length. The error names the rule for each platform. Ask Claude to adjust the
+post, or fix it in the composer.
 
-**A post is partly published.** Ask Claude to retry it. Retrying only re-attempts
-the accounts that failed and never posts twice to the same account.
-
-**Clipping can't read my video.** The video must be at a public URL. To use a
-file from your computer, upload it in the Unsora web app first, then ask Claude
-to clip it from your library.
-
-## Data and privacy
-
-The connector reads and writes only your Unsora account data, through the
-Unsora API, using the account you sign in with. It doesn't read your Claude
-conversation history or files. See the
-[Unsora privacy policy](https://tryunsora.com/privacy) for how data is
-collected, used, and retained.
+**A post is only partly published.** Ask Claude to retry it. Unsora only
+retries the accounts that failed.
 
 ## Support
 
-Email [support@tryunsora.com](mailto:support@tryunsora.com) or visit
-[tryunsora.com/help](https://tryunsora.com/help).
+Contact us at [tryunsora.com/contact](https://tryunsora.com/contact), email
+[hi@tryunsora.com](mailto:hi@tryunsora.com), or visit the
+[help center](https://tryunsora.com/help).
