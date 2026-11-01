@@ -1,0 +1,12 @@
+---
+title: "Refresh analytics"
+description: "Fetch current metrics for your posts from every platform now, instead of waiting for the next scheduled poll."
+openapi: "POST /posts/analytics/refresh"
+---
+
+Polls the platforms for your posts published in the last 90 days and stores fresh figures. Posts read in the last 15 minutes (3 hours for X) are skipped. The response comes back when polling finishes; then call [Analytics summary](/api-reference/analytics/summary).
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/posts/analytics/refresh" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY"
+```

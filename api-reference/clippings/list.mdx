@@ -1,10 +1,12 @@
 ---
 title: "List clipping jobs"
-description: "Paginated list of all AI clipping jobs for the authenticated user, including status, source videos, and generated clips."
+description: "List every AI clipping job for the authenticated user, newest first, with status, source video and generated clips."
 openapi: "GET /clippings/all"
 ---
 
 **`GET /clippings/all`**
+
+Returns all of your clipping jobs in one response, newest first. The list isn't paginated.
 
 ## Response
 

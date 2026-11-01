@@ -1,0 +1,32 @@
+---
+title: "Movie materials"
+description: "Generate pre-production images for a film: character faces, bodies and sheets, locations, first frames, style collages and storyboards."
+openapi: "POST /movie-materials/create"
+---
+
+Makes one reference image for a script, in one of 8 modes:
+
+| `mode` | Makes |
+| --- | --- |
+| `face` | Close-up portrait of a character |
+| `wide-body` | Full-body shot of a character |
+| `sheet` | Character turnaround sheet |
+| `location` | Set or location reference |
+| `first-frame` | The opening frame of a shot |
+| `style-collage` | Look-and-feel collage |
+| `multishot-2x4` | 8-panel storyboard |
+| `multishot-1x4` | 4-panel storyboard |
+
+Costs 3 credits at `1k`, 4 at `2k` (default) and 6 at `4k`. Add up to 14 `referenceImageUrls`. `params` takes optional per-mode settings: `cinematography` for every mode (`cinematic`, `anime`, `realistic`, `cartoon`, `fantasy`, …); `age` and `gender` for `face`; `camera-angle` for `first-frame`; `color-palette`, `lighting-mood` and `era-vibe` for `style-collage`. Poll [Poll image status](/api-reference/image/poll-status) with `generation.id`.
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/movie-materials/create" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "mode": "face",
+    "prompt": "A weary lighthouse keeper in her sixties, wind-burned skin, grey braid",
+    "params": { "age": "elderly", "gender": "female", "cinematography": "realistic" },
+    "ratio": "3:4"
+  }'
+```

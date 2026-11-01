@@ -1,0 +1,50 @@
+---
+title: "Connect accounts"
+description: "Connect TikTok, Instagram, YouTube and other social accounts to Unsora, share a connect link with a client, and reconnect accounts that expire."
+---
+
+Unsora posts through social accounts you connect once in the dashboard. After that, your agent, the API and the integrations can all post to them.
+
+## Connect an account
+
+1. Open **Accounts** in the dashboard sidebar.
+2. Click the platform you want.
+3. Click **Connect**, or **Copy link** to send it to whoever owns the account (see below).
+4. Approve access on the platform, then come back to Unsora.
+
+The account appears under **Connected accounts** with its profile picture and when it last posted.
+
+## Platform notes
+
+- **Instagram** needs a business or creator account. Connect it directly, or choose **Instagram via Facebook** if it's linked to a Facebook Page you manage.
+- **Facebook** connects Pages you manage, not personal profiles.
+- **LinkedIn** connects your personal profile. Company pages aren't supported yet.
+- **Google Business Profile** connects every location you manage.
+- **Bluesky** asks for your handle first; custom domains like `yourname.com` work.
+- Platforms that aren't live yet show as **Coming soon**.
+
+## Connect someone else's account
+
+Managing a client's or teammate's account? In the connect dialog, click **Copy link** and send it to them. They approve access on their own device, and the account is added to your Unsora. The link works for **1 hour**. Bluesky can't be shared this way, because its sign-in starts from the account's handle.
+
+## How many accounts
+
+You can connect more than one account per platform. How many you can connect in total depends on your plan:
+
+| Plan | Social accounts |
+| --- | --- |
+| Starter | 5 |
+| Growth | 15 |
+| Scale | 50 |
+
+Without a plan you can still connect up to the Starter limit, so your accounts are ready when you start a trial. Posting needs a plan; see [Plans and credits](/guides/plans-and-credits).
+
+## Reconnect
+
+Platforms expire access from time to time. An account that needs attention shows **Expires soon** or **Reconnect needed**; click it and approve access again. Posts to an account that needs reconnecting fail until you do, and you can retry them afterwards.
+
+## Use connected accounts
+
+- In the dashboard, pick accounts in the post composer ([Scheduler](/guides/scheduler)).
+- Over the API, list them with [List accounts](/api-reference/accounts/get_accounts) and pass their ids to [Create post](/api-reference/posts/create_post).
+- From an agent, ask it to list your accounts; it calls `get_accounts`.

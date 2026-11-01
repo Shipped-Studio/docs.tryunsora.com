@@ -1,0 +1,14 @@
+---
+title: "List models"
+description: "Every video, image and motion-control model Unsora runs, with each model's modes and inputs: names, allowed values, ranges and defaults."
+openapi: "GET /catalog"
+---
+
+Returns every generation model with its modes and the exact inputs each one takes, read live from the provider. Use it to see which durations, aspect ratios, resolutions and reference files a model accepts before you call [Generate](/api-reference/catalog/generate).
+
+Filter with `?category=video`, `image` or `motion-control`. Prices aren't listed because they depend on the inputs; use [Quote a generation](/api-reference/catalog/quote).
+
+```bash
+curl "https://mvp.tryunsora.com/api/v1/catalog?category=video" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY"
+```

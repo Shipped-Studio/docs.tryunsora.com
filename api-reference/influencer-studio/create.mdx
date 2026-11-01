@@ -4,7 +4,7 @@ description: "Queue one or more AI influencer portrait jobs to generate consiste
 openapi: "POST /influencer-studio/create"
 ---
 
-Creates **AI influencer** image job(s). Each image in `count` is a separate generation row and credit charge. Poll each id via [Poll generation status](/api-reference/image/poll-status) (`type`: `INFLUENCER`).
+Creates **AI influencer** image job(s). Each image in `count` is a separate generation and costs 4 credits. Poll each id with [Poll image status](/api-reference/image/poll-status).
 
 To keep one face across every post and video, read the [guide: consistent AI influencer](https://tryunsora.com/tools/create-consistent-ai-influencer-looks-same-every).
 
@@ -13,6 +13,7 @@ To keep one face across every post and video, read the [guide: consistent AI inf
 | Header | Required | Description |
 | --- | --- | --- |
 | `Authorization` | Yes | `Bearer uns_*` API key or Clerk JWT |
+| `Idempotency-Key` | No | Max 128 chars. Replays the same response for 24h on API key requests |
 | `Content-Type` | Yes | `application/json` |
 
 ## Request body
@@ -28,7 +29,7 @@ To keep one face across every post and video, read the [guide: consistent AI inf
 </ParamField>
 
 <ParamField body="count" type="integer">
-  Number of images to generate (separate jobs). Min `1`, max `10`. Default: `1`.
+  Number of images to generate (separate jobs). Min `1`, max `10`. Default: `1`. Values outside that range are clamped, not rejected.
 </ParamField>
 
 <ParamField body="cameraAngle" type="string">
@@ -61,12 +62,12 @@ Single image (`count: 1`):
   "generations": [
     { "id": "cm123abc", "status": "QUEUED" }
   ],
-  "creditsDeducted": 10,
-  "creditsRemaining": 90
+  "creditsDeducted": 4,
+  "creditsRemaining": 96
 }
 ```
 
-Multiple images (`count` > 1) return one entry per job in `generations`. Credits deducted = per-image cost × `count`.
+Multiple images (`count` > 1) return one entry per job in `generations`. Credits deducted = 4 × `count`.
 
 ## Example
 

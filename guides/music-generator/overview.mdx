@@ -3,13 +3,13 @@ title: "Music generator"
 description: "Generate complete songs from lyrics and style prompts in the Unsora dashboard — pick a model, write lyrics, and get streamable tracks."
 ---
 
-The **Music generator** turns lyrics and an optional style prompt into full songs powered by [Mureka AI](https://wavespeed.ai/models/mureka-ai). Open it from the dashboard sidebar at [`/music-generator`](https://app.tryunsora.com/music-generator).
+The **Music generator** turns lyrics and a style into full songs powered by [Mureka AI](https://wavespeed.ai/models/mureka-ai). Open it from the dashboard sidebar at [`/music-generator`](https://app.tryunsora.com/music-generator).
 
 ## Layout
 
 The page has two panels:
 
-1. **Song settings** (left on desktop) — model, lyrics, style prompt, and **Generate song**
+1. **Song settings** (left on desktop) — model, lyrics, style, and the generate button
 2. **Results** (right) — compact cards for in-progress and completed tracks
 
 On mobile, settings stack above results.
@@ -18,30 +18,38 @@ On mobile, settings stack above results.
 
 The **Model** selector is at the top of the song settings panel. Pick the engine before you write lyrics.
 
-| Model | Best for |
-| --- | --- |
-| **Mureka V9 (Auto)** | Default full song with vocals |
-| **Mureka V9 / V8 / O2 / V7.6** | Full songs with lyrics; credit cost varies by model |
-| **Mureka V7.5 (BGM)** | Instrumental background music — style prompt is required unless lyrics describe mood only |
+| Model | Best for | Credits |
+| --- | --- | --- |
+| **Mureka V9 (auto)** | Default full song with vocals | 3 |
+| **Mureka V9**, **Mureka V8** | Full songs with lyrics | 3 |
+| **Mureka V7.6** | Full songs with lyrics | 4 |
+| **Mureka O2** | Full songs with lyrics | 6 |
+| **Mureka V7.5 (background music)** | Instrumental background music | 4 |
 
 <Note>
-  Song models require **Lyrics**. BGM mode treats lyrics as optional and focuses on the style prompt.
+  Song models need **Lyrics**. **Mureka V7.5 (background music)** needs a **Style** or lyrics, and lyrics are optional.
 </Note>
 
 ## Write lyrics and style
 
 **Lyrics** — paste or write verse/chorus text. Section labels like `[Verse]` and `[Chorus]` are supported.
 
-**Style prompt** (optional for songs, important for BGM) — plain language for genre, tempo, mood, and vocal style, for example: `r&b, slow, passionate, male vocal`.
+**Style** (optional for songs, needed for background music without lyrics) — plain language for genre, tempo, mood, and vocal style, for example: `r&b, slow, passionate, male vocal`.
 
-Click **Generate song** (or **Generate BGM** for V7.5). Credits are deducted when the job is queued.
+Click **Generate song** (or **Generate music** for V7.5). Credits are deducted when the job is queued.
+
+## Use your cloned voice
+
+Turn on **Use my cloned voice** and pick one of your cloned voices. Unsora makes an instrumental track, then your cloned voice reads the lyrics over it. It speaks the lyrics; it doesn't sing them. The button changes to **Generate with my voice**. Lyrics are required.
+
+Create cloned voices with the voice clone tools first.
 
 ## Results cards
 
 Each result is a compact dashboard row:
 
 - **Play / pause** on the artwork button
-- **Title** from your style prompt (or “Untitled song”)
+- **Title** from your style (or “Untitled song”)
 - **One-line lyric preview** when idle
 - **Rolling synced lyrics** while that track is the active player (see [Playback & player](/guides/music-generator/playback))
 - **Download** and **delete** on hover (always visible on touch devices)
@@ -50,8 +58,8 @@ In-progress jobs show a spinner and status (`Queued`, `Generating…`). Failed j
 
 ## Tips
 
-- Keep lyrics under 3000 characters (API limit).
-- Use a style prompt even when optional — it steers genre and vocal delivery.
+- Keep lyrics under 3,000 characters and the style under 1,024 characters.
+- Add a style even when it's optional — it steers genre and vocal delivery.
 - You can start playback and switch to other tools; audio keeps playing in the global player.
 
 ## API access

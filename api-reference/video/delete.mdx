@@ -1,10 +1,10 @@
 ---
 title: "Delete video generation"
-description: "Permanently delete a video generation job and its output video from your Unsora account. This action cannot be undone."
+description: "Permanently delete a video generation record from your Unsora account. The video file stays in your library. This action cannot be undone."
 openapi: "DELETE /videos/{generationId}"
 ---
 
-Deletes one video generation owned by the authenticated user.
+Deletes one video generation record owned by the authenticated user. The output video file isn't deleted; it stays in your library.
 
 **`DELETE /videos/{generationId}`**
 

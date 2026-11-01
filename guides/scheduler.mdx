@@ -1,0 +1,72 @@
+---
+title: "Scheduler"
+description: "Create, schedule and queue social posts in the Unsora dashboard — the composer, posting times, calendar, posts list and post statuses."
+---
+
+The scheduler is the **Schedule** section of the dashboard sidebar: Home, Calendar, Queue, Posts, Analytics and Accounts. Posting needs a paid plan or an active trial ([Plans and credits](/guides/plans-and-credits)).
+
+## Create a post
+
+Click **New post** and pick a format:
+
+| Format | What it makes |
+| --- | --- |
+| **Video** | One video, posted as a Reel, Short, TikTok or feed video |
+| **Photos** | One image, or a carousel for feeds |
+| **Slideshow** | Vertical swipe-through photos, built for TikTok photo mode |
+| **Text** | A written post with no media |
+
+Pick the accounts (up to 10 per post), write the caption, and adjust each platform's settings, such as the YouTube title or Pinterest board. The composer only offers accounts whose platform supports the format; see [Platforms](/guides/platforms).
+
+Then choose how it goes out:
+
+- **Add to queue** — takes the next free posting time (see below)
+- **Schedule** — a date and time you pick
+- **Publish now**
+- **Save draft** — keeps it without a time
+
+## Posting times and the queue
+
+**Queue** shows what goes out next and your **posting times**: a weekly set of times, such as Monday to Friday at 9:00, in a timezone you choose. **Add to queue** puts a post in the next posting time that doesn't already have a post scheduled within a minute of it. You can set up to 70 posting times.
+
+If you haven't set any posting times, schedule posts with a date and time instead.
+
+Posting times are a dashboard feature. Over the API and MCP, pass `scheduled_at` for each post.
+
+## Calendar and posts
+
+- **Calendar** shows scheduled and published posts by date.
+- **Posts** lists every post with tabs for **All**, **Scheduled**, **Drafts**, **Published** and **Needs attention**, and filters for format and account.
+- **Home** shows your posting timeline: what went out and what's next.
+
+Open a post to see each account's result and a link to the live post.
+
+## Post statuses
+
+| Status | Meaning |
+| --- | --- |
+| **Draft** | Saved without a time |
+| **Scheduled** | Waiting for its time |
+| **Publishing** | Being sent to the platforms |
+| **Published** | Live on every account |
+| **Partly published** | Live on some accounts, failed on others |
+| **Failed** | Failed on every account |
+
+What you can do with a post:
+
+- **Edit** — drafts, scheduled, failed and partly published posts
+- **Publish now** — drafts and scheduled posts
+- **Retry failed** — failed and partly published posts; only the accounts that failed are retried
+- **Duplicate** — copy any post into a new draft
+- **Delete** — any post except one that's publishing right now. Deleting doesn't need a plan.
+
+## Timezones
+
+Times show in your scheduler timezone, which you set with your posting times. A post scheduled over the API takes its own `timezone` field.
+
+## From an agent or the API
+
+Everything except posting times works from your AI agent ([MCP server](/integrations/mcp)) and the REST API:
+
+- [Create post](/api-reference/posts/create_post), [Update post](/api-reference/posts/update_post), [Publish](/api-reference/posts/publish), [Retry](/api-reference/posts/retry)
+- [List posts](/api-reference/posts/list_posts), [Get post](/api-reference/posts/get_post), [Delete post](/api-reference/posts/delete_post)

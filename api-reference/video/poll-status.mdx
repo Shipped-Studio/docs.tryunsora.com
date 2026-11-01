@@ -1,19 +1,23 @@
 ---
 title: "Poll video status"
-description: "Poll a video generation job until it completes — returns the latest status and the finished video URL once rendering is done."
+description: "Poll any video job (generation, motion control, talking avatar, video upscale or subtitle removal) until it completes. Returns the latest status and the finished video URL."
 openapi: "GET /video/status/{id}"
 ---
 
-Poll a video job created via [Create video](/api-reference/video/create). Use the `id` from the create response.
+One polling endpoint for every job that produces a video:
 
-**`GET /video/status/{id}`** — same pattern as image (`/image/status/{id}`).
+- [Create video](/api-reference/video/create) and [Generate](/api-reference/catalog/generate) (video models): `generation.id`
+- [Motion control](/api-reference/motion-control/create): `generation.id`
+- [Talking avatar](/api-reference/avatar-generations/create): `generation.id`
+- [Video upscaler](/api-reference/video-upscaler/create): `job.id`
+- [Subtitle removal](/api-reference/watermark-removal/create): an id from `videoIds`
 
 Poll every few seconds until `status` is `COMPLETED` or `FAILED`.
 
 ## Path parameter
 
 <ParamField path="id" type="string" required>
-  Generation id from `POST /videos/create` (`generation.id`).
+  Job id from the create response.
 </ParamField>
 
 ## Response
@@ -23,7 +27,7 @@ Poll every few seconds until `status` is `COMPLETED` or `FAILED`.
   "success": true,
   "data": {
     "id": "cm123abc",
-    "model": "seedance_2.0",
+    "model": "seedance-2.5",
     "status": "COMPLETED",
     "outputUrl": "https://files.tryunsora.com/....mp4",
     "thumbnailUrl": "https://files.tryunsora.com/....jpg",
@@ -41,6 +45,8 @@ Poll every few seconds until `status` is `COMPLETED` or `FAILED`.
 | `PROCESSING` | Rendering |
 | `COMPLETED` | `outputUrl` is ready |
 | `FAILED` | See `error` |
+
+`model` is the model the job ran on. Video upscales report `upscale-standard`, `upscale-ultra-1080p` or `upscale-ultra-4k`, and subtitle removal reports `watermark-removal`.
 
 ## Example
 

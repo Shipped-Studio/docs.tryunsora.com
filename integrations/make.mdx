@@ -1,0 +1,116 @@
+---
+title: "Make"
+description: "Use Unsora in Make scenarios to clip long videos, generate AI media, and schedule social posts with your API key."
+---
+
+The Unsora app for [Make](https://www.make.com) lets your scenarios clip long
+videos, generate AI video, images, music, and voiceovers, and schedule posts
+to your connected social accounts. It uses the same [Unsora API](/api-guide)
+as the web app, authenticated with your API key.
+
+## What you need
+
+- An Unsora account. Sign up at [tryunsora.com](https://tryunsora.com).
+- An Unsora API key. Create one at
+  [app.tryunsora.com/api-keys](https://app.tryunsora.com/api-keys). Keys start
+  with `uns_`.
+- Credits for clipping and generation. Posting needs a paid plan and at least
+  one social account connected in the [Unsora web app](https://app.tryunsora.com).
+
+## Connect Unsora
+
+1. In a Make scenario, add a module and search for **Unsora**.
+2. Pick a module, then select **Create a connection**.
+3. Paste your API key into **API Key** and select **Save**. Leave the advanced
+   **Base URL** as it is.
+
+Make checks the key when it saves the connection and names it after your
+credit balance, such as **Unsora (1200 credits)**. Your connected social
+accounts, voices, and models then load into the module dropdowns.
+
+<Note>
+  Connect social accounts in the Unsora web app. The Make app reads them, but
+  it can't add new ones.
+</Note>
+
+## Triggers
+
+The Unsora API doesn't send webhooks, so every trigger polls on your
+scenario's schedule. When you add a trigger, choose where it starts: from now,
+or from a past date.
+
+| Trigger | Fires when |
+| ------- | ---------- |
+| **Watch Completed Clippings** | A clipping job finishes. The bundle includes its clips. |
+| **Watch Published Posts** | A post is published. |
+| **Watch Failed Posts** | A post fails. |
+| **Watch Completed Generations** | A video, image, music, or voiceover generation finishes. |
+
+## Modules
+
+| Group | Modules |
+| ----- | ------- |
+| AI Clipping | Create Clipping, Get Clipping Status, Get Clipping, List Clippings, Delete Clipping, Delete Clip |
+| Social Posts | Create Post, Get Post, List Posts, Update Post, Publish Post Now, Retry Post, Delete Post, Get Post Analytics |
+| Media Uploads | Upload From URL, Upload File, List Uploads, Delete Upload |
+| AI Video | Create Video, Get Video Status, List Videos, Delete Video |
+| AI Images | Create Image, Get Image, Get Image Status, List Images, Delete Image |
+| AI Influencer | Create Influencer Image, List Influencer Images, Delete Influencer Image |
+| AI Thumbnails | Create Thumbnail, Get Thumbnail, List Thumbnails, Delete Thumbnail |
+| AI Music | Create Music, Get Music Status, List Music, Delete Music |
+| AI Voiceovers | List Voices, Create Voiceover, Get Voiceover Status, List Voiceovers, Delete Voiceover |
+| Account | List Accounts, List Pinterest Boards, Get TikTok Creator Info, Get Credits, Get Subscription |
+| Other | Make an API Call — an authenticated request to any [API endpoint](/api-reference/introduction) |
+
+**Create Image** and **Create Post** accept an optional **Idempotency Key**. If a scenario retries with the same key, Unsora returns the original
+job instead of charging again or posting twice.
+
+### Wait for a job to finish
+
+Clipping and generation run in the background, and a Make module can't wait
+minutes for a result. Create modules return the job ID and status `QUEUED`
+right away. To use the result, pick one of these patterns:
+
+- **Watch trigger (recommended).** Scenario 1 creates the job. Scenario 2
+  starts with **Watch Completed Clippings** or **Watch Completed
+  Generations** and uses the result.
+- **Poll in the same scenario.** After the create module, add *Repeater* →
+  *Tools: Sleep* (30–60 seconds) → **Get … Status**, followed by a filter that
+  continues when `status` is `COMPLETED`. Keep polling under 60 requests per
+  minute per API key.
+
+## Example scenarios
+
+- **YouTube to TikTok on autopilot.** *YouTube: Watch Videos* → **Create
+  Clipping** (9:16, captions on). In a second scenario: **Watch Completed
+  Clippings** → *Iterator* over the clips → **Create Post** with each clip URL.
+- **Podcast drop to Shorts.** *Google Drive: Watch Files* → *Download a File*
+  → **Upload File** → **Create Clipping** with the upload's URL.
+- **Failure alerts.** **Watch Failed Posts** → *Slack: Create a Message*
+  with the caption and each account's error.
+- **Weekly analytics.** *Schedule* → **Get Post Analytics** → *Google Sheets:
+  Add a Row*.
+
+## Troubleshooting
+
+**The connection fails.** Check that you pasted the whole key, starting with
+`uns_`, and that it hasn't been revoked at
+[app.tryunsora.com/api-keys](https://app.tryunsora.com/api-keys).
+
+**A module fails because you're out of credits.** Run **Get Credits** or top
+up in the [web app](https://app.tryunsora.com).
+
+**A post fails with `PLAN_REQUIRED` (HTTP 403).** Scheduling and publishing
+need a paid plan.
+
+**A module fails with a rate limit error.** Each API key allows 60 requests
+per minute. Lengthen the *Sleep* in polling loops, or run fewer scenarios at
+once.
+
+**An account is missing from the dropdown.** Connect it in the Unsora web
+app, then refresh the dropdown.
+
+## Support
+
+Contact us at [tryunsora.com/contact](https://tryunsora.com/contact) or email
+[hi@tryunsora.com](mailto:hi@tryunsora.com).

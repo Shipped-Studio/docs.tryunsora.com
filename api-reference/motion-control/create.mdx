@@ -1,0 +1,21 @@
+---
+title: "Motion control"
+description: "Make the character in an image copy the motion of a reference video, with Kling, Wan Animate or DreamActor."
+openapi: "POST /motion-control/create"
+---
+
+Animates the character in `character_image_url` with the motion from `motion_video_url`. Runs through [Generate](/api-reference/catalog/generate) with live pricing; check a model's inputs with [List models](/api-reference/catalog/list) (`?category=motion-control`) and its price with [Quote a generation](/api-reference/catalog/quote).
+
+Models: `kling-mc-3.0-pro` (default), `kling-mc-3.0-std`, `kling-mc-2.6-pro`, `wan-2.2-animate`, `dreamactor-v2`. Poll [Poll video status](/api-reference/video/poll-status) with `generation.id`.
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/motion-control/create" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "kling-mc-3.0-pro",
+    "character_image_url": "https://cdn.example.com/character.png",
+    "motion_video_url": "https://cdn.example.com/dance.mp4",
+    "keep_sound": true
+  }'
+```

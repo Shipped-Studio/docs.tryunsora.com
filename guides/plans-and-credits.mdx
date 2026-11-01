@@ -1,0 +1,82 @@
+---
+title: "Plans and credits"
+description: "Unsora plans are priced by how many social accounts you post to. Credits for AI generation come from one-time packs that never expire."
+---
+
+Unsora has two separate things to pay for:
+
+- **A plan** — scheduling and posting, priced by how many social accounts you connect.
+- **Credits** — AI generation in Content Studio (video, images, music, voice, clipping and more). Plans don't include credits; you buy them in packs.
+
+## Plans
+
+| Plan | Price | Social accounts | Includes |
+| --- | --- | --- | --- |
+| **Starter** | $19/month | 5 | Scheduling, calendar and analytics; REST API and MCP server |
+| **Growth** | $39/month | 15 | Scheduling, calendar and analytics; REST API and MCP server |
+| **Scale** | $99/month | 50 | Scheduling, calendar and analytics; REST API and MCP server; priority support |
+
+Every plan includes unlimited posts, posting to every live platform, multiple accounts per platform, carousels, the posting queue and post analytics.
+
+### Free trial
+
+Your first subscription starts with a **7-day free trial**. Nothing is charged until the trial ends, and you can cancel any time before then from **Billing**. If you've paid for a plan before, a new subscription starts straight away.
+
+Plans include no credits, so the trial doesn't add any either. Buy a credit pack if you want to generate content during the trial.
+
+### Without a plan
+
+You can sign up and connect social accounts without a plan (up to the Starter limit), but you can't post. Creating, updating, publishing or retrying a post without a plan or trial returns `403` with code `PLAN_REQUIRED`. Deleting posts always works.
+
+### Older plans
+
+Subscribers on the earlier Basic, Pro and Power plans keep their plan and its monthly credits for as long as they stay subscribed. If they switch to Starter, Growth or Scale, the credits they have left are kept and never expire.
+
+## Credit packs
+
+| Pack | Price | Credits |
+| --- | --- | --- |
+| **Plus** | $20 | 500 |
+| **Pro Pack** | $50 | 1,500 |
+| **Power Pack** | $150 | 5,000 |
+
+- Pack credits **never expire**.
+- You can buy packs on any plan, or with no plan at all.
+- Buy them in the dashboard under **Billing**.
+- Check your balance with [Credits](/api-reference/user/credits) (`GET /user/credits`).
+
+## What things cost
+
+Most generation is priced **live**, from what the model's provider charges for that exact job (model, length, resolution, audio). Prices move when providers change theirs, so ask before you run:
+
+- `GET /catalog` — every model and the inputs it accepts
+- `POST /catalog/quote` — the exact credit cost of a job
+
+Over MCP, the `get_price` tool returns the same quote.
+
+Some tools have fixed prices:
+
+| Tool | Credits |
+| --- | --- |
+| Clipping | 4 per started minute of source video (minimum 1 minute) |
+| Thumbnail | 12 per variation |
+| AI influencer | 3 (1K), 4 (2K) or 6 (4K) per image in the app; 4 per image through the API (always 2K) |
+| Music: Mureka V9 (auto), V9, V8 | 3 per song |
+| Music: Mureka V7.6, V7.5 (background music) | 4 per song |
+| Music: Mureka O2 | 6 per song |
+| Voiceover: ElevenLabs Eleven v3 | 6 per started 1,000 characters |
+| Voiceover: MiniMax Speech 2.6 HD | 1 per started 1,000 characters |
+| Voiceover: your cloned voice | 3 per started 500 characters (minimum 3) |
+| Creating a voice clone | 15, once |
+
+Credits are deducted when a job is queued. A job you can't afford returns `402`.
+
+## Manage your plan
+
+Open **Billing** in the dashboard to:
+
+- start a trial or choose a plan
+- switch plans
+- buy credit packs
+- see your credit history
+- update payment details or cancel through **Manage billing**

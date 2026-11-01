@@ -1,59 +1,71 @@
 ---
 title: "Create Post"
-description: "Schedule or publish posts to YouTube, TikTok, Instagram, Facebook, LinkedIn, Bluesky, Threads, and Pinterest."
+description: "Schedule or draft posts to YouTube, TikTok, Instagram, Facebook, LinkedIn, X, Bluesky, Threads, Pinterest and Google Business Profile."
 openapi: "POST /posts"
 ---
 
-Schedule a post for later or save it as a **draft**. Publishing runs through Unsora when the post is published from the scheduler.
+Schedule a post for later or save it as a **draft**. A scheduled post is published at its time by the Unsora scheduler; a draft is published with [Publish post](/api-reference/posts/publish).
 
-Posts can target any connected account on: **YouTube, TikTok, Instagram,
-Facebook, LinkedIn, Bluesky, Threads, Pinterest** (up to 10 accounts per
-post, mixed platforms allowed).
+Posts can target any connected account on **YouTube, TikTok, Instagram,
+Facebook, LinkedIn, X, Bluesky, Threads, Pinterest and Google Business
+Profile**: up to 10 accounts per post, mixed platforms allowed, each account
+once.
 
 ## Supported content
 
-| `media.type` | Use for | Response `type` |
+| `media` | Post type | Use for |
 | --- | --- | --- |
-| `video` | Instagram Reel, TikTok Reel | `video` |
-| `slideshow` | Instagram carousel, TikTok photo post | `slideshow` |
+| `{ "type": "video", … }` | `VIDEO` | Reels, Shorts, TikToks, feed videos |
+| `{ "type": "slideshow", "urls": […] }` | `CAROUSEL` | Instagram carousels, TikTok photo posts, multi-image posts |
+| An array of media items | Inferred: `VIDEO` if any item is a video, otherwise `CAROUSEL` for 2+ images or `IMAGE` for one | Mixed cases, single images, videos with a cover |
+| Omitted or `null` | `TEXT` | Text-only posts |
 
-Connect accounts in the Unsora app, then list them via
-[Get accounts](/api-reference/accounts/get_accounts). Note: **YouTube accepts
-video posts only**; text-only posts work on Facebook, LinkedIn, Bluesky, and
-Threads.
+Which post types each platform takes:
+
+| Platform | Video | Image / carousel | Text only |
+| --- | --- | --- | --- |
+| YouTube | ✅ | — | — |
+| TikTok, Instagram, Pinterest | ✅ | ✅ | — |
+| Facebook, LinkedIn, X, Bluesky, Threads | ✅ | ✅ | ✅ |
+| Google Business Profile | — | ✅ (one image) | ✅ |
+
+Connect accounts in the Unsora app, then list them with
+[Get accounts](/api-reference/accounts/get_accounts).
 
 ## Media requirements
 
-Make sure media matches each platform's rules **before** creating the post.
-Media that violates them fails at publish time: the post ends up `FAILED`
-(or `PARTIALLY_PUBLISHED`) with the platform's error on the affected
-account — fix the media and create a new post, or use
-[Retry post](/api-reference/posts/retry) for accounts that failed for other
-reasons.
+A scheduled post is checked when you create it. If the media doesn't fit a
+platform, the request fails with `400` and code `PLATFORM_RULES`, with one
+entry per problem in `issues`. Drafts are checked when you publish them.
 
-| Placement | Allowed aspect ratio | Recommended size |
-| --- | --- | --- |
-| Instagram feed image / carousel item | **4:5 to 1.91:1** | 1080×1350, 1080×1080, 1080×566 |
-| Instagram Reel (video) | 9:16 recommended | 1080×1920 |
-| TikTok slideshow / video | 9:16 recommended | 1080×1920 |
+| Platform | Caption limit | Images per post | Video length | Video size |
+| --- | --- | --- | --- | --- |
+| Instagram | 2,200 | 10 | 3 s – 15 min | 300 MB |
+| TikTok | 2,200 | 35 | 3 s – 10 min | — |
+| YouTube | 5,000 (description) | — | — | — |
+| Facebook | 63,206 | 10 | — | — |
+| LinkedIn | 3,000 | 20 | 3 s – 30 min | 500 MB |
+| X | 280 | 4 | up to 140 s | 512 MB |
+| Threads | 500 | 20 | up to 5 min | 1 GB |
+| Bluesky | 300 characters | 4 | up to 3 min | 100 MB |
+| Pinterest | 800 | 5 | 4 s – 15 min | 2 GB |
+| Google Business Profile | 1,500 | 1 | — | — |
 
-<Warning>
-Instagram rejects feed/carousel images outside **4:5 – 1.91:1** (e.g. 9:16
-images). When posting the same slideshow to Instagram **and** TikTok, use
-4:5 images (both platforms accept them) — or create separate posts per
-platform.
-</Warning>
+Image format, size and aspect ratio don't block a post. Unsora fixes them for
+each platform at publish time:
 
-Images should be **JPEG** — Instagram's API only accepts JPEG, and TikTok
-photo posts accept JPEG/WebP. PNG images posted to TikTok are converted to
-JPEG automatically at publish time. Videos should be MP4/MOV (H.264 + AAC)
-at a publicly reachable URL.
+- **Format:** images a platform doesn't take are converted to JPEG (Instagram takes JPEG only).
+- **Aspect ratio:** images outside the allowed range (Instagram: 4:5 to 1.91:1) are padded over a blurred copy of themselves, nothing is cropped.
+- **Carousels:** Instagram carousel images are padded to the first image's ratio, and Pinterest images are made the same pixel size.
+- **Size:** oversized images are scaled and re-compressed under the platform's cap.
+
+Videos should be MP4 or MOV (H.264 + AAC) at a publicly reachable URL.
 
 ## Before you post
 
-1. Active **paid plan** + API key or Clerk JWT.
+1. Active **paid plan** + API key.
 2. [Get accounts](/api-reference/accounts/get_accounts) → copy each account `id`.
-3. Pick `video` or `slideshow`. For Instagram reels, optional `cover_url`.
+3. Pick your media. For Pinterest, get a board id with [Pinterest boards](/api-reference/accounts/pinterest-boards); for TikTok, check the allowed privacy options with [TikTok creator info](/api-reference/accounts/tiktok-creator-info).
 
 ## Request body
 
@@ -62,18 +74,23 @@ at a publicly reachable URL.
 </ParamField>
 
 <ParamField body="accounts" type="array" required>
-  `[{ "id": "<account-uuid>" }]` — up to 10 accounts. Each account object also
-  accepts optional `title` (YouTube video title / Pinterest pin title) and
-  `customCaption` (overrides `caption` for that account only).
+  `[{ "id": "<account-id>" }]`: 1 to 10 accounts, each once (alias `accountId`). Each account object also accepts:
+
+  - `customCaption`: replaces `caption` for that account only.
+  - `title`: the **YouTube** video title. Defaults to the first 100 characters of the caption. Pinterest ignores it; use `settings.pinterest.title`.
 </ParamField>
 
-<ParamField body="media" type="object | null">
-  <Expandable title="Video (reel)">
+<ParamField body="media" type="object | array | null">
+  <Expandable title="Video">
     <ParamField body="type" type="string" required>`video`</ParamField>
     <ParamField body="url" type="string" required>MP4/MOV URL reachable by Unsora.</ParamField>
     <ParamField body="duration_sec" type="number">Video length in seconds.</ParamField>
+    <ParamField body="width" type="integer" />
+    <ParamField body="height" type="integer" />
+    <ParamField body="bytes" type="integer">File size in bytes.</ParamField>
+    <ParamField body="mime_type" type="string">e.g. `video/mp4`.</ParamField>
     <ParamField body="cover_url" type="string">
-      Optional **Instagram Reel** cover image (JPG/PNG URL). Ignored by TikTok.
+      Optional **Instagram Reel** cover image URL. Ignored by TikTok.
     </ParamField>
   </Expandable>
 
@@ -81,65 +98,88 @@ at a publicly reachable URL.
     <ParamField body="type" type="string" required>`slideshow`</ParamField>
     <ParamField body="urls" type="string[]" required>1–35 image URLs in order.</ParamField>
   </Expandable>
+
+  <Expandable title="Array of media items">
+    Each item: `type` (`VIDEO`, `IMAGE` or `THUMBNAIL`, where `THUMBNAIL` is a video cover), `url`, and optional `order`, `width`, `height`, `duration`, `fileSize`, `mimeType`.
+  </Expandable>
+
+  Omit, or send `null`, for a text post. Media URLs are stored as uploads and appear in [List uploads](/api-reference/uploads/list).
+</ParamField>
+
+<ParamField body="type" type="string">
+  Overrides the inferred post type: `VIDEO`, `IMAGE`, `CAROUSEL` or `TEXT`.
 </ParamField>
 
 <ParamField body="settings" type="object">
-  Optional publish options for **Instagram, TikTok, YouTube, and Pinterest**. You can also send `instagram`, `tiktok`, `youtube`, or `pinterest` at the **top level** of the body (same shape as below). Other keys under `settings` return `400`.
+  Optional per-platform options. You can also send `instagram`, `tiktok`, `youtube`, `pinterest` or `google_business` at the **top level** of the body (same shape). Each account gets only its own platform's options. Other keys under `settings` return `400`.
 
-  <Expandable title="Instagram — settings.instagram">
+  <Expandable title="Instagram: settings.instagram">
     <ParamField body="cover_url" type="string">
-      Custom **Reel** cover image URL (JPG/PNG). Same as `media.cover_url`.
+      Custom **Reel** cover image URL. Same as `media.cover_url`.
     </ParamField>
   </Expandable>
 
-  <Expandable title="TikTok — settings.tiktok">
-    <ParamField body="post_mode" type="string">
-      `DIRECT_POST` (default) or `MEDIA_UPLOAD` (inbox draft — user finishes in TikTok).
-    </ParamField>
+  <Expandable title="TikTok: settings.tiktok">
     <ParamField body="privacy_level" type="string">
-      e.g. `PUBLIC_TO_EVERYONE`, `SELF_ONLY`. Must match [creator info](https://developers.tiktok.com/doc/content-posting-api-reference-query-creator-info) for the account.
-    </ParamField>
-    <ParamField body="music_usage_confirmation" type="boolean">
-      Confirm music usage when TikTok requires it.
+      `PUBLIC_TO_EVERYONE` (default), `MUTUAL_FOLLOW_FRIENDS`, `FOLLOWER_OF_CREATOR` or `SELF_ONLY`. Must be an option TikTok allows for the account; see [TikTok creator info](/api-reference/accounts/tiktok-creator-info).
     </ParamField>
     <ParamField body="disable_comment" type="boolean" />
-    <ParamField body="disable_duet" type="boolean" />
-    <ParamField body="disable_stitch" type="boolean" />
+    <ParamField body="disable_duet" type="boolean">Video posts only.</ParamField>
+    <ParamField body="disable_stitch" type="boolean">Video posts only.</ParamField>
     <ParamField body="brand_content_toggle" type="boolean">Paid partnership (third-party brand).</ParamField>
-    <ParamField body="brand_organic_toggle" type="boolean">Promoting creator's own business.</ParamField>
-    <ParamField body="is_aigc" type="boolean">AI-generated content flag.</ParamField>
-    <ParamField body="auto_add_music" type="boolean">Slideshow only — TikTok adds background music.</ParamField>
-    <ParamField body="photo_cover_index" type="integer">Slideshow only — cover image index (0-based).</ParamField>
-    <ParamField body="video_cover_timestamp_ms" type="integer">Reel only — cover frame time in ms.</ParamField>
+    <ParamField body="brand_organic_toggle" type="boolean">Promoting the creator's own business.</ParamField>
+    <ParamField body="is_aigc" type="boolean">Label the post as AI-generated.</ParamField>
+    <ParamField body="post_mode" type="string">
+      Photo posts only. `DIRECT_POST` (default) publishes; `MEDIA_UPLOAD` sends it to the creator's TikTok inbox to finish in the app.
+    </ParamField>
+    <ParamField body="auto_add_music" type="boolean">Photo posts only. TikTok adds background music.</ParamField>
+    <ParamField body="photo_cover_index" type="integer">Photo posts only. Cover image index (0-based).</ParamField>
+    <ParamField body="video_cover_timestamp_ms" type="integer">Video posts only. Cover frame time in ms. Default: `1000`.</ParamField>
+    <ParamField body="music_usage_confirmation" type="boolean">Stored with the post; not sent to TikTok.</ParamField>
   </Expandable>
 
-  <Expandable title="YouTube — settings.youtube">
+  <Expandable title="YouTube: settings.youtube">
     <ParamField body="privacy_status" type="string">
       `public` (default), `private`, or `unlisted`.
     </ParamField>
     <ParamField body="tags" type="string[]">Video tags.</ParamField>
-    <ParamField body="category_id" type="string">YouTube category id.</ParamField>
-    <ParamField body="made_for_kids" type="boolean">COPPA made-for-kids flag.</ParamField>
+    <ParamField body="category_id" type="string">YouTube category id. Default: `22` (People & Blogs).</ParamField>
+    <ParamField body="made_for_kids" type="boolean">COPPA made-for-kids flag. Default: `false`.</ParamField>
   </Expandable>
 
-  <Expandable title="Pinterest — settings.pinterest">
+  <Expandable title="Pinterest: settings.pinterest">
     <ParamField body="board_id" type="string">
       Board to pin to. Defaults to the account's first board.
+    </ParamField>
+    <ParamField body="title" type="string">Pin title, up to 100 characters. Defaults to the start of the caption.</ParamField>
+    <ParamField body="link" type="string">Destination URL opened when the pin is clicked.</ParamField>
+  </Expandable>
+
+  <Expandable title="Google Business Profile: settings.google_business">
+    <ParamField body="cta_type" type="string">
+      Button on the post: `LEARN_MORE`, `BOOK`, `ORDER`, `SHOP`, `SIGN_UP` or `CALL` (dials the location's phone number).
+    </ParamField>
+    <ParamField body="cta_url" type="string">
+      Link the button opens. Required for every `cta_type` except `CALL`; leave it out for `CALL`.
     </ParamField>
   </Expandable>
 </ParamField>
 
 <ParamField body="scheduled_at" type="string">
-  ISO 8601 with timezone, **≥ 2 minutes** ahead. Omit for **draft**.
+  ISO 8601 with a time zone offset (or Unix time in milliseconds), **at least 2 minutes** ahead. Omit for a **draft**. Alias: `scheduledFor`.
+</ParamField>
+
+<ParamField body="timezone" type="string">
+  IANA time zone, e.g. `Europe/Berlin`. Stored with the schedule for display; it doesn't change how `scheduled_at` is read.
 </ParamField>
 
 <ParamField body="external_id" type="string">
-  Idempotency key (max 128 chars) or use `Idempotency-Key` header.
+  Your own id for the request. Without an `Idempotency-Key` header, its first 128 characters are used as the idempotency key.
 </ParamField>
 
 ## Instagram reel cover
 
-Only **`cover_url`** — a public image URL:
+Only **`cover_url`**, a public image URL:
 
 ```json
 "media": {
@@ -153,25 +193,32 @@ TikTok reel cover frame: optional `settings.tiktok.video_cover_timestamp_ms`.
 
 ## Platform settings (optional)
 
-Supported providers: **Instagram**, **TikTok**, **YouTube**, **Pinterest** — via `settings.<provider>` (or the same keys at the top level of the body). Nothing is required; omit `settings` if you do not need them. YouTube video titles and Pinterest pin titles go on the **account object** (`accounts[].title`), not in `settings`.
+Nothing in `settings` is required; leave it out if you don't need it. The YouTube video title goes on the **account object** (`accounts[].title`); the Pinterest pin title goes in `settings.pinterest.title`.
 
 <Tip>
-  Top-level `tiktok` / `instagram` / `youtube` / `pinterest` keys work the same as their `settings.*` equivalents.
+  Top-level `tiktok` / `instagram` / `youtube` / `pinterest` / `google_business` keys work the same as their `settings.*` equivalents.
 </Tip>
 
 ```json
 "settings": {
   "instagram": { "cover_url": "https://cdn.example.com/cover.jpg" },
   "tiktok": {
-    "post_mode": "MEDIA_UPLOAD",
     "privacy_level": "SELF_ONLY",
-    "music_usage_confirmation": true
+    "is_aigc": true
   },
   "youtube": {
     "privacy_status": "unlisted",
     "tags": ["ai", "shorts"]
   },
-  "pinterest": { "board_id": "1234567890" }
+  "pinterest": {
+    "board_id": "1234567890",
+    "title": "Weekend outfit ideas",
+    "link": "https://example.com/lookbook"
+  },
+  "google_business": {
+    "cta_type": "BOOK",
+    "cta_url": "https://example.com/book"
+  }
 }
 ```
 
@@ -196,7 +243,7 @@ Supported providers: **Instagram**, **TikTok**, **YouTube**, **Pinterest** — v
 
 <RequestExample>
 ```bash Instagram reel with cover theme={null}
-curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
+curl -X POST "https://mvp.tryunsora.com/api/v1/posts" \
   -H "Authorization: Bearer uns_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -210,8 +257,8 @@ curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
   }'
 ```
 
-```bash TikTok reel theme={null}
-curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
+```bash TikTok reel, scheduled theme={null}
+curl -X POST "https://mvp.tryunsora.com/api/v1/posts" \
   -H "Authorization: Bearer uns_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -220,12 +267,14 @@ curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
       "type": "video",
       "url": "https://cdn.example.com/tip.mp4"
     },
-    "accounts": [{ "id": "YOUR_TIKTOK_ACCOUNT_ID" }]
+    "accounts": [{ "id": "YOUR_TIKTOK_ACCOUNT_ID" }],
+    "scheduled_at": "2026-11-20T09:00:00Z",
+    "timezone": "Europe/Berlin"
   }'
 ```
 
 ```bash Slideshow theme={null}
-curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
+curl -X POST "https://mvp.tryunsora.com/api/v1/posts" \
   -H "Authorization: Bearer uns_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -241,8 +290,21 @@ curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
   }'
 ```
 
+```bash Text post to LinkedIn and X theme={null}
+curl -X POST "https://mvp.tryunsora.com/api/v1/posts" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "caption": "We just shipped scheduling from ChatGPT.",
+    "accounts": [
+      { "id": "YOUR_LINKEDIN_ACCOUNT_ID" },
+      { "id": "YOUR_X_ACCOUNT_ID" }
+    ]
+  }'
+```
+
 ```bash TikTok slideshow + settings theme={null}
-curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
+curl -X POST "https://mvp.tryunsora.com/api/v1/posts" \
   -H "Authorization: Bearer uns_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -258,7 +320,6 @@ curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
     "accounts": [{ "id": "YOUR_TIKTOK_ACCOUNT_ID" }],
     "tiktok": {
       "post_mode": "MEDIA_UPLOAD",
-      "music_usage_confirmation": true,
       "privacy_level": "SELF_ONLY"
     },
     "external_id": "tiktok-draft-001"
@@ -277,7 +338,7 @@ curl -X POST "https://mvp2.tryunsora.com/api/v1/posts" \
 | `FAILED` | No account published |
 
 For `FAILED` or `PARTIALLY_PUBLISHED` posts, call
-[Retry post](/api-reference/posts/retry) — it re-attempts only the failed
+[Retry post](/api-reference/posts/retry): it re-attempts only the failed
 accounts and never double-posts. Per-account results (including
 `publishedUrl` and `error`) are on each post's `postAccounts`.
 
@@ -285,9 +346,9 @@ accounts and never double-posts. Per-account results (including
 
 | HTTP | When |
 | --- | --- |
-| `400` | Validation failed |
+| `400` | Invalid body (missing caption, more than 10 accounts, a repeated account, `scheduled_at` less than 2 minutes ahead, an unknown settings key), or a scheduled post that fails a check: `MEDIA_REQUIRED`, `MEDIA_NOT_ALLOWED`, `MIXED_MEDIA`, `CAPTION_REQUIRED`, `UNSUPPORTED_FORMAT`, `PLATFORM_RULES` (see `issues`) or `PLATFORM_UNAVAILABLE` |
 | `401` | Invalid auth |
-| `403` | No paid plan or unknown account |
+| `403` | `PLAN_REQUIRED` (no paid plan) or `UNKNOWN_ACCOUNTS` (an account isn't yours) |
 | `404` | User not found |
-| `409` | Idempotency conflict |
+| `409` | `IDEMPOTENCY_CONFLICT` |
 | `500` | Server error |

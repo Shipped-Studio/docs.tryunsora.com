@@ -1,0 +1,12 @@
+---
+title: "Pinterest boards"
+description: "List the boards of a connected Pinterest account, to pick the board_id a pin goes to."
+openapi: "GET /accounts/{accountId}/pinterest/boards"
+---
+
+Returns the boards of one connected Pinterest account. Pass a board's id as `settings.pinterest.board_id` in [Create Post](/api-reference/posts/create_post); without one, pins go to the account's first board.
+
+```bash
+curl "https://mvp.tryunsora.com/api/v1/accounts/ACCOUNT_ID/pinterest/boards" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY"
+```

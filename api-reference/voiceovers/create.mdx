@@ -1,12 +1,12 @@
 ---
 title: "Create voiceover"
-description: "Turn a script into natural speech with ElevenLabs Eleven v3 — pick from 20 voices and poll until the finished audio is ready."
+description: "Turn a script into speech with an Eleven v3 voice, a MiniMax preset voice or your own cloned voice, then poll until the audio is ready."
 openapi: "POST /voiceovers/create"
 ---
 
-Converts a script into natural speech using ElevenLabs Eleven v3. Credits are deducted when the job is queued. Poll [Poll voiceover status](/api-reference/voiceovers/poll-status) with the returned `generation.id` until `status` is `COMPLETED` or `FAILED`.
+Converts a script into speech. The voice you pick decides the model: one of 20 ElevenLabs Eleven v3 voices, one of 12 MiniMax preset voices, or one of your [cloned voices](/api-reference/voice-clones/list). Credits are deducted when the job is queued. Poll [Poll voiceover status](/api-reference/voiceovers/poll-status) with the returned `generation.id` until `status` is `COMPLETED` or `FAILED`.
 
-Pick a voice first with [List voices](/api-reference/voiceovers/voices) — every voice ships a preview clip so you can choose by ear.
+Pick a voice first. [List voices](/api-reference/voiceovers/voices) has the Eleven v3 voices with preview clips; [List voices you can use](/api-reference/voice-clones/list) adds the MiniMax presets and your clones.
 
 ## Headers
 
@@ -24,24 +24,40 @@ Pick a voice first with [List voices](/api-reference/voiceovers/voices) — ever
 </ParamField>
 
 <ParamField body="voice_id" type="string" required>
-  Voice to use. One of: `Aria`, `Roger`, `Sarah`, `Laura`, `Charlie`, `George`,
-  `Callum`, `River`, `Liam`, `Charlotte`, `Alice`, `Matilda`, `Will`, `Jessica`,
-  `Eric`, `Chris`, `Brian`, `Daniel`, `Lily`, `Bill`.
+  Voice to use:
 
-  See [List voices](/api-reference/voiceovers/voices) for descriptions and preview clips of each voice.
+  - **Eleven v3:** `Aria`, `Roger`, `Sarah`, `Laura`, `Charlie`, `George`, `Callum`, `River`, `Liam`, `Charlotte`, `Alice`, `Matilda`, `Will`, `Jessica`, `Eric`, `Chris`, `Brian`, `Daniel`, `Lily`, `Bill`
+  - **MiniMax presets:** `Friendly_Person`, `Wise_Woman`, `Deep_Voice_Man`, `Calm_Woman`, `Casual_Guy`, `Lively_Girl`, `Inspirational_girl`, `Determined_Man`, `Lovely_Girl`, `Elegant_Man`, `English_CaptivatingStoryteller`, `English_ConfidentWoman`
+  - **Your clones:** the clone `id` from [List voices you can use](/api-reference/voice-clones/list)
+</ParamField>
+
+<ParamField body="emotion" type="string">
+  Delivery for MiniMax preset voices: `happy`, `sad`, `angry`, `fearful`, `disgusted`, `surprised` or `neutral`. Default: `neutral`. Eleven v3 voices ignore it.
+</ParamField>
+
+<ParamField body="speed" type="number">
+  Speaking speed, `0.5`–`2`. Default: `1`.
+</ParamField>
+
+<ParamField body="output_format" type="string">
+  `mp3`, `wav` or `flac`. Default: `mp3`. Eleven v3 voices always return `mp3`.
 </ParamField>
 
 <ParamField body="stability" type="number">
-  `0`–`1`, default `0.5`. Higher values produce a more consistent delivery; lower values are more expressive.
+  Eleven v3 voices only, `0`–`1`. Higher values give a more consistent delivery; lower values are more expressive. Left out, the provider's default applies. Other voices ignore it.
 </ParamField>
 
 <ParamField body="similarity" type="number">
-  `0`–`1`, default `1`. Controls how closely the output sticks to the base voice. Very high values can cause artifacts.
+  Eleven v3 voices only, `0`–`1`. How closely the output sticks to the base voice; very high values can cause artifacts. Left out, the provider's default applies. Other voices ignore it.
 </ParamField>
 
 ## Credits
 
-6 credits per started 1,000 characters (a 2,300-character script costs 18 credits). Output is always `mp3`.
+| Voice | Cost |
+| --- | --- |
+| Eleven v3 | 6 credits per started 1,000 characters (a 2,300-character script costs 18) |
+| MiniMax preset | 1 credit per started 1,000 characters |
+| Your cloned voice | 3 credits per started 500 characters, minimum 3 |
 
 ## Async completion
 
@@ -80,7 +96,8 @@ curl -X POST "https://mvp.tryunsora.com/api/v1/voiceovers/create" \
 
 | HTTP | When |
 | --- | --- |
-| `400` | Missing/invalid text, voice_id, stability, or similarity |
+| `400` | Missing text or voice_id, an unknown voice, or an invalid emotion, speed, stability, similarity or output_format |
+| `409` | `IDEMPOTENCY_CONFLICT`: the Idempotency-Key was already used on a different endpoint |
 | `401` | Invalid auth |
 | `402` | Insufficient credits |
 | `404` | User not found |

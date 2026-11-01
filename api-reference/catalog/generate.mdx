@@ -1,0 +1,29 @@
+---
+title: "Generate"
+description: "Start a video, image or motion-control generation with any model and every input it takes, priced live and charged when it's queued."
+openapi: "POST /catalog/generate"
+---
+
+One endpoint for every model in [List models](/api-reference/catalog/list). Send the model key and its inputs under their own names; the request is validated against the model, priced live, charged and queued.
+
+Poll [Poll video status](/api-reference/video/poll-status) (video and motion control) or [Poll image status](/api-reference/image/poll-status) (image) with `generation.id`.
+
+- **Price guard:** send `expectedCredits` (for example the quote's `credits`). If the live price is higher, nothing is charged and the response is `409` with code `PRICE_CHANGED` and the new price in `credits`.
+- **Outside media:** URLs hosted outside Unsora are copied into your library first, up to 12 per request.
+- **Retries:** send an `Idempotency-Key` header so a retried request isn't charged twice.
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/catalog/generate" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "seedance-2.5",
+    "inputs": {
+      "prompt": "A red fox running through fresh snow at sunrise",
+      "aspect_ratio": "9:16",
+      "duration": 8,
+      "generate_audio": true
+    },
+    "expectedCredits": 64
+  }'
+```

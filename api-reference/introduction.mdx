@@ -1,9 +1,9 @@
 ---
 title: "Introduction"
-description: "Overview of the Unsora public API — generate video, images, music, and voiceovers, clip long videos, and schedule social posts over REST."
+description: "Overview of the Unsora public API — schedule social posts to 10 platforms and generate video, images, music and voice over REST."
 ---
 
-Unsora exposes a public HTTP API for AI generation features and social scheduling.
+Unsora's public API covers the social media scheduler (connected accounts, posts, analytics) and Content Studio (AI generation and clipping). Everything you can do from an AI agent over MCP, you can do here.
 
 ## Base URL
 
@@ -11,41 +11,52 @@ Unsora exposes a public HTTP API for AI generation features and social schedulin
 https://mvp.tryunsora.com/api/v1
 ```
 
-Local development:
-
-```
-http://localhost:3000/api/v1
-```
-
 ## Authentication
 
-Send a Clerk JWT or Unsora API key:
+Send an Unsora API key (or a Clerk session token) as a Bearer token:
 
 ```bash
 Authorization: Bearer uns_...
 ```
 
-Create keys at `/api-keys` in the dashboard. See [Get started](/get-started) and [API guide](/api-guide).
+Create keys in the dashboard under **Developers → API keys**. See [Get started](/get-started) and [API guide](/api-guide).
 
 ## Feature areas
 
-| Feature                             | Prefix                | Dashboard guide |
-| ----------------------------------- | --------------------- | --------------- |
-| Image generator                     | `/image-generations`  | — |
-| Music generator (Mureka AI)         | `/music-generations`  | [Overview](/guides/music-generator/overview) |
-| AI influencer                       | `/influencer-studio`  | — |
-| Thumbnail generator (incl. YouTube) | `/thumbnails`         | — |
-| Clipping                            | `/clippings`          | — |
-| Social media scheduler              | `/posts`, `/accounts` | — |
+| Feature | Prefix | Guide |
+| --- | --- | --- |
+| Posts (schedule, publish, retry) | `/posts` | [Scheduler](/guides/scheduler) |
+| Post analytics | `/posts/analytics` | [Analytics](/guides/analytics) |
+| Connected accounts | `/accounts` | [Connect accounts](/guides/connect-accounts) |
+| Uploads and library | `/uploads` | — |
+| Model catalog and live prices | `/catalog` | [Plans and credits](/guides/plans-and-credits) |
+| Video generation | `/videos`, `/video/status` | — |
+| Image generation | `/image-generations`, `/image/status` | — |
+| AI influencer | `/influencer-studio` | — |
+| Thumbnails | `/thumbnails` | — |
+| Music (Mureka) | `/music-generations`, `/music/status` | [Music generator](/guides/music-generator/overview) |
+| Voiceover | `/voiceovers` | — |
+| Voice clones | `/voice-clones` | — |
+| Voice changer | `/voice-conversions` | — |
+| Image upscaler | `/image-upscaler` | — |
+| Video upscaler | `/video-upscaler` | — |
+| Motion control | `/motion-control` | — |
+| Talking avatar | `/avatar-generations` | — |
+| Movie materials | `/movie-materials` | — |
+| Subtitle (watermark) removal | `/watermark-removal` | — |
+| Clipping | `/clippings` | — |
+| Credits and subscription | `/user` | [Plans and credits](/guides/plans-and-credits) |
+
+Posting needs a paid plan; generation spends credits from credit packs. See [Plans and credits](/guides/plans-and-credits).
 
 ## OpenAPI
 
-OpenAPI source: `docs/api-reference/openapi.json`
+The reference pages are generated from `openapi.json` at the root of the docs repo.
 
-External tools can import:
+External tools can import the live spec:
 
-- `GET /api/v1/openapi.json`
-- `GET /api-docs/openapi.json`
+- `GET https://mvp.tryunsora.com/api/v1/openapi.json`
+- `GET https://mvp.tryunsora.com/api-docs/openapi.json`
 
 ## Security scheme
 
@@ -55,4 +66,8 @@ Protected endpoints declare:
 "security": [{ "bearerAuth": [] }]
 ```
 
-`bearerAuth` accepts Clerk JWT or `uns_*` API keys.
+`bearerAuth` accepts `uns_*` API keys or Clerk session tokens.
+
+## MCP
+
+Prefer an AI assistant? The same features are available as tools on the MCP server at `https://mcp.tryunsora.com/mcp`. See [MCP server](/integrations/mcp).

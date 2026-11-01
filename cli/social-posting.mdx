@@ -4,9 +4,9 @@ description: "Schedule and publish posts to YouTube, TikTok, Instagram, Facebook
 ---
 
 Schedule or publish posts to any connected account on **YouTube, TikTok,
-Instagram, Facebook, LinkedIn, Bluesky, Threads, or Pinterest**. Connect
-accounts in the [web app](https://app.tryunsora.com); posting requires a paid
-plan.
+Instagram, Facebook, LinkedIn, Bluesky, Threads, Pinterest, X, or Google
+Business Profile**. Connect accounts in the
+[web app](https://app.tryunsora.com); posting requires a paid plan.
 
 ## See your accounts
 
@@ -18,21 +18,35 @@ unsora accounts --platform tiktok
 Copy the account `id` values — they're what `post create` targets. YouTube
 accounts show provider `google`.
 
+Two helpers load platform-specific options:
+
+```bash
+unsora accounts boards <pinterest-account-id>      # board ids for --board
+unsora accounts tiktok-info <tiktok-account-id>    # allowed privacy levels, max duration
+```
+
 ## Create & schedule posts
 
 ```bash
-# Post a video now
-unsora post create -c "caption" -a <account-id> --video https://...
+# Publish a video now
+unsora post create -c "caption" -a <account-id> --video https://... --now
 
-# Schedule a slideshow to two accounts
+# Schedule a carousel to two accounts
 unsora post create -c "caption" -a <id1> -a <id2> \
   --image https://.../1.jpg --image https://.../2.jpg \
   --schedule 2026-08-05T10:00:00Z --timezone Europe/London
+
+# Save a draft to finish later
+unsora post create -c "caption" -a <account-id> --video https://...
 ```
 
-`--schedule` must be at least 2 minutes in the future; omit it to publish
-immediately. Media URLs can come from generations or
+Without `--schedule` or `--now`, the post is saved as a **draft**.
+`--schedule` must be at least 2 minutes in the future. Add `--wait` to `--now`
+to see the result for each account. Media URLs can come from generations or
 [`unsora upload`](/cli/uploads).
+
+One `--image` creates an image post; several create a carousel. Use
+`--account-caption <id>=<text>` to give one account its own caption.
 
 ## Platform extras
 
@@ -42,27 +56,78 @@ unsora post create -c "description text" -a <youtube-account-id> \
   --video https://... --title "Video title" --privacy unlisted \
   --tag ai --tag shorts
 
-# Pinterest: pin title + board
+# TikTok: privacy and disclosures
+unsora post create -c "caption" -a <tiktok-account-id> --video https://... \
+  --tiktok-privacy SELF_ONLY --tiktok-ai-generated --now
+
+# Pinterest: pin title, board, and link
 unsora post create -c "caption" -a <pinterest-account-id> \
-  --image https://... --title "Pin title" --board <board-id>
+  --image https://... --pin-title "Pin title" --board <board-id> \
+  --pin-link https://example.com
+
+# Google Business Profile: call-to-action button
+unsora post create -c "caption" -a <google-business-account-id> \
+  --image https://... --cta LEARN_MORE --cta-url https://example.com
 ```
 
+To send settings the flags don't cover, pass a raw `settings` object with
+`--settings-json`; it's merged over the flags.
+
+| Flag | Effect |
+| --- | --- |
+| `--cover <url>` | Instagram Reel cover image |
+| `--media-json <json>` | Raw `media` value (an object or an array of `{type, url, …}`) |
+| `--type <type>` | Override the post type: `VIDEO`, `IMAGE`, `CAROUSEL`, `TEXT` |
+| `--title <text>` | YouTube title (also the Pinterest pin title) |
+| `--privacy <status>` | YouTube privacy: `public`, `private`, `unlisted` |
+| `--tag <tag>` | YouTube tag (repeatable) |
+| `--category-id <id>` | YouTube category id (default 22, People & Blogs) |
+| `--made-for-kids` | YouTube: mark the video as made for kids |
+| `--tiktok-privacy <level>` | TikTok privacy level |
+| `--tiktok-disable-comment` / `--tiktok-disable-duet` / `--tiktok-disable-stitch` | Turn off comments, duets, or stitches (duets and stitches are video only) |
+| `--tiktok-brand-content` / `--tiktok-brand-organic` | Disclose a paid partnership or promotion of your own business |
+| `--tiktok-ai-generated` | Label the post as AI-generated |
+| `--tiktok-auto-music` | Let TikTok add music (photo posts) |
+| `--tiktok-post-mode <mode>` | Photo posts: `DIRECT_POST` or `MEDIA_UPLOAD` (send to the TikTok inbox) |
+| `--tiktok-photo-cover <index>` | Photo posts: zero-based cover image index |
+| `--tiktok-cover-ms <ms>` | Video posts: cover frame timestamp in milliseconds |
+| `--board <id>`, `--pin-title <text>`, `--pin-link <url>` | Pinterest board, pin title (up to 100 characters), and link |
+| `--cta <type>`, `--cta-url <url>` | Google Business Profile button and its link |
+| `--external-id <id>` | Your own id for the request; works as an idempotency key when `--idempotency-key` isn't set |
+| `--idempotency-key <key>` | Retry safely without creating a second post |
+
 <Note>
-Instagram feed/slideshow images must be between **4:5 and 1.91:1** — 9:16
-images are rejected (use 9:16 only for Reels video and TikTok). See the
-[Create Post reference](/api-reference/posts/create_post) for all media rules.
+Images outside a platform's allowed aspect ratio are padded to fit over a
+blurred copy of themselves, so nothing is cropped. For example, a 9:16 image
+on Instagram is padded to 4:5. Media that breaks other rules, such as video
+length or image count, is rejected with a list of issues. See the
+[Create Post reference](/api-reference/posts/create_post) for the media rules.
 </Note>
 
 ## Manage posts
 
 ```bash
 unsora post list --status SCHEDULED
+unsora post list --type CAROUSEL --page 2 --limit 50
 unsora post get <id>                 # per-account publish status + URLs
 unsora post update <id> --schedule 2026-08-06T09:00:00Z
+unsora post update <id> -c "new caption" --timezone America/New_York
+unsora post update <id> -a <id1> -a <id2>   # replace the account list
 unsora post update <id> --unschedule # back to draft
-unsora post retry <id>               # re-attempts only failed accounts
+unsora post publish <id> --wait      # publish now (any post that isn't already published)
+unsora post retry <id> --wait        # re-attempts only failed accounts
 unsora post delete <id>
 ```
 
-`retry` is safe: it only re-attempts accounts that failed and never
-double-posts to accounts that already published.
+`publish` works on drafts, scheduled posts, and failed or partly published
+posts. `retry` is safe: it only re-attempts accounts that failed and never
+double-posts to accounts that already published. Media can't be changed after
+a post is created; create a new post instead. With `--wait`, `publish` and
+`retry` exit with code 1 unless every account published.
+
+## Analytics
+
+```bash
+unsora post analytics --days 30
+unsora post analytics --days 7 --refresh   # fetch fresh metrics from the platforms first
+```

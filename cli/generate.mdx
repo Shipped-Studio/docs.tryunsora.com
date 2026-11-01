@@ -4,8 +4,10 @@ description: "Create images, video, music, voiceovers, thumbnails, and clips fro
 ---
 
 Every generation command follows the same pattern: `create` queues the job and
-polls until done, `list` shows past generations, `status <id>` checks one job,
-`delete <id>` removes it.
+polls until done, `list` shows past generations (`--page <n>`), `status <id>`
+checks one job, and `delete <id>` removes it. `image`, `music`, `thumbnail`,
+and `clip` also have `get <id>`. Add `--save` to `get` or `status` to download
+the result.
 
 ## Images
 
@@ -17,17 +19,66 @@ unsora image create --prompt "isometric 3d icon of a rocket" \
 unsora image create -p "same character, waving" --ref https://.../char.png
 ```
 
-Models: `nano-banana-2` (default), `nano-banana-pro`, `seedream-v5-lite`,
-`gpt-image-1.5`, `gpt-image-2`.
+`nano-banana-2` is the default. Run `unsora models --category image` for every
+image model, then pass its key with `--model`. `--resolution` (`1k`, `2k`,
+`4k`) and `--quality` work on models that offer them.
 
 ## Video
 
 ```bash
 unsora video create --prompt "cinematic drone shot over mountains at sunset"
+
+# Pick another model, with sound, at 1080p
+unsora video create -p "a chef plating pasta, close-up" \
+  --model veo-3.1-fast --sound --resolution 1080p --ratio 9:16
+
+# Image-to-video with start and end frames
+unsora video create -p "slow push-in" \
+  --start-image https://.../first.png --last-image https://.../last.png
 ```
 
-The public API currently exposes **Seedance 2.0**; Kling, Veo, Sora, and Wan
-are available in the [web app](https://app.tryunsora.com).
+`seedance-2.0` is the default. Run `unsora models --category video` for every
+video model (Seedance, Veo, Kling, Sora, Wan, and more) and the options each
+one accepts.
+
+| Flag | Effect |
+| --- | --- |
+| `-m, --model <model>` | Video model (default `seedance-2.0`) |
+| `-d, --duration <seconds>` | Length in seconds (default 5) |
+| `-r, --ratio <ratio>` | Aspect ratio (default 16:9; valid values depend on the model) |
+| `--resolution <res>` | Output resolution, such as 720p or 1080p |
+| `--sound` / `--no-sound` | Generate with or without audio, on models that offer it |
+| `--negative-prompt <text>` | What to avoid (not supported by Sora or Seedance) |
+| `--start-image <url>` / `--last-image <url>` | Start and end frames |
+| `--ref <url>` | Reference image (repeatable) |
+| `--ref-video <url>` / `--ref-audio <url>` | Seedance omni reference video or audio (repeatable, up to 3 each) |
+
+`unsora video list -m <model>` filters past videos by model.
+
+## Any model with the catalog
+
+`unsora catalog` works with every video, image, and motion-control model,
+using the input names from the live catalog:
+
+```bash
+unsora catalog list --category video                 # every model in a category
+unsora models veo-3.1-fast                           # modes and inputs for one model
+unsora catalog quote -m veo-3.1-fast -p "a red fox in snow"   # price it, free
+unsora catalog generate -m veo-3.1-fast -p "a red fox in snow" \
+  --expected-credits 120
+```
+
+Pass any other input with `-i <key>=<value>`, using the keys `unsora models <model>`
+lists.
+
+With `--expected-credits`, nothing is charged if the live price is higher.
+
+| Flag | Effect |
+| --- | --- |
+| `--mode <mode>` | Mode key (default: picked from the attached media) |
+| `-i, --input <key=value>` | One model input by its catalog key (repeatable; repeat a key for a list) |
+| `--inputs <json>` | All inputs as one JSON object |
+| `--category <category>` | Reject a model from another category |
 
 ## Music
 
@@ -40,6 +91,9 @@ unsora music create --prompt "r&b, slow, passionate, male vocal" \
 unsora music create --prompt "calm lo-fi study beat" --model mureka-7.5
 ```
 
+The default model is `auto`. `--format` sets the output to `mp3` (default),
+`wav`, or `flac`.
+
 ## Voiceovers
 
 ```bash
@@ -51,6 +105,8 @@ unsora voiceover create --text "Welcome to Unsora." --voice Brian
 ```
 
 Use `<#1.5#>` between words in the text to pause for 1.5 seconds.
+`--stability` (0–1) makes delivery more consistent, and `--similarity` (0–1)
+sets how closely it matches the base voice.
 
 ## Thumbnails & influencer portraits
 
@@ -64,17 +120,51 @@ unsora influencer create --prompt "young woman, coffee shop" \
   --style golden_hour --angle portrait --count 2
 ```
 
+Thumbnail options:
+
+| Flag | Effect |
+| --- | --- |
+| `--ref <url>` | Reference image, such as the creator's face (repeatable, up to 16) |
+| `--template <url>` | Layout template image (1) |
+| `--context <url>` | A YouTube video (title and transcript) or a public PDF to read |
+| `--context-type <type>` | `youtube` or `document` (default: detected from the URL) |
+| `--expression <name>` | `auto`, `neutral`, `soft-smile`, `big-smile`, `surprised`, `confused`, `worried`, `angry`, `sad`, `disgusted`, or `determined` |
+| `--variations <n>` | Number of variations (1–20) |
+
+Influencer options: `-r, --ratio` (`1:1`, `16:9`, `9:16`, `4:3`, `3:4`),
+`-c, --count` (1–10), `--angle`, `--style`, and `--age` (18–70).
+
+Thumbnail and influencer jobs can return several files, so they don't take
+`-o`; results download to the current directory.
+
 ## Clipping
 
 ```bash
 # Auto-detect the most viral clips
 unsora clip create --url "https://www.youtube.com/watch?v=..."
 
+# Five vertical 30–60s clips with captions, and wait for the result
+unsora clip create -u "https://www.youtube.com/watch?v=..." \
+  --limit 5 --ratio 9:16 --duration 30-60 \
+  --captions --caption-style bold-white --wait
+
+# Find specific moments
+unsora clip create -u "https://..." --query "every time we talk about pricing"
+
+# Translate the captions
+unsora clip create -u "https://..." --captions --target-lang es
+
 # Check progress / fetch results later
+unsora clip list
+unsora clip get <clipping-id>
 unsora clip status <clipping-id>
+unsora clip delete <clipping-id>
+unsora clip delete-clip <clipping-id> <clip-id>
 ```
 
-Accepts YouTube links or direct video file URLs. See the
-[clipping API reference](/api-reference/clippings/create) for ratios, caption
-styles, and Find Moments mode — all exposed as flags on `unsora clip create`
-(run `unsora clip create --help`).
+`--source-lang` sets the spoken language if detection needs a hint, and
+`--target-lang` translates the captions.
+
+Clipping can take several minutes, so `clip create` returns right away unless
+you add `--wait`. It accepts YouTube links or direct video file URLs. See the
+[clipping API reference](/api-reference/clippings/create) for every option.

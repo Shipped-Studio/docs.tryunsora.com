@@ -1,6 +1,6 @@
 ---
 title: "Retry post"
-description: "Retry a failed post. Re-attempts publishing to any platform that errored and returns the updated per-platform publish status."
+description: "Retry a failed post. Re-attempts publishing to every account that errored; returns 202 straight away while it runs."
 openapi: "POST /posts/{id}/retry"
 ---
 
@@ -9,7 +9,7 @@ Retry a post whose status is `FAILED` or `PARTIALLY_PUBLISHED`.
 Only the accounts that failed to publish are re-attempted. Accounts that
 already published are left untouched, so retrying never double-posts.
 
-After the retry, the post status reflects the per-account outcome:
+The response is `202` with `status: "PUBLISHING"` as soon as the retry starts. When it finishes, [Get post](/api-reference/posts/get_post) shows the per-account outcome:
 
 | Outcome | Status |
 | --- | --- |

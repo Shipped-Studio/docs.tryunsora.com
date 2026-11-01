@@ -1,12 +1,22 @@
 ---
 title: "List thumbnails"
-description: "Paginated list of all thumbnail generations for the authenticated user, including status and finished thumbnail images."
+description: "Paginated list of thumbnail generations for the authenticated user, including status and finished thumbnail images."
 openapi: "GET /thumbnails"
 ---
 
-Returns thumbnail jobs for the authenticated user, newest first.
+Returns thumbnail jobs for the authenticated user, newest first, 12 per page by default.
 
 **`GET /thumbnails`**
+
+## Query parameters
+
+<ParamField query="page" type="integer">
+  Page number. Default: `1`.
+</ParamField>
+
+<ParamField query="limit" type="integer">
+  Results per page. Default: `12`, max `100`.
+</ParamField>
 
 ## Response
 
@@ -28,7 +38,13 @@ Returns thumbnail jobs for the authenticated user, newest first.
       "createdAt": "2026-06-02T12:00:00.000Z",
       "updatedAt": "2026-06-02T12:01:00.000Z"
     }
-  ]
+  ],
+  "pagination": {
+    "total": 1,
+    "page": 1,
+    "limit": 12,
+    "totalPages": 1
+  }
 }
 ```
 

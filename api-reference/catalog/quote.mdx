@@ -1,0 +1,21 @@
+---
+title: "Quote a generation"
+description: "Get the live credit price of one generation with your exact inputs before you run it. Free; nothing is charged."
+openapi: "POST /catalog/quote"
+---
+
+Prices one run of a model with these inputs (resolution, duration, audio, and the length of any attached video or audio). Nothing is charged.
+
+`estimate` is `true` while required files are still missing, so the final price may differ; `credits` can be `null` for models that can't be priced until their files are attached.
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/catalog/quote" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "seedance-2.5",
+    "inputs": { "prompt": "A red fox running through fresh snow", "duration": 8, "resolution": "720p" }
+  }'
+```
+
+Pass the quoted `credits` as `expectedCredits` to [Generate](/api-reference/catalog/generate) to be sure you're never charged more.

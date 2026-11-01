@@ -1,5 +1,9 @@
 ---
 title: "Publish post"
-description: "Publish a post to its connected social platforms and return per-platform results, including platform post IDs and any errors."
+description: "Start publishing a draft or scheduled post now. Returns 202 straight away; poll Get post for per-platform results."
 openapi: "POST /posts/{id}/publish"
 ---
+
+Publishing runs in the background. The response is `202` with `status: "PUBLISHING"` and an empty `results` list; call [Get post](/api-reference/posts/get_post) to see each account's `publishedUrl` or `error` once it finishes.
+
+The post is checked first. If it can't be published, the response is `400` with a `code`: for example `PLATFORM_RULES` with `issues` when media or a caption breaks a platform's limits, or `PLATFORM_UNAVAILABLE` when a platform on the post is switched off.

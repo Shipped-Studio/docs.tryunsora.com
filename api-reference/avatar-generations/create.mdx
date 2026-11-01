@@ -1,0 +1,22 @@
+---
+title: "Talking avatar"
+description: "Turn a portrait into a talking video that speaks your script or an audio file, up to 20 seconds. Costs 10 credits."
+openapi: "POST /avatar-generations/create"
+---
+
+Animates a portrait so it speaks. Send either a `transcript` (read in `voice_id`) or an `audio_url`; either way the speech can be up to 20 seconds. Costs 10 credits.
+
+`voice_id` takes a MiniMax preset, an Eleven v3 voice or one of your cloned voices; see [List voices you can use](/api-reference/voice-clones/list). Poll [Poll video status](/api-reference/video/poll-status) with `generation.id`.
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/avatar-generations/create" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "image_url": "https://cdn.example.com/portrait.jpg",
+    "transcript": "Hi, I'm Maya. Here are three tips for better morning routines.",
+    "voice_id": "Calm_Woman",
+    "emotion": "happy",
+    "resolution": "720p"
+  }'
+```

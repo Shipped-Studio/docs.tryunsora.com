@@ -1,0 +1,12 @@
+---
+title: "List voices you can use"
+description: "List the MiniMax preset voices, the Eleven v3 voices and your own cloned voices, with the ids to pass as voice_id."
+openapi: "GET /voice-clones"
+---
+
+Returns every voice you can use: the 12 MiniMax presets (`presets`), the 20 Eleven v3 voices (`elevenV3Voices`) and your cloned voices (`clones`). Any of their ids works as `voice_id` in [Create voiceover](/api-reference/voiceovers/create) and [Talking avatar](/api-reference/avatar-generations/create). [Re-voice a recording](/api-reference/voice-conversions/create) takes cloned voices only.
+
+```bash
+curl "https://mvp.tryunsora.com/api/v1/voice-clones" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY"
+```
