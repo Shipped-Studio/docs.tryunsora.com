@@ -1,71 +1,103 @@
 ---
 title: "API guide"
-description: "How to authenticate with the Unsora API — API keys, rate limits, idempotency keys, credits, and polling async generation jobs."
+description: "How the Unsora API works — authentication, rate limits, idempotency, credits, polling async jobs, and error codes."
 ---
+
+## Base URL
+
+```
+https://mvp.tryunsora.com/api/v1
+```
 
 ## Authentication
 
 Send **either**:
 
-- Clerk JWT (signed-in dashboard user), or
-- Unsora API key (`uns_*`)
+- an Unsora API key (`uns_*`), or
+- a Clerk session token (signed-in dashboard user)
 
 ```bash
 Authorization: Bearer uns_...
 ```
 
-That is enough to call the public feature APIs under `/api/v1/*`. Both resolve to the same user account (credits, jobs, scheduler data).
+Both resolve to the same user account: the same credits, generations, connected accounts and posts.
 
-Create and revoke keys at `/api-keys` (Clerk sign-in required for key management only).
+Create and revoke keys in the dashboard under **Developers → API keys** (`/api-keys`). Managing keys needs a dashboard sign-in.
 
 ## Rate limits
 
-API key requests are limited to **60 requests per minute** per key.
+API key requests are limited to **60 requests per minute** per key. Over the limit, the API returns `429` with this body:
 
-Response headers:
+```json
+{ "success": false, "error": "API key rate limit exceeded", "code": "RATE_LIMIT_EXCEEDED" }
+```
 
-- `X-RateLimit-Limit`
-- `X-RateLimit-Remaining`
-- `X-RateLimit-Reset`
-
-When exceeded, the API returns `429` with code `RATE_LIMIT_EXCEEDED` and a `Retry-After` header.
+No rate-limit headers are sent, so back off and retry after a short wait.
 
 ## Idempotency
 
-For `POST` create endpoints, pass an `Idempotency-Key` header when using an API key.
+For `POST` create endpoints, pass an `Idempotency-Key` header so a retried request doesn't run (or charge) twice.
 
-**Base URL** comes from OpenAPI `servers` in `openapi.json`. On each endpoint page (e.g. [Create image](/api-reference/image-generations/create)), use the **API playground** — pick a server, set headers (`Authorization`, `Idempotency-Key`), and send the request.
-
-- Same key + same request path replays the stored response for **24 hours**
+- The same key on the same request path replays the stored response for **24 hours**
 - Reusing a key with a different request returns `409 IDEMPOTENCY_CONFLICT`
-- Successful replays include `Idempotent-Replayed: true`
+- Replayed responses include `Idempotent-Replayed: true`
 
-Posts also accept body `external_id` as an idempotency alias when the header is omitted.
+Posts also accept `external_id` in the body as an idempotency key when the header is omitted.
 
-## Credit audit
+## Plans, credits and errors
 
-Credit consumption from API key requests is linked to the key in the audit log via `apiKeyId` on credit transactions.
+- **Posting** (create, update, publish and retry a post) needs a paid plan or an active trial. Without one, those requests return `403`:
+
+  ```json
+  { "success": false, "error": "An active paid plan is required to use the scheduler.", "code": "PLAN_REQUIRED" }
+  ```
+
+  Listing, reading and deleting posts work on any plan.
+- **Generation** spends credits. Plans don't include credits; they come from one-time credit packs that never expire. A job you can't afford returns `402`. See [Plans and credits](/guides/plans-and-credits).
+- Credits spent through an API key are linked to that key (`apiKeyId`) in your credit history.
+
+## Models and prices
+
+Models and their credit prices change as providers ship new versions, so don't hard-code them:
+
+- `GET /catalog` lists every video, image and motion-control model with the inputs it accepts
+- `POST /catalog/quote` returns the exact credit cost of a job before you run it
+- `POST /catalog/generate` runs any catalog model
+
+Prices are worked out live from the provider's cost for each job.
 
 ## Async jobs (polling)
 
-All generation and scheduler jobs complete asynchronously. **Use polling only** — the public API does not accept callback or webhook URLs.
+All generation jobs and publishes complete asynchronously. **Use polling** — the public API doesn't accept callback or webhook URLs.
 
-1. `POST .../create` → receive job id(s) with `QUEUED` status
-2. Poll until `COMPLETED` or `FAILED`:
-   - **Images / influencer / thumbnails** → `GET /image/status/:id`
-   - **Video (all models)** → `GET /video/status/:id`
-   - **Music (Mureka AI)** → `GET /music/status/:id` — see [Poll music status](/api-reference/music/poll-status)
-   - **Voiceover (ElevenLabs Eleven v3)** → `GET /voiceovers/status/:id` — see [Poll voiceover status](/api-reference/voiceovers/poll-status)
+1. `POST .../create` returns the job id(s) with status `QUEUED`
+2. Poll the matching status endpoint until `COMPLETED` or `FAILED`:
 
-Image status `type` values: `BASIC`, `INFLUENCER`, `THUMBNAIL`. Video jobs are always `seedance_2.0` on the video status endpoint.
+| Status endpoint | Returns jobs from |
+| --- | --- |
+| `GET /image/status/:id` | Image generations, AI influencer, thumbnails, image upscales, movie materials |
+| `GET /video/status/:id` | Every video model, motion control, talking avatars, video upscales, subtitle (watermark) removal |
+| `GET /music/status/:id` | Music (Mureka) |
+| `GET /voiceovers/status/:id` | Voiceovers and voice changer conversions |
+| `GET /clippings/status/:clippingId` | Clipping jobs |
 
-List or delete video jobs with `GET /videos/all` and `DELETE /videos/:generationId` — see [List video generations](/api-reference/video/list) and [Delete video generation](/api-reference/video/delete).
+A video job's `model` is the model it actually ran on. Image status responses don't include a job type field; keep track of which endpoint you called.
 
-Music jobs use `GET /music/status/:id`. List or delete with [List music generations](/api-reference/music-generations/list) and [Delete music generation](/api-reference/music-generations/delete). Dashboard users can also manage songs at [Music generator](/guides/music-generator/overview).
+Poll every few seconds for images and voice, and every 10–30 seconds for video and clipping.
 
-Voiceover jobs use `GET /voiceovers/status/:id`. Pick a voice with [List voices](/api-reference/voiceovers/voices) — each voice includes a preview clip — then create with [Create voiceover](/api-reference/voiceovers/create).
+Publishing a post is async too: `POST /posts/:id/publish` and `POST /posts/:id/retry` return `202` with status `PUBLISHING`. Read the result with `GET /posts/:id`.
+
+## Voiceovers
+
+Pick a voice with [List voices](/api-reference/voiceovers/voices); each voice includes a preview clip. `voice_id` accepts:
+
+- **ElevenLabs Eleven v3** voices (the default model)
+- **MiniMax Speech 2.6 HD** presets, such as `Friendly_Person` and `Calm_Woman`
+- your own **cloned voices** (made with ElevenLabs Multilingual v2)
+
+Then create the job with [Create voiceover](/api-reference/voiceovers/create).
 
 ## OpenAPI
 
-- Mintlify pages resolve from `docs/openapi.json`
-- Live spec: `GET /api/v1/openapi.json`
+- The docs pages are generated from `openapi.json` in this repo
+- Live spec: `GET https://mvp.tryunsora.com/api/v1/openapi.json`

@@ -1,0 +1,16 @@
+---
+title: "Remove subtitles"
+description: "Erase burned-in subtitles, captions or a watermark from a video up to 2 minutes long."
+openapi: "POST /watermark-removal/create"
+---
+
+Erases burned-in text from a video up to 2 minutes long. Costs 1 credit per second, rounded up to the next 10 seconds (a 23-second video costs 30).
+
+Pass a direct video file URL (such as `.mp4`); upload it with [Upload media](/api-reference/uploads/create) first if needed. Poll [Poll video status](/api-reference/video/poll-status) with the id in `videoIds`.
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/watermark-removal/create" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "videoUrl": "https://cdn.example.com/with-subtitles.mp4" }'
+```

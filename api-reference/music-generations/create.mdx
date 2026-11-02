@@ -18,12 +18,12 @@ For the dashboard UI (models, lyrics, playback, and the global player), see [Mus
 
 ## Request body
 
-<ParamField body="lyrics" type="string" required>
+<ParamField body="lyrics" type="string">
   Song lyrics. Required for song models (`auto`, `mureka-9`, `mureka-8`, `mureka-o2`, `mureka-7.6`). Max 3000 characters.
 </ParamField>
 
-<ParamField body="prompt" type="string" required>
-  Style prompt — genre, mood, tempo, vocal style. Max 1024 characters.
+<ParamField body="prompt" type="string">
+  Style prompt — genre, mood, tempo, vocal style. Max 1024 characters. Optional for song models; `mureka-7.5` needs a prompt or lyrics.
 </ParamField>
 
 <ParamField body="model" type="string">
@@ -31,9 +31,9 @@ For the dashboard UI (models, lyrics, playback, and the global player), see [Mus
 
   | `model` | Display name | Credits | Notes |
   | --- | --- | --- | --- |
-  | `auto` | Mureka V9 (Auto) | 5 | Full song with lyrics |
-  | `mureka-9` | Mureka V9 | 5 | Full song with lyrics |
-  | `mureka-8` | Mureka V8 | 5 | Full song with lyrics |
+  | `auto` | Mureka V9 (Auto) | 3 | Full song with lyrics |
+  | `mureka-9` | Mureka V9 | 3 | Full song with lyrics |
+  | `mureka-8` | Mureka V8 | 3 | Full song with lyrics |
   | `mureka-o2` | Mureka O2 | 6 | Full song with lyrics |
   | `mureka-7.6` | Mureka V7.6 | 4 | Full song with lyrics |
   | `mureka-7.5` | Mureka V7.5 (BGM) | 4 | Instrumental background music |
@@ -56,8 +56,8 @@ Poll [Poll music status](/api-reference/music/poll-status) with `generation.id` 
     "id": "cm123abc",
     "status": "QUEUED"
   },
-  "creditsDeducted": 5,
-  "creditsRemaining": 95
+  "creditsDeducted": 3,
+  "creditsRemaining": 97
 }
 ```
 
@@ -81,7 +81,7 @@ curl -X POST "https://mvp.tryunsora.com/api/v1/music-generations/create" \
 
 | HTTP | When |
 | --- | --- |
-| `400` | Missing/invalid lyrics, prompt, model, or output format |
+| `400` | Missing lyrics (song models), missing both prompt and lyrics, text too long, or an invalid model or output format |
 | `401` | Invalid auth |
 | `402` | Insufficient credits |
 | `404` | User not found |

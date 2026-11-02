@@ -12,7 +12,7 @@ library.
 The server verifies the object actually exists in storage (you get a `400` if
 the `PUT` didn't happen) and reads its size and MIME type from storage
 metadata. `blobName` must come from **your own** signed-URL response — blobs
-outside your upload prefix are rejected with `403`.
+outside your upload prefix are rejected with `403`. `fileSize` is `null` when storage doesn't report a size.
 
 ## Response
 

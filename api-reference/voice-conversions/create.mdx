@@ -1,0 +1,20 @@
+---
+title: "Re-voice a recording"
+description: "Swap the voice in a recording for one of your cloned voices, keeping the words and timing. Up to 5 minutes."
+openapi: "POST /voice-conversions/create"
+---
+
+Speech-to-speech: keeps the words and timing of a recording and replaces the voice with one of your [cloned voices](/api-reference/voice-clones/list). Audio can be up to 5 minutes. Costs 10 credits per minute, rounded up (minimum 1).
+
+Poll [Poll voiceover status](/api-reference/voiceovers/poll-status) with `conversion.id`.
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/voice-conversions/create" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "voice_id": "YOUR_CLONE_ID",
+    "source_url": "https://cdn.example.com/take-3.mp3",
+    "output_format": "mp3"
+  }'
+```

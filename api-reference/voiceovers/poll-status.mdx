@@ -1,10 +1,10 @@
 ---
 title: "Poll voiceover status"
-description: "Poll a voiceover generation job — returns the latest status and the finished audio file with a download URL when complete."
+description: "Poll a voiceover or voice-changer job. Returns the latest status and the finished audio URL when complete."
 openapi: "GET /voiceovers/status/{id}"
 ---
 
-Poll voiceover jobs created via [Create voiceover](/api-reference/voiceovers/create).
+Poll voiceover jobs created via [Create voiceover](/api-reference/voiceovers/create) and voice-changer jobs created via [Re-voice a recording](/api-reference/voice-conversions/create) (use `conversion.id`).
 
 Use the `id` returned from the create response. Poll every few seconds until `status` is `COMPLETED` or `FAILED`. Jobs typically finish in ~20 seconds.
 

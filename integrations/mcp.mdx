@@ -1,0 +1,217 @@
+---
+title: "MCP server"
+description: "Connect Unsora to Claude, ChatGPT, Claude Code, Cursor, or any MCP client to schedule social posts, clip videos, and generate AI media from chat."
+---
+
+The Unsora MCP server gives AI agents the full Unsora toolset: schedule and
+publish posts to your social accounts, clip long videos into shorts, and
+generate video, images, music, voiceovers, avatars, and more. It's a hosted
+server, so there's nothing to install.
+
+```
+https://mcp.tryunsora.com/mcp
+```
+
+It uses the Streamable HTTP transport and works in Claude, ChatGPT, Claude
+Code, Cursor, and any client that connects to remote MCP servers.
+
+<Note>
+  Using Claude and only need clipping and scheduling? The lighter
+  [Unsora for Claude](/integrations/claude) connector has just those tools.
+</Note>
+
+## What you need
+
+- An Unsora account. Sign up at [tryunsora.com](https://tryunsora.com).
+- To post, a paid Unsora plan and at least one social account connected in
+  the [Unsora web app](https://app.tryunsora.com). Unsora supports YouTube,
+  TikTok, Instagram, Facebook, LinkedIn, Pinterest, Threads, Bluesky, X, and
+  Google Business Profile.
+- To generate or clip, Unsora credits. Plans don't include credits; buy a
+  credit pack in **Billing**. Pack credits never expire.
+
+## Sign in
+
+You can connect in two ways:
+
+- **OAuth.** Claude and ChatGPT open an Unsora sign-in window when you add the
+  server. Nothing to copy.
+- **API key.** Create a key in the Unsora web app under **Developers** >
+  **API keys**, then send it in one of these headers:
+  - `Authorization: Bearer uns_...`
+  - `x-api-key: uns_...`
+  - `apiKey: uns_...` (the form Cursor's `headers` config uses)
+
+Treat API keys like passwords. See [Get started](/get-started).
+
+## Set it up
+
+### Claude
+
+1. In Claude, open **Settings** > **Connectors** and select **Add custom
+   connector**.
+2. Paste `https://mcp.tryunsora.com/mcp` as the URL and select **Add**.
+3. Sign in to Unsora when prompted.
+4. In a chat, open the **+** menu, select **Connectors**, and switch Unsora on.
+
+### ChatGPT
+
+Custom connectors need a paid ChatGPT plan.
+
+1. In ChatGPT, open **Settings** > **Connectors**.
+2. Under **Advanced**, turn on **Developer mode**, then select **Create**.
+3. Name it Unsora, paste `https://mcp.tryunsora.com/mcp`, and save.
+4. In a new chat, open the tools menu and enable Unsora.
+
+### Claude Code
+
+```bash
+claude mcp add --transport http unsora https://mcp.tryunsora.com/mcp --header "apiKey: uns_YOUR_KEY"
+```
+
+### Cursor
+
+Add this to `~/.cursor/mcp.json` (or `.cursor/mcp.json` in a project):
+
+```json
+{
+  "mcpServers": {
+    "unsora": {
+      "url": "https://mcp.tryunsora.com/mcp",
+      "headers": { "apiKey": "${env:UNSORA_API_KEY}" }
+    }
+  }
+}
+```
+
+`"Authorization": "Bearer ${env:UNSORA_API_KEY}"` works too.
+
+### Other clients
+
+Point any client that supports remote MCP servers over Streamable HTTP at
+`https://mcp.tryunsora.com/mcp`, and send your API key in one of the headers
+above. Clients that support OAuth discovery can sign in instead.
+
+## Example prompts
+
+- "Schedule this video to TikTok and Instagram tomorrow at 9am with the caption 'New drop'."
+- "Clip this podcast into five 30-second vertical clips with captions: https://www.youtube.com/watch?v=VIDEO_ID"
+- "Make a 5-second 9:16 video of a coffee pour in slow motion, then post it to my Reels."
+- "Write a 30-second voiceover script for this product and voice it."
+- "How did my posts do over the last 30 days?"
+
+## Tools
+
+Your agent asks for your approval before it runs a tool that changes data,
+unless you've allowed it to run without asking. Tools that generate or clip
+spend credits; the agent can check the price first with `get_price`.
+
+### Posting and scheduling
+
+| Tool | What it does | Key inputs |
+| ---- | ------------ | ---------- |
+| `get_accounts` | Lists your connected social accounts | — |
+| `get_subscription` | Shows your plan and whether posting is enabled | — |
+| `get_credits` | Shows your credit balance | — |
+| `create_post` | Saves a draft, schedules, or publishes a post to up to 10 accounts | `caption`, `accountIds`, `mediaType` (`video`, `slideshow`, `none`), `mediaUrl` / `mediaUrls`, `scheduled_at`, `timezone`, `publishNow`, platform settings (below) |
+| `compose_post` | Opens the post composer, which you finish yourself | `caption`, media, `scheduled_at`, `title` |
+| `publish_post` | Publishes a draft or scheduled post now | `postId` |
+| `update_post` | Edits a draft or scheduled post | `postId`, `caption`, `scheduled_at`, `timezone`, `accountIds` |
+| `retry_post` | Retries only the accounts that failed | `postId` |
+| `delete_post` | Deletes a post from Unsora (not from the platforms) | `postId` |
+| `get_post` / `list_posts` | Reads posts and their publishing status | `postId`; `status`, `page`, `limit` |
+| `get_post_analytics` | Views, likes, comments, and shares over 7 to 90 days (default 30) | `days`, `refresh` |
+| `create_image_and_schedule` | Generates an image and schedules it in one step | `prompt`, `caption`, `accountIds`, `scheduled_at`, `aspectRatio` |
+
+`create_post` platform settings:
+
+- **Per account:** `accountOverrides` sets a custom caption or title for one
+  account.
+- **YouTube:** `title`, `privacy_status` (`public`, `private`, `unlisted`),
+  `tags`, `category_id`, `made_for_kids`.
+- **TikTok:** `privacy_level`, `disable_comment`, `disable_duet`,
+  `disable_stitch`, `brand_organic_toggle`, `brand_content_toggle`, `is_aigc`
+  (AI-generated label), `auto_add_music` and `photo_cover_index` (photo
+  posts), `video_cover_timestamp_ms`.
+- **Instagram:** `cover_url` for the Reel cover.
+- **Pinterest:** `board_id`, `title` (up to 100 characters), `link`.
+- **Google Business Profile:** `cta_type` (`LEARN_MORE`, `BOOK`, `ORDER`,
+  `SHOP`, `SIGN_UP`, `CALL`) and `cta_url`.
+
+Use `mediaType: slideshow` with several `mediaUrls` for a carousel. Media that
+breaks a platform rule, such as video length or image count, is rejected with
+a list of issues before the post is saved.
+
+### Uploads and library
+
+| Tool | What it does | Key inputs |
+| ---- | ------------ | ---------- |
+| `upload_file` | Imports a file from a public URL (up to 200 MB) or a small base64 file | `url` or `base64`, `fileName`, `contentType` |
+| `create_upload_url` / `complete_upload` | Uploads a large or local file through a one-time link | `blobName`, `fileName` |
+| `list_uploads` | Lists your uploads and shows an **Upload** button in apps | `page`, `limit` |
+| `list_generations` | Lists your past results for one feature | `type`, `page`, `limit` |
+| `delete_generation` | Permanently deletes a result or upload | `type`, `id` |
+
+### Clipping
+
+| Tool | What it does | Key inputs |
+| ---- | ------------ | ---------- |
+| `create_clipping` | Cuts a long video into 1 to 20 short clips | `videoUrl`, `ratio`, `enableCaption`, `captionStyle`, `limit`, `targetDuration`, `query`, `sourceLang`, `targetLang` |
+| `wait_for_clipping` | Checks a clipping job until it finishes | `clippingId`, `maxAttempts`, `intervalSeconds` |
+
+See [Unsora for Claude](/integrations/claude#choose-clip-settings) for the
+clip settings.
+
+### Video, image, and motion
+
+| Tool | What it does | Key inputs |
+| ---- | ------------ | ---------- |
+| `list_models` | Lists every video, image, and motion-control model with its modes and inputs | — |
+| `get_price` | Quotes the credit price of one generation without creating anything | `category`, `model`, `mode`, `inputs` |
+| `create_video` | Generates a video (default model `seedance-2.5`) | `model`, `mode`, `prompt`, `inputs`, `maxCredits` |
+| `create_image` | Generates or edits an image (default model `nano-banana-2`) | `model`, `mode`, `prompt`, `inputs`, `maxCredits` |
+| `create_motion_control` | Makes a character copy the motion of a reference video (default model `kling-mc-3.0-pro`) | `model`, `inputs.image`, `inputs.video`, `prompt` |
+| `upscale_image` | Upscales an image to 2K, 4K, or 8K | `imageUrl`, resolution |
+| `upscale_video` | Upscales a video | `videoUrl`, `model` (`standard`, `ultra-1080p`, `ultra-4k`) |
+| `create_avatar_video` | Turns a portrait into a talking-head video | `imageUrl`, `transcript` + `voiceId` or `audioUrl`, `emotion`, `resolution` (`480p`, `720p`) |
+| `create_influencer` | Generates AI influencer portraits | `prompt`, `aspectRatio`, `count` (1–10), `cameraAngle`, `styleMode`, `age` |
+| `create_thumbnail` | Generates YouTube thumbnails | `prompt`, `referenceImageUrls`, `templateImageUrls`, `context`, `expression`, `variations` |
+| `create_movie_material` | Generates pre-production images for films and ads | `prompt`, `mode`, `params`, `ratio`, `resolution`, `referenceImageUrls` (up to 14) |
+| `wait_for_video` / `wait_for_image` | Checks a job until it finishes | `generationId`, `maxAttempts`, `intervalSeconds` |
+
+Movie material modes: `face`, `wide-body`, `sheet`, `location`,
+`first-frame`, `style-collage`, `multishot-2x4`, `multishot-1x4`.
+
+### Music and voice
+
+| Tool | What it does | Key inputs |
+| ---- | ------------ | ---------- |
+| `create_music` | Generates a song or instrumental track (Mureka) | `prompt`, `lyrics`, `model`, `output_format` (`mp3`, `wav`, `flac`) |
+| `list_voiceover_voices` | Lists the 20 Eleven v3 voices with previews | — |
+| `list_voices` | Lists every voice you can use: presets, Eleven v3 voices, and your clones | — |
+| `create_voiceover` | Voices a script | `text` (up to 10,000 characters), `voice_id`, `speed` (0.5–2), `emotion`, `stability`, `similarity` |
+| `create_voice_clone` | Clones a voice from a recording (15 credits, up to 10 clones) | `name`, `description`, `sampleUrl` |
+| `delete_voice_clone` | Deletes one of your cloned voices | `cloneId` |
+| `change_voice` | Re-voices speech into one of your cloned voices | `voiceId`, `sourceUrl`, `outputFormat` (`mp3`, `wav`) |
+| `wait_for_music` / `wait_for_voiceover` | Checks a job until it finishes | `generationId`, `maxAttempts`, `intervalSeconds` |
+
+Only clone your own voice or a voice you have permission to use.
+
+### Resource
+
+The server also publishes a `unsora://workflows` resource: a guide to
+Unsora's workflows and per-platform posting rules that agents can read.
+
+## Errors
+
+- **403 `PLAN_REQUIRED`.** Posting and scheduling need a paid plan.
+- **402.** Not enough credits for a generation or clipping job. Buy a credit
+  pack in **Billing**.
+- **Rejected post with a list of issues.** The media or caption breaks a
+  platform rule. The error names the rule for each platform.
+
+## Support
+
+Contact us at [tryunsora.com/contact](https://tryunsora.com/contact), email
+[hi@tryunsora.com](mailto:hi@tryunsora.com), or visit the
+[help center](https://tryunsora.com/help).

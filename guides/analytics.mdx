@@ -1,0 +1,46 @@
+---
+title: "Analytics"
+description: "How Unsora tracks views, likes, comments, shares and saves on your published posts, how often it refreshes them, and how to read them over the API."
+---
+
+Unsora reads engagement on every post it published for you and shows it under **Analytics** in the dashboard. Your agent can read the same numbers over MCP (`get_post_analytics`) or the API.
+
+## What's tracked
+
+Each published post gets **views**, **likes**, **comments**, **shares** and **saves**, where the platform provides them:
+
+| Platform | What Unsora reads |
+| --- | --- |
+| TikTok | Views, likes, comments, shares |
+| Instagram | Likes and comments; views, shares and saves through Instagram insights |
+| YouTube | Views, likes, comments |
+| Facebook | Reactions (counted as likes), comments, shares, impressions and video views |
+| Threads | Views, likes, replies, reposts and quotes |
+| Bluesky | Likes, replies, reposts and quotes (Bluesky has no view counts) |
+| Pinterest | Impressions, saves, clicks |
+| X | Impressions, likes, replies, reposts and quotes, bookmarks |
+| LinkedIn | Reactions (counted as likes); impressions aren't available |
+| Google Business Profile | Not tracked — Google no longer reports per-post stats |
+
+## How often numbers refresh
+
+Platforms don't push engagement to Unsora, so Unsora re-reads it on a schedule that slows down as a post ages:
+
+| Post age | Re-read about every |
+| --- | --- |
+| First 48 hours | 6 hours |
+| Up to 7 days | 24 hours |
+| Up to 30 days | 3 days |
+| Up to 90 days | Weekly |
+
+After 90 days the numbers stop updating.
+
+**X** is read less often: every 12 hours for the first 48 hours, every 2 days up to 7 days, then weekly up to 30 days, after which it stops.
+
+Clicking **Update stats** in the dashboard, or calling the refresh endpoint, re-reads posts straight away, except ones read in the last 15 minutes (3 hours for X).
+
+## Over the API
+
+- `GET /posts/analytics/summary?days=30` — totals and per-post numbers for the last 7–90 days (default 30)
+- `POST /posts/analytics/refresh` — re-read your posts now
+- [Get post](/api-reference/posts/get_post) — one post's per-account results

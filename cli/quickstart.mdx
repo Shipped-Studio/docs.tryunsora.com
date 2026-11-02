@@ -23,19 +23,30 @@ unsora --version
 ## Authenticate
 
 Create an API key in the [Unsora app](https://app.tryunsora.com) under
-**Settings → API Keys**, then:
+**Developers → API keys**, then:
 
 ```bash
 unsora auth login          # paste your uns_… key
 unsora credits             # verify it works
 ```
 
+Other account commands:
+
+| Command | Description |
+| --- | --- |
+| `unsora auth login --key <key>` | Save a key without the prompt |
+| `unsora auth whoami [--json]` | Show your credits and subscription |
+| `unsora auth logout` | Remove the saved key |
+| `unsora config set <apiKey\|baseUrl> <value>` | Set a saved config value |
+| `unsora config get` | Show the saved config |
+| `unsora open` | Print links to the app, website, docs, and MCP server |
+
 Instead of saving the key you can set environment variables — useful in CI:
 
 | Variable | Description |
 | --- | --- |
 | `UNSORA_API_KEY` | API key — overrides saved config |
-| `UNSORA_API_URL` | API base URL override |
+| `UNSORA_API_URL` | API base URL override (default `https://mvp.tryunsora.com/api/v1`) |
 
 ## First generation
 
@@ -46,29 +57,35 @@ unsora image create --prompt "product photo of sneakers on white background"
 The CLI queues the job, polls until it finishes, prints the output URL, and
 downloads the file to the current directory (`unsora-image-<id>.png`).
 
-Flags that work on every `create` command:
+Flags that work on every generation `create` command (`clip create` returns
+right away instead; add `--wait` to poll it):
 
 | Flag | Effect |
 | --- | --- |
 | `--no-wait` | Queue the job and return immediately |
 | `--no-save` | Don't download the result file |
-| `-o <file>` | Choose the download path |
+| `-o <file>` | Choose the download path (not on `thumbnail` and `influencer`, which can return several files) |
 | `--json` | Machine-readable output for scripting |
+| `--idempotency-key <key>` | Retry safely: the same key replays the first response for 24 hours instead of charging again |
 
 ## All commands
 
 | Command | Description |
 | --- | --- |
 | `unsora image …` | Image generation (nano-banana, Seedream, GPT Image) |
-| `unsora video …` | Seedance 2.0 video generation |
+| `unsora video …` | Video generation (Seedance, Veo, Kling, Sora, Wan) |
 | `unsora music …` | Mureka music (songs + BGM) |
 | `unsora voiceover …` | ElevenLabs Eleven v3 script-to-speech |
 | `unsora thumbnail …` | YouTube-style 16:9 thumbnails |
 | `unsora influencer …` | AI influencer portraits |
 | `unsora clip …` | AI clipping (long video → short clips) |
 | `unsora upload …` | [Upload media](/cli/uploads) to your library |
-| `unsora accounts` / `unsora post …` | [Social posting](/cli/social-posting) |
-| `unsora models --all` | List every available model |
+| `unsora accounts …` / `unsora post …` | [Social posting](/cli/social-posting) and analytics |
+| `unsora models` | List every available model from the live catalog |
+| `unsora catalog …` | List, price, or generate with any catalog model |
+| `unsora credits` | Show your credit balance |
+| `unsora auth …` / `unsora config …` | Manage your API key and settings |
+| `unsora open` | Print links to Unsora |
 | `unsora upgrade` | Update the CLI |
 
 Run any command with `--help` for its full options.

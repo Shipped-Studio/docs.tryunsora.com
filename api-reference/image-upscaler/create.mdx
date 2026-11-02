@@ -1,0 +1,14 @@
+---
+title: "Upscale image"
+description: "Upscale an image to 2k, 4k or 8k. Costs 2, 3 or 5 credits."
+openapi: "POST /image-upscaler/create"
+---
+
+Upscales one image. Costs 2 credits for `2k`, 3 for `4k` and 5 for `8k`. Poll [Poll image status](/api-reference/image/poll-status) with `job.id`.
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/image-upscaler/create" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "imageUrl": "https://cdn.example.com/photo.jpg", "resolution": "4k" }'
+```

@@ -1,31 +1,41 @@
 ---
 title: "Create video"
-description: "Queue a video generation job with Sora 2, Veo 3, Kling, and other supported models, then poll until the finished video is ready."
+description: "Queue a video generation with Seedance, Veo 3.1, Kling, Sora 2, Wan, Gemini Omni or Grok Imagine, then poll until the finished video is ready."
 openapi: "POST /videos/create"
 ---
 
 Creates a video generation with any supported video model. Credits are charged when the job is queued. Poll [Poll video status](/api-reference/video/poll-status) with `generation.id` until `status` is `COMPLETED` or `FAILED`.
 
-Not sure [which video model to use](https://tryunsora.com/tools/ai-video-generator)? Start with the comparison, then pick a key below.
+This endpoint takes a simple, fixed set of fields and translates them onto the chosen model. It runs through the same live pricing as [Generate](/api-reference/catalog/generate), which exposes every input a model has. New integrations should use the catalog endpoints.
+
+Not sure [which video model to use](https://tryunsora.com/ai-video-generator)? Start with the comparison, then pick a key below.
 
 ## Supported models
 
 Pass the model key in the `model` body field. Default: `seedance-2.0`.
 
-| Model key | Name | Duration | Aspect ratios | Sound |
-| --- | --- | --- | --- | --- |
-| `kling-standard` | Kling v3.0 Standard | 1–15s | `16:9`, `1:1`, `9:16` | ✅ `sound` |
-| `kling-pro` | Kling v3.0 Pro | 3–15s | `16:9`, `1:1`, `9:16` | ✅ `sound` |
-| `veo` | Google Veo 3.1 | 4, 6, or 8s | `16:9`, `9:16` | ✅ `sound` |
-| `veo-fast` | Google Veo 3.1 Fast | 4, 6, or 8s | `16:9`, `9:16` | ✅ `sound` |
-| `veo-lite` | Google Veo 3.1 Lite | 4, 6, or 8s | `16:9`, `9:16` | ✅ `sound` |
-| `sora-2` | OpenAI Sora 2 | 4, 8, 12, 16, or 20s | `16:9`, `9:16` | — |
-| `sora-2-pro` | OpenAI Sora 2 Pro | 4, 8, 12, 16, or 20s | `16:9`, `9:16` | — |
-| `wan` | Alibaba Wan 2.6 | 5–15s | `16:9`, `9:16` | — |
-| `seedance-2.0` | Seedance 2.0 (720p) | 4–15s | `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` | `generateAudio` |
-| `seedance-2.0-fast` | Seedance 2.0 Fast (720p) | 4–15s | `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` | `generateAudio` |
+| Model key | Name |
+| --- | --- |
+| `seedance-2.5` | Seedance 2.5 |
+| `seedance-2.5-turbo` | Seedance 2.5 Turbo |
+| `seedance-2.0` | Seedance 2.0 |
+| `seedance-2.0-fast` | Seedance 2.0 Fast |
+| `seedance-2.0-mini` | Seedance 2.0 Mini |
+| `veo-3.1` | Veo 3.1 |
+| `veo-3.1-fast` | Veo 3.1 Fast |
+| `veo-3.1-lite` | Veo 3.1 Lite |
+| `gemini-omni-1.1-flash` | Gemini Omni 1.1 Flash |
+| `kling-o3-pro` | Kling O3 Pro |
+| `kling-3.0-pro` | Kling 3.0 Pro |
+| `kling-3.0-std` | Kling 3.0 Standard |
+| `wan-3.0` | Wan 3.0 |
+| `grok-imagine-video-1.5` | Grok Imagine Video 1.5 |
+| `sora-2` | Sora 2 |
+| `sora-2-pro` | Sora 2 Pro |
 
-All models run on WaveSpeed and share the same form inputs: `image` / `lastImage` for start/end frames, `referenceImages` (plus `referenceVideos` / `referenceAudios` on Seedance) for reference-guided generation, `negativePrompt`, `sound` / `generateAudio`, and `resolution` (Veo / Wan).
+Older names still work: `veo`, `veo-fast`, `veo-lite`, `kling-pro`, `kling-standard`, `gemini-omni-flash`, `seedance_2.0`, `sora_2` and `sora_2_pro`. `wan` and `wan_2.6` now run as `wan-3.0`.
+
+Durations, aspect ratios, resolutions, audio and how many reference files each model takes differ by model. [List models](/api-reference/catalog/list) returns every model's inputs with their allowed values.
 
 ## Headers
 
@@ -37,91 +47,97 @@ All models run on WaveSpeed and share the same form inputs: `image` / `lastImage
 
 ## Request body
 
-<ParamField body="prompt" type="string" required>
-  Text prompt describing the video to generate.
+Fields a model doesn't take are ignored, and anything you leave out uses the model's own default. snake_case spellings work too (`aspect_ratio`, `negative_prompt`, `generate_audio`, `start_frame`, `last_image`, `reference_images`, …).
+
+<ParamField body="prompt" type="string">
+  What the video shows. Required for text-to-video. Image-to-video and reference modes that run from attached media can go without it.
 </ParamField>
 
 <ParamField body="model" type="string">
   Video model key from the table above. Default: `seedance-2.0`.
 </ParamField>
 
+<ParamField body="mode" type="string">
+  Generation mode, for models that have more than one: `omni_reference`, `first_last_frames` or `REFERENCE_2_VIDEO` (also `omni`, `FIRST_AND_LAST_FRAMES_2_VIDEO`, `reference`). Left out, the mode is picked from the media you attach. `functionMode` is an alias.
+</ParamField>
+
 <ParamField body="duration" type="integer">
-  Length in seconds (integer). Default: `5`. The valid range depends on the model (see table above).
+  Length in seconds. Valid values depend on the model.
 </ParamField>
 
 <ParamField body="aspectRatio" type="string">
-  Aspect ratio. Default: `16:9`. Valid values depend on the model (see table above).
-</ParamField>
-
-<ParamField body="negativePrompt" type="string">
-  What to avoid in the video. Supported by Kling, Veo, and Wan models.
-</ParamField>
-
-<ParamField body="sound" type="boolean">
-  Generate audio with the video. Default: `false`. Supported by Kling v3 and Veo 3.1 models — increases credit cost.
+  Aspect ratio, such as `16:9` or `9:16`. Valid values depend on the model; `auto` uses the model's default.
 </ParamField>
 
 <ParamField body="resolution" type="string">
-  `720p` or `1080p` for Veo 3.1 and Wan 2.6 models. Ignored on Seedance, which is fixed at `720p`.
+  Output resolution, such as `720p` or `1080p`, for models that offer it.
+</ParamField>
+
+<ParamField body="negativePrompt" type="string">
+  What to avoid, for models that take one.
+</ParamField>
+
+<ParamField body="sound" type="boolean">
+  Generate audio with the video, for models that offer it. Usually costs more. `generateAudio` is an alias on every model.
 </ParamField>
 
 <ParamField body="image" type="string">
-  Start image URL for image-to-video. On Seedance models this switches to first/last-frame mode.
+  Start frame for image-to-video. Alias: `startFrame`.
 </ParamField>
 
 <ParamField body="lastImage" type="string">
-  End/last image URL, for models that support start/end frames.
+  End frame, for models that support start and end frames. Aliases: `endImage`, `endFrame`.
+</ParamField>
+
+<ParamField body="filePaths" type="string[]">
+  Start and end frame as a list: the first item is the start frame, the second the end frame.
+</ParamField>
+
+<ParamField body="imageUrls" type="string[]">
+  An image list. In reference mode these are the reference images; otherwise the first two are the start and end frames.
 </ParamField>
 
 <ParamField body="referenceImages" type="string[]">
-  Reference image URLs. Veo 3.1 reference mode; Seedance omni reference (up to 9 public image URLs).
+  Reference image URLs. The maximum count depends on the model.
 </ParamField>
 
 <ParamField body="referenceVideos" type="string[]">
-  **Seedance only** — up to 3 public video URLs.
+  Reference video URLs, for models that take them.
 </ParamField>
 
 <ParamField body="referenceAudios" type="string[]">
-  **Seedance only** — up to 3 public audio URLs.
+  Reference audio URLs, for models that take them.
 </ParamField>
 
-<ParamField body="generateAudio" type="boolean">
-  **Seedance only** — generate a soundtrack/audio for the video. Default: `false`.
-</ParamField>
+Media URLs hosted outside Unsora are copied into your library before the job starts, up to 12 per request. Upload more with [Upload media](/api-reference/uploads/create) first.
 
 ## Credits
 
-| Model | Pricing |
-| --- | --- |
-| `kling-standard` | 5s: 20 · 10s: 35 · 15s: 50 — with `sound`: 25 / 50 / 75 |
-| `kling-pro` | 5s: 45 · 10s: 85 · 15s: 125 — with `sound`: 65 / 125 / 190 |
-| `veo` | 9 credits/second — with `sound`: 18 credits/second |
-| `veo-fast` | 4.5 credits/second — with `sound`: 6.75 credits/second (rounded up) |
-| `veo-lite` | 3.6 credits/second (rounded up) |
-| `sora-2` | 4s: 20 · 8s: 35 · 12s: 50 · 16s: 65 · 20s: 80 |
-| `sora-2-pro` | 4s: 50 · 8s: 95 · 12s: 145 · 16s: 190 · 20s: 240 |
-| `wan` | 720p — 5s: 20 · 10s: 40 · 15s: 60; 1080p — 5s: 30 · 10s: 60 · 15s: 90 |
-| `seedance-2.0` | 5s: 64 · 10s: 127 · 15s: 190 |
-| `seedance-2.0-fast` | 5s: 37 · 10s: 74 · 15s: 111 |
+Each run is priced live from the provider's cost for those exact inputs (model, duration, resolution, audio). Get the price before you generate with [Quote a generation](/api-reference/catalog/quote); `creditsDeducted` in the response is what was charged.
 
 ## Async completion
 
-Poll `GET /video/status/{id}` — see [Poll video status](/api-reference/video/poll-status). No webhooks.
+Poll `GET /video/status/{id}`. See [Poll video status](/api-reference/video/poll-status). No webhooks.
 
 ## Response
 
 ```json
 {
   "success": true,
+  "model": "seedance-2.0",
   "generation": {
     "id": "cm123abc",
-    "status": "QUEUED"
+    "status": "QUEUED",
+    "model": "seedance-2.0",
+    "mode": "omni",
+    "modelId": "bytedance/seedance-2.0/text-to-video"
   },
-  "model": "seedance-2.0",
   "creditsDeducted": 40,
   "creditsRemaining": 60
 }
 ```
+
+`generation.modelId` is the provider endpoint the request routed to.
 
 ## Examples
 
@@ -142,7 +158,7 @@ curl -X POST "https://mvp.tryunsora.com/api/v1/videos/create" \
   -H "Authorization: Bearer uns_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "veo",
+    "model": "veo-3.1",
     "prompt": "A barista pours latte art in a cozy cafe, ambient chatter",
     "aspectRatio": "16:9",
     "duration": 8,
@@ -150,26 +166,15 @@ curl -X POST "https://mvp.tryunsora.com/api/v1/videos/create" \
   }'
 ```
 
-```bash Kling Pro image-to-video theme={null}
+```bash Kling 3.0 Pro image-to-video theme={null}
 curl -X POST "https://mvp.tryunsora.com/api/v1/videos/create" \
   -H "Authorization: Bearer uns_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "kling-pro",
+    "model": "kling-3.0-pro",
     "prompt": "The character turns and smiles at the camera",
     "image": "https://cdn.example.com/start.jpg",
     "duration": 5
-  }'
-```
-
-```bash Sora 2 theme={null}
-curl -X POST "https://mvp.tryunsora.com/api/v1/videos/create" \
-  -H "Authorization: Bearer uns_YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "sora-2",
-    "prompt": "A golden retriever surfs a small wave at sunset, slow motion",
-    "duration": 8
   }'
 ```
 
@@ -179,6 +184,7 @@ curl -X POST "https://mvp.tryunsora.com/api/v1/videos/create" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "seedance-2.0",
+    "mode": "omni_reference",
     "prompt": "Character walks through neon alley, same outfit as reference",
     "aspectRatio": "9:16",
     "duration": 10,
@@ -205,9 +211,11 @@ curl -X POST "https://mvp.tryunsora.com/api/v1/videos/create" \
 
 | HTTP | When |
 | --- | --- |
-| `400` | Invalid model, prompt, mode, ratio, duration, or reference files |
+| `400` | Invalid model, mode or inputs; a media file couldn't be read or imported; or more than 12 outside media URLs |
 | `401` | Invalid auth |
 | `402` | Insufficient credits |
 | `404` | User not found |
+| `409` | `IDEMPOTENCY_CONFLICT`: the Idempotency-Key was already used on a different endpoint |
 | `429` | Rate limit exceeded |
-| `500` | Server error |
+| `502` | The pricing service couldn't be reached. Try again |
+| `503` | `PROVIDER_UNAVAILABLE`: generation is temporarily unavailable. Nothing was charged |

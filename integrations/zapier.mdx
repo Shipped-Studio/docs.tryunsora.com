@@ -1,0 +1,130 @@
+---
+title: "Zapier"
+description: "Connect Unsora to Zapier to clip long videos, generate AI media, and schedule social posts from your Zaps with your API key."
+---
+
+The Unsora app for [Zapier](https://zapier.com) lets your Zaps clip long
+videos, generate AI video, images, music, and voiceovers, and schedule posts
+to your connected social accounts. It uses the same [Unsora API](/api-guide)
+as the web app, authenticated with your API key.
+
+## What you need
+
+- An Unsora account. Sign up at [tryunsora.com](https://tryunsora.com).
+- An Unsora API key. Create one at
+  [app.tryunsora.com/api-keys](https://app.tryunsora.com/api-keys). Keys start
+  with `uns_`.
+- Credits for clipping and generation. Posting needs a paid plan and at least
+  one social account connected in the [Unsora web app](https://app.tryunsora.com).
+
+## Connect Unsora
+
+1. In the Zap editor, add a step and search for **Unsora**.
+2. Pick a trigger, action, or search, then select **Sign in**.
+3. Paste your API key into **API Key** and select **Yes, Continue**. Leave
+   **Base URL** as it is.
+
+Zapier tests the key and labels the connection with your credit balance.
+Your connected social accounts, voices, and models then load into the
+dropdowns.
+
+<Note>
+  Connect social accounts in the Unsora web app. The Zapier app reads them,
+  but it can't add new ones.
+</Note>
+
+## Triggers
+
+The Unsora API doesn't send webhooks, so these triggers poll on your Zapier
+plan's update interval. Each item triggers once.
+
+| Trigger | Triggers when |
+| ------- | ------------- |
+| **Clipping Completed** | A clipping job finishes. Includes each clip's URL and file. |
+| **Post Published** | A post is published. |
+| **Post Failed** | A post fails. Optionally include partly published posts. |
+| **Generation Completed** | A video, image, music, voiceover, thumbnail, or AI influencer image finishes. |
+
+## Actions
+
+| Group | Actions |
+| ----- | ------- |
+| Clipping | Create Clipping, Delete Clipping, Delete Clip |
+| Posts | Create Post, Update Post, Publish Post Now, Retry Post, Delete Post |
+| Uploads | Upload From URL, Upload File, Delete Upload |
+| Generation | Create Video, Create Image, Create Music, Create Voiceover, Create Thumbnail, Create Influencer Image, and a matching Delete action for each |
+| Advanced | Custom API Call — an authenticated request to any [API endpoint](/api-reference/introduction) |
+
+**Create Post** takes your accounts from a dropdown, a caption, and a video,
+images, or no media for a text-only post (Media Type **None (text post)**). Turn on **Show Platform Options** to set TikTok, YouTube, Pinterest,
+and Google Business options.
+
+Actions that spend credits accept an optional **Idempotency Key**. If a Zap
+replays with the same key, Unsora returns the original job instead of
+charging again.
+
+## Searches
+
+| Search | Finds |
+| ------ | ----- |
+| **Find Clipping** | A clipping job by ID or status |
+| **Find Post** | A post |
+| **Get Generation Status** | The status and output URL of a generation |
+| **Get Credits** | Your credit balance |
+| **Get Subscription** | Your plan |
+| **Get Post Analytics** | Engagement for recent posts |
+| **Find Social Account** | A connected social account |
+| **Find Pinterest Board** | A board on a Pinterest account |
+| **Get TikTok Creator Info** | A TikTok account's posting options |
+| **Find Upload** | A file in your Unsora library |
+
+## Use results from clipping and generation
+
+Zapier steps must finish in about 30 seconds, but clipping and generation
+take longer. Create actions return the job ID and status `QUEUED` right away.
+To use the result, pick one of these patterns:
+
+- **Second Zap (recommended).** Zap 1 runs **Create Clipping** or a
+  generation action. Zap 2 starts with **Clipping Completed** or
+  **Generation Completed** and uses the result.
+- **Delay in the same Zap.** After the create action, add *Delay by Zapier*,
+  then **Find Clipping** or **Get Generation Status**, then a *Filter* that
+  continues only when `status` is `COMPLETED`.
+
+## Example Zaps
+
+- **YouTube to TikTok on autopilot.** *YouTube: New Video in Channel* →
+  **Create Clipping** (9:16, captions on). Second Zap: **Clipping Completed**
+  → *Looping by Zapier* over the clips → **Create Post** with each clip URL.
+- **Podcast drop to Shorts.** *Google Drive: New File in Folder* → **Upload
+  File** → **Create Clipping** with the upload's URL.
+- **Failure alerts.** **Post Failed** → *Slack: Send Channel Message* with
+  the caption and each account's error.
+- **Low-credit warning.** *Schedule by Zapier* → **Get Credits** with
+  **Minimum Credits** → *Email by Zapier*.
+
+## Troubleshooting
+
+**The connection test fails.** Check that you pasted the whole key, starting
+with `uns_`, and that it hasn't been revoked at
+[app.tryunsora.com/api-keys](https://app.tryunsora.com/api-keys).
+
+**An action fails because you're out of credits.** Run **Get Credits** or top
+up in the [web app](https://app.tryunsora.com).
+
+**A post fails with `PLAN_REQUIRED` (HTTP 403).** Scheduling and publishing
+need a paid plan.
+
+**A step is throttled.** Each API key allows 60 requests per minute. Zapier
+retries throttled steps automatically.
+
+**Upload File fails on a large file.** Zapier holds the whole file in memory.
+For files over about 50 MB, host the file and use **Upload From URL**.
+
+**An account is missing from the dropdown.** Connect it in the Unsora web
+app, then select **Refresh fields**.
+
+## Support
+
+Contact us at [tryunsora.com/contact](https://tryunsora.com/contact) or email
+[hi@tryunsora.com](mailto:hi@tryunsora.com).

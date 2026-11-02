@@ -1,0 +1,75 @@
+---
+title: "Platforms"
+description: "Which social platforms Unsora posts to, what each one accepts (video, images, carousels, text), caption and media limits, and what Unsora fixes for you."
+---
+
+Unsora publishes to 10 platforms. If a platform isn't live for your account yet, it shows as **Coming soon** on the Accounts page, and posting to it returns `PLATFORM_UNAVAILABLE`.
+
+## Post types
+
+| Platform | Video | Image | Carousel | Text only |
+| --- | :-: | :-: | :-: | :-: |
+| YouTube | ✓ | | | |
+| TikTok | ✓ | ✓ | ✓ | |
+| Instagram | ✓ | ✓ | ✓ | |
+| Facebook | ✓ | ✓ | ✓ | ✓ |
+| LinkedIn | ✓ | ✓ | ✓ | ✓ |
+| X | ✓ | ✓ | ✓ | ✓ |
+| Threads | ✓ | ✓ | ✓ | ✓ |
+| Bluesky | ✓ | ✓ | ✓ | ✓ |
+| Pinterest | ✓ | ✓ | ✓ | |
+| Google Business Profile | | ✓ | | ✓ |
+
+A carousel is a post with more than one image. One post can go to up to **10 accounts**, across any mix of platforms.
+
+## Limits
+
+Unsora checks these when you create or schedule a post, so problems show up straight away instead of at publish time.
+
+| Platform | Caption | Images per post | Image formats | Video length | Video size |
+| --- | --- | --- | --- | --- | --- |
+| YouTube | 5,000 | — | — | — | — |
+| TikTok | 2,200 | 35 | JPEG, WebP | 3 s – 10 min | — |
+| Instagram | 2,200 | 10 | JPEG | 3 s – 15 min | 300 MB |
+| Facebook | 63,206 | 10 | JPEG, PNG, GIF | — | — |
+| LinkedIn | 3,000 | 20 | JPEG, PNG, GIF | 3 s – 30 min | 500 MB |
+| X | 280 | 4 | JPEG, PNG, GIF, WebP | up to 140 s | 512 MB |
+| Threads | 500 | 20 | JPEG, PNG | up to 5 min | 1 GB |
+| Bluesky | 300 characters (counted as graphemes) | 4 | JPEG, PNG, WebP | up to 3 min | 100 MB |
+| Pinterest | 800 | 5 | JPEG, PNG | 4 s – 15 min | 2 GB |
+| Google Business Profile | 1,500 | 1 | JPEG, PNG | — | — |
+
+Image size limits: Instagram 8 MB, Facebook 10 MB, Pinterest 20 MB, X 5 MB, Threads 8 MB, Bluesky about 1 MB, Google Business Profile 5 MB.
+
+A dash means Unsora doesn't add its own check; the platform's own rules still apply.
+
+## What Unsora fixes for you
+
+Before publishing, Unsora adjusts images that don't fit a platform, so the post goes through instead of failing:
+
+- **Formats** — images in a format the platform doesn't take are converted to JPEG (Instagram only accepts JPEG). TikTok photos are always converted.
+- **Aspect ratio** — images outside the allowed ratio are padded over a blurred copy of themselves; nothing is cropped. Instagram allows 4:5 to 1.91:1, Threads 1:10 to 10:1.
+- **Carousels** — on Instagram every image is padded to the first image's ratio; on Pinterest every image is resized to the same size.
+- **Size** — oversized images are scaled down and re-compressed under the platform's limit.
+
+Images that already fit are left alone. If a fix fails, the original image is sent and the platform decides.
+
+## Account requirements
+
+- **Instagram** needs a business or creator account. You can connect it directly, or through Facebook if it's linked to a Facebook Page you manage.
+- **Facebook** posts to Pages you manage, not personal profiles.
+- **LinkedIn** posts to your personal profile. Company pages aren't supported yet.
+- **Google Business Profile** connects every location you manage. Posts appear on your Google Search and Maps listing.
+- **Bluesky** signs in with your handle; custom domains work too.
+
+## Platform settings
+
+Each platform has its own optional settings on a post:
+
+- **YouTube** — title (required, up to 100 characters), privacy (public, unlisted or private), tags, category, made for kids
+- **TikTok** — privacy, comments, duet and stitch, branded content labels, AI-generated label, auto-add music, cover frame
+- **Instagram** — cover image for Reels
+- **Pinterest** — board (the account's first board if you don't pick one), pin title (up to 100 characters), link
+- **Google Business Profile** — call-to-action button (Learn more, Book, Order, Shop, Sign up, Call) and its link
+
+See [Create post](/api-reference/posts/create_post) for the exact field names.

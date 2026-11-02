@@ -1,17 +1,18 @@
 ---
 title: "Get accounts"
-description: "List every social account connected to your Unsora workspace for scheduling — YouTube, TikTok, Instagram, Facebook, LinkedIn, Bluesky, and more."
+description: "List every social account connected to your Unsora workspace for scheduling: YouTube, TikTok, Instagram, Facebook, LinkedIn, X, Bluesky, Threads, Pinterest and Google Business Profile."
 openapi: "GET /accounts"
 ---
 
 Returns social accounts connected to the authenticated user. Use each account `id` when calling [Create Post](/api-reference/posts/create_post).
 
-Supported platforms: **YouTube, TikTok, Instagram, Facebook, LinkedIn,
-Bluesky, Threads, Pinterest**. Each account's `provider` field identifies its
-platform — YouTube accounts have provider `google`.
+Supported platforms: **YouTube, TikTok, Instagram, Facebook, LinkedIn, X,
+Bluesky, Threads, Pinterest and Google Business Profile**. Each account's
+`provider` field identifies its platform: YouTube accounts have provider
+`google`, and Google Business Profile locations have `google_business`.
 
 ```bash
-curl "https://mvp2.tryunsora.com/api/v1/accounts" \
+curl "https://mvp.tryunsora.com/api/v1/accounts" \
   -H "Authorization: Bearer uns_YOUR_API_KEY"
 ```
 

@@ -12,7 +12,21 @@
     "groups": [
       {
         "group": "API documentation",
-        "pages": ["get-started", "api-guide", "api-reference/introduction"]
+        "pages": [
+          "get-started",
+          "api-guide",
+          "api-reference/introduction"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/plans-and-credits",
+          "guides/platforms",
+          "guides/connect-accounts",
+          "guides/scheduler",
+          "guides/analytics"
+        ]
       },
       {
         "group": "CLI",
@@ -26,7 +40,12 @@
       {
         "group": "Integrations",
         "pages": [
-          "integrations/claude"
+          "integrations/mcp",
+          "integrations/claude",
+          "integrations/zapier",
+          "integrations/make",
+          "integrations/n8n",
+          "integrations/activepieces"
         ]
       },
       {
@@ -38,7 +57,11 @@
       },
       {
         "group": "Accounts",
-        "pages": ["api-reference/accounts/get_accounts"]
+        "pages": [
+          "api-reference/accounts/get_accounts",
+          "api-reference/accounts/pinterest-boards",
+          "api-reference/accounts/tiktok-creator-info"
+        ]
       },
       {
         "group": "Posts",
@@ -50,6 +73,21 @@
           "api-reference/posts/publish",
           "api-reference/posts/retry",
           "api-reference/posts/delete_post"
+        ]
+      },
+      {
+        "group": "Analytics",
+        "pages": [
+          "api-reference/analytics/summary",
+          "api-reference/analytics/refresh"
+        ]
+      },
+      {
+        "group": "Models and pricing",
+        "pages": [
+          "api-reference/catalog/list",
+          "api-reference/catalog/quote",
+          "api-reference/catalog/generate"
         ]
       },
       {
@@ -100,6 +138,22 @@
         ]
       },
       {
+        "group": "Voice clones",
+        "pages": [
+          "api-reference/voice-clones/list",
+          "api-reference/voice-clones/create",
+          "api-reference/voice-clones/delete"
+        ]
+      },
+      {
+        "group": "Voice changer",
+        "pages": [
+          "api-reference/voice-conversions/create",
+          "api-reference/voice-conversions/list",
+          "api-reference/voice-conversions/delete"
+        ]
+      },
+      {
         "group": "AI influencer",
         "pages": [
           "api-reference/influencer-studio/create",
@@ -122,7 +176,56 @@
           "api-reference/clippings/create",
           "api-reference/clippings/list",
           "api-reference/clippings/get",
-          "api-reference/clippings/delete"
+          "api-reference/clippings/delete",
+          "api-reference/clippings/delete-clip"
+        ]
+      },
+      {
+        "group": "Image upscaler",
+        "pages": [
+          "api-reference/image-upscaler/create",
+          "api-reference/image-upscaler/list",
+          "api-reference/image-upscaler/delete"
+        ]
+      },
+      {
+        "group": "Video upscaler",
+        "pages": [
+          "api-reference/video-upscaler/create",
+          "api-reference/video-upscaler/list",
+          "api-reference/video-upscaler/delete"
+        ]
+      },
+      {
+        "group": "Subtitle removal",
+        "pages": [
+          "api-reference/watermark-removal/create",
+          "api-reference/watermark-removal/list",
+          "api-reference/watermark-removal/delete"
+        ]
+      },
+      {
+        "group": "Motion control",
+        "pages": [
+          "api-reference/motion-control/create",
+          "api-reference/motion-control/list",
+          "api-reference/motion-control/delete"
+        ]
+      },
+      {
+        "group": "Talking avatar",
+        "pages": [
+          "api-reference/avatar-generations/create",
+          "api-reference/avatar-generations/list",
+          "api-reference/avatar-generations/delete"
+        ]
+      },
+      {
+        "group": "Movie materials",
+        "pages": [
+          "api-reference/movie-materials/create",
+          "api-reference/movie-materials/list",
+          "api-reference/movie-materials/delete"
         ]
       },
       {

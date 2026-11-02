@@ -1,6 +1,6 @@
 # Unsora Docs
 
-The official documentation and API reference for [Unsora](https://app.tryunsora.com) — AI video, image, music, thumbnail, influencer, and clipping generation.
+The official documentation and API reference for [Unsora](https://app.tryunsora.com) — a social media scheduler for AI agents, with Content Studio for AI video, image, music, voice and clipping. Covers the REST API, the MCP server (`https://mcp.tryunsora.com/mcp`), the CLI and the no-code integrations.
 
 Built with [Mintlify](https://mintlify.com).
 
@@ -23,7 +23,10 @@ View your local preview at `http://localhost:3000`.
 ## Structure
 
 - `docs.json` — navigation, theme, logo, and site config
-- `get-started.mdx`, `api-guide.mdx` — guides
+- `get-started.mdx`, `api-guide.mdx` — getting started and API basics
+- `guides/` — product guides (plans, platforms, scheduler, analytics, accounts, music)
+- `integrations/` — MCP server, Claude connector, Zapier, Make, n8n, Activepieces
+- `cli/` — the `unsora` CLI
 - `api-reference/` — endpoint reference pages
 - `openapi.json` — OpenAPI spec that powers the API playground
 - `logo/`, `images/`, `favicon.png` — branding assets

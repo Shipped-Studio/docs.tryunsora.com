@@ -1,0 +1,22 @@
+---
+title: "Upscale video"
+description: "Upscale a video up to 25 seconds long with the standard, Ultra 1080p or Ultra 4K model."
+openapi: "POST /video-upscaler/create"
+---
+
+Upscales a video up to 25 seconds long. The price comes from the video's measured length:
+
+| `model` | Up to 5 s | Up to 10 s | Longer |
+| --- | --- | --- | --- |
+| `standard` (default) | 10 | 10 | 10 |
+| `ultra-1080p` | 6 | 11 | 16 |
+| `ultra-4k` | 22 | 43 | 64 |
+
+Poll [Poll video status](/api-reference/video/poll-status) with `job.id`.
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/video-upscaler/create" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "videoUrl": "https://cdn.example.com/clip.mp4", "model": "ultra-1080p" }'
+```

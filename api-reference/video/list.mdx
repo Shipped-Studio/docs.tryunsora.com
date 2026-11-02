@@ -19,7 +19,7 @@ Returns video generations (all video models) for the authenticated user, newest 
 </ParamField>
 
 <ParamField query="model" type="string">
-  Filter by video model key (e.g. `seedance-2.0`, `veo`, `kling-pro`, `sora-2`, `wan`). Defaults to all video models.
+  Filter by video model key, such as `seedance-2.5`, `veo-3.1` or `sora-2`. An older name like `veo` or `kling-pro` matches that model's jobs under every name. For Wan use `wan-3.0`: `wan` and `wan_2.6` only match jobs saved under those old names. An unknown value returns `400` with the valid keys. Defaults to all video models.
 </ParamField>
 
 ## Response
@@ -30,7 +30,7 @@ Returns video generations (all video models) for the authenticated user, newest 
   "generations": [
     {
       "id": "cm123abc",
-      "model": "seedance_2.0",
+      "model": "seedance-2.0",
       "prompt": "Slow cinematic drone shot over misty mountains",
       "status": "COMPLETED",
       "ratio": "16:9",
@@ -65,6 +65,7 @@ curl "https://mvp.tryunsora.com/api/v1/videos/all?page=1&limit=12" \
 
 | HTTP | When |
 | --- | --- |
+| `400` | Unknown `model` value |
 | `401` | Invalid auth |
 | `404` | User not found |
 | `500` | Server error |

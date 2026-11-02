@@ -5,5 +5,6 @@ openapi: "GET /uploads"
 ---
 
 Returns your uploaded assets (newest first), paginated with `page` and `limit`
-(max 100). Only uploads are returned — generated media lives on its own
-generation endpoints.
+(max 100). This includes files you uploaded or imported and the media URLs you
+passed to [Create post](/api-reference/posts/create_post), which are stored as
+uploads too. Generated media lives on its own generation endpoints.

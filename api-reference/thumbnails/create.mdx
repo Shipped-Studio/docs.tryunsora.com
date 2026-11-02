@@ -13,3 +13,7 @@ Pass YouTube URL in `context` for YouTube thumbnail mode:
   "variations": 3
 }
 ```
+
+`context` takes exactly one item: a YouTube link (`youtube`) or a public PDF (`document`). With more than one item, or a link that doesn't match its type, the context is ignored without an error, so check the item before you send it. `label` works in place of `content`.
+
+Each variation is a separate job and costs 12 credits. `variations` outside 1–20 is clamped, and an unknown `expression` falls back to `auto`. Poll each id with [Poll image status](/api-reference/image/poll-status).

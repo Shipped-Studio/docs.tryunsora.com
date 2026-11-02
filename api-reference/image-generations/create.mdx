@@ -1,10 +1,12 @@
 ---
 title: "Create image"
-description: "Queue an AI image generation job from a text prompt with models like GPT Image and Seedream, then poll until your images are ready."
+description: "Queue an AI image generation from a text prompt with Nano Banana, GPT Image or Seedream, then poll until your image is ready."
 openapi: "POST /image-generations/create"
 ---
 
-Creates an image generation job. Credits are deducted when the job is queued. Poll [Poll generation status](/api-reference/image/poll-status) with the returned `generation.id` until `status` is `COMPLETED` or `FAILED`.
+Creates an image generation job. Credits are deducted when the job is queued. Poll [Poll image status](/api-reference/image/poll-status) with the returned `generation.id` until `status` is `COMPLETED` or `FAILED`.
+
+This endpoint takes a simple, fixed set of fields and translates them onto the chosen model. It runs through the same live pricing as [Generate](/api-reference/catalog/generate), which exposes every input a model has.
 
 ## Headers
 
@@ -16,6 +18,8 @@ Creates an image generation job. Credits are deducted when the job is queued. Po
 
 ## Request body
 
+Fields a model doesn't take are ignored, and anything you leave out uses the model's own default.
+
 <ParamField body="prompt" type="string" required>
   Text prompt for the image.
 </ParamField>
@@ -23,43 +27,55 @@ Creates an image generation job. Credits are deducted when the job is queued. Po
 <ParamField body="model" type="string">
   Model key. Default: `nano-banana-2`.
 
-  | `model` | Display name | `resolution` values | `aspectRatio` |
-  | --- | --- | --- | --- |
-  | `nano-banana-2` | Google Nano Banana 2 | `1k`, `2k`, `4k` | `auto`, `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`, `4:5`, `5:4`, `21:9`, `1:4`, `4:1`, `1:8`, `8:1` |
-  | `nano-banana-pro` | Google Nano Banana Pro | `1k`, `2k`, `4k` | `1:1`, `2:3`, `3:4`, `4:5`, `3:2`, `4:3`, `5:4`, `16:9`, `21:9` |
-  | `seedream-v5-lite` | ByteDance Seedream v5.0 Lite | `basic`, `high` (quality) | `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `2:3`, `3:2`, `21:9` |
-  | `gpt-image-1.5` | OpenAI GPT-Image 1.5 | `1024x1024`, `1024x1536`, `1536x1024` (use as `resolution`) | — |
-  | `gpt-image-2` | OpenAI GPT Image 2 | `1k`, `2k`, `4k` | `auto`, `1:1`, `9:16`, `16:9`, `4:3`, `3:4` |
+  | `model` | Name |
+  | --- | --- |
+  | `nano-banana-2` | Nano Banana 2 |
+  | `nano-banana-2-lite` | Nano Banana 2 Lite |
+  | `nano-banana-pro` | Nano Banana Pro |
+  | `gpt-image-2` | GPT Image 2 |
+  | `gpt-image-2.5-flare` | GPT Image 2.5 Flare |
+  | `gpt-image-2.5-sunburst` | GPT Image 2.5 Sunburst |
+  | `seedream-5.0-pro` | Seedream 5.0 Pro |
+
+  `gpt-image-1.5` now runs as `gpt-image-2`, and `seedream-v5-lite` as `seedream-5.0-pro`. Each model's aspect ratios, resolutions and quality tiers are listed by [List models](/api-reference/catalog/list).
 </ParamField>
 
 <ParamField body="aspectRatio" type="string">
-  Aspect ratio. Must be allowed for the chosen `model`. Default: `auto` (where supported).
+  Aspect ratio, such as `1:1` or `9:16`. Valid values depend on the model; `auto` uses the model's default. Aliases: `aspect`, `aspect_ratio`, `ratio`.
 </ParamField>
 
 <ParamField body="resolution" type="string">
-  Output size or quality tier. Must match the chosen `model` (see table above). Default: `2k` for most models.
+  Output size written as a number plus `k`: `1k`, `2k` or `4k`, for models that offer it. Other values (such as `1024x1024`, `basic` or `high`) are ignored and the model's default applies. Nano Banana 2 and Nano Banana Pro default to `2k`.
+</ParamField>
+
+<ParamField body="quality" type="string">
+  Quality tier, for models that offer one.
 </ParamField>
 
 <ParamField body="referenceImages" type="string[]">
-  Reference image URLs (public HTTPS). Use for style or subject guidance. Max count depends on model (up to 14–16).
+  Reference image URLs, for style or subject guidance. The maximum count depends on the model. Aliases: `referenceImageUrls`, `referenceImageUrl`, `images`. URLs hosted outside Unsora are copied into your library first (up to 12 per request).
 </ParamField>
 
-<ParamField body="nsfwChecker" type="boolean">
-  Enable NSFW filtering when supported by the provider pipeline.
-</ParamField>
+## Credits
+
+Each run is priced live from the provider's cost for those inputs (model, resolution, quality). Get the price first with [Quote a generation](/api-reference/catalog/quote).
 
 ## Async completion
 
-Poll [Poll generation status](/api-reference/image/poll-status) with `generation.id` until `status` is `COMPLETED` or `FAILED`. Webhooks are not supported on the public API.
+Poll [Poll image status](/api-reference/image/poll-status) with `generation.id` until `status` is `COMPLETED` or `FAILED`. Webhooks are not supported on the public API.
 
 ## Response
 
 ```json
 {
   "success": true,
+  "model": "nano-banana-2",
   "generation": {
     "id": "cm123abc",
-    "status": "QUEUED"
+    "status": "QUEUED",
+    "model": "nano-banana-2",
+    "mode": "create",
+    "modelId": "google/nano-banana-2/text-to-image"
   },
   "creditsDeducted": 5,
   "creditsRemaining": 95
@@ -101,9 +117,11 @@ curl -X POST "https://mvp.tryunsora.com/api/v1/image-generations/create" \
 
 | HTTP | When |
 | --- | --- |
-| `400` | Missing/invalid prompt, model, ratio, resolution, or too many reference images |
+| `400` | Missing prompt, an invalid model or input, a reference image that couldn't be imported, or too many reference images |
 | `401` | Invalid auth |
 | `402` | Insufficient credits |
 | `404` | User not found |
+| `409` | `IDEMPOTENCY_CONFLICT`: the Idempotency-Key was already used on a different endpoint |
 | `429` | Rate limit exceeded |
-| `500` | Server error |
+| `502` | The pricing service couldn't be reached. Try again |
+| `503` | `PROVIDER_UNAVAILABLE`: generation is temporarily unavailable. Nothing was charged |

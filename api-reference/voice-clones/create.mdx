@@ -1,0 +1,17 @@
+---
+title: "Clone a voice"
+description: "Make an instant clone of a voice from a recording, then use it in voiceovers, talking avatars and the voice changer. Costs 15 credits."
+openapi: "POST /voice-clones/create"
+---
+
+Clones a voice from a clear recording of one person speaking. Costs 15 credits; you can keep up to 10 clones. Use the returned `clone.id` as a `voice_id`.
+
+```bash
+curl -X POST "https://mvp.tryunsora.com/api/v1/voice-clones/create" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My narrator voice",
+    "sample_url": "https://cdn.example.com/voice-sample.mp3"
+  }'
+```

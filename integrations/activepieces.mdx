@@ -1,0 +1,118 @@
+---
+title: "Activepieces"
+description: "Use Unsora in Activepieces to clip long videos, generate AI media, and schedule social posts in automated flows with your API key."
+---
+
+The Unsora piece for [Activepieces](https://www.activepieces.com) lets your
+flows clip long videos, generate AI video, images, music, and voiceovers, and
+schedule posts to your connected social accounts. It uses the same
+[Unsora API](/api-guide) as the web app, authenticated with your API key.
+
+## What you need
+
+- An Unsora account. Sign up at [tryunsora.com](https://tryunsora.com).
+- An Unsora API key. Create one at
+  [app.tryunsora.com/api-keys](https://app.tryunsora.com/api-keys). Keys start
+  with `uns_`.
+- Credits for clipping and generation. Posting needs a paid plan and at least
+  one social account connected in the [Unsora web app](https://app.tryunsora.com).
+
+## Connect Unsora
+
+1. In an Activepieces flow, add a step and search for **Unsora**.
+2. Pick an action or trigger, then select **Connect**.
+3. Paste your API key into **API Key** and select **Save**. Leave **Base URL
+   (advanced)** empty.
+
+Activepieces checks the key before it saves the connection. Your connected
+social accounts, voices, and models then load into the piece's dropdowns.
+
+<Note>
+  Connect social accounts in the Unsora web app. The piece reads them, but it
+  can't add new ones.
+</Note>
+
+## Triggers
+
+The Unsora API doesn't send webhooks, so every trigger polls on Activepieces'
+normal schedule. Each item fires once.
+
+| Trigger | Fires when |
+| ------- | ---------- |
+| **Clipping Completed** | A clipping job finishes. The output includes `clipList` and `clipUrls`, so you can loop over the clips. |
+| **Post Published** | A post is published on all of its accounts. Optionally include partly published posts. |
+| **Post Failed** | A post fails. Optionally include partial failures. |
+| **Generation Completed** | A video, image, music, or voiceover generation finishes. The output includes `outputUrl`. |
+
+## Actions
+
+| Group | Actions |
+| ----- | ------- |
+| Clipping | Create Clipping, Get Clipping Status, Get Clipping, List Clippings, Delete Clipping, Delete Clip |
+| Posts | Create Post, Get Post, List Posts, Update Post, Publish Post Now, Retry Post, Delete Post, Get Post Analytics |
+| Accounts | List Accounts, List Pinterest Boards, Get TikTok Creator Info |
+| Uploads | Upload File, Upload From URL, List Uploads, Delete Upload |
+| Video | Create Video, Get Video Status, List Videos, Delete Video |
+| Image | Create Image, Get Image, Get Image Status, List Images, Delete Image |
+| Music | Create Music, Get Music Status, List Music, Delete Music |
+| Voiceover | List Voices, Create Voiceover, Get Voiceover Status, List Voiceovers, Delete Voiceover |
+| Thumbnail | Create Thumbnail, Get Thumbnail, List Thumbnails, Delete Thumbnail |
+| AI influencer | Create AI Influencer Image, List AI Influencer Images, Delete AI Influencer Image |
+| Billing | Get Credits, Get Subscription |
+| Advanced | Custom API Call — an authenticated request to any [API endpoint](/api-reference/introduction) |
+
+Every create action accepts an optional **Idempotency Key**. If a step retries
+with the same key, Unsora returns the original job instead of charging again.
+
+### Wait for completion
+
+Create Clipping, Video, Image, Music, Voiceover, Thumbnail, and AI Influencer
+Image have a **Wait for Completion** option, on by default. The step checks
+the job until it finishes and returns the result URL, or the clips for a
+clipping job.
+
+**Max Wait (seconds)** defaults to 540, because Activepieces Cloud stops a
+flow run after 10 minutes. If the job isn't done by then, the step fails with
+the job ID and the job keeps running in Unsora. Long videos can take longer
+than 10 minutes to clip. For those, turn **Wait for Completion** off and start
+a second flow from the **Clipping Completed** trigger.
+
+## Example flows
+
+- **YouTube to TikTok on autopilot.** *YouTube: New Video* → **Create
+  Clipping** (9:16, captions on, wait off). In a second flow: **Clipping
+  Completed** → loop over `clipList` → **Create Post** with the clip URL.
+- **Podcast drop to Shorts.** *Dropbox: New File* → **Upload File** →
+  **Create Clipping** with the upload's URL → **Create Post** for each clip.
+- **Failure alerts.** **Post Failed** → *Slack: Send Message* with the
+  caption and each account's error.
+- **Daily AI video.** *Schedule* → *OpenAI* writes a prompt → **Create
+  Video** → **Create Post** with `outputUrl`.
+
+## Troubleshooting
+
+**The connection fails.** Check that you pasted the whole key, starting with
+`uns_`, and that it hasn't been revoked at
+[app.tryunsora.com/api-keys](https://app.tryunsora.com/api-keys).
+
+**A step fails with HTTP 402.** You're out of credits. Run **Get Credits** or
+top up in the [web app](https://app.tryunsora.com).
+
+**A post fails with `PLAN_REQUIRED` (HTTP 403).** Scheduling and publishing
+need a paid plan.
+
+**A step fails with HTTP 429.** Each API key allows 60 requests per minute.
+The piece retries automatically; if it keeps happening, spread out your flows
+or use more than one key.
+
+**Wait for Completion times out.** The job is still running. Use the job ID
+from the error with a **Get … Status** action, or switch to the matching
+trigger.
+
+**An account is missing from the dropdown.** Connect it in the Unsora web
+app, then reload the dropdown.
+
+## Support
+
+Contact us at [tryunsora.com/contact](https://tryunsora.com/contact) or email
+[hi@tryunsora.com](mailto:hi@tryunsora.com).

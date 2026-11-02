@@ -1,0 +1,14 @@
+---
+title: "Analytics summary"
+description: "Views, likes, comments, shares and saves for your published posts over the last 7 to 90 days, in total, per platform, per day and per post."
+openapi: "GET /posts/analytics/summary"
+---
+
+Totals for posts published in the last `days` days (default 30, 7 to 90), counted per account a post went to, plus a per-platform breakdown, a daily series and one entry per published post.
+
+Metrics are polled from the platforms less often as a post ages: every 6 hours for its first 48 hours, then daily up to 7 days, every 3 days up to 30 days, and weekly up to 90 days. X posts are polled for 30 days. Call [Refresh analytics](/api-reference/analytics/refresh) for fresh figures.
+
+```bash
+curl "https://mvp.tryunsora.com/api/v1/posts/analytics/summary?days=30" \
+  -H "Authorization: Bearer uns_YOUR_API_KEY"
+```

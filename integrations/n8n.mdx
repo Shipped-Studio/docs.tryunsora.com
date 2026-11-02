@@ -1,0 +1,168 @@
+---
+title: "n8n"
+description: "Install the Unsora node in n8n to clip long videos, generate AI media, and schedule social posts in your workflows with your API key."
+---
+
+The Unsora node for [n8n](https://n8n.io) lets your workflows clip long
+videos, generate AI video, images, music, and voiceovers, and schedule posts
+to your connected social accounts. It uses the same [Unsora API](/api-guide)
+as the web app, authenticated with your API key. The node also works as a
+tool for n8n's AI Agent.
+
+## What you need
+
+- An Unsora account. Sign up at [tryunsora.com](https://tryunsora.com).
+- An Unsora API key. Create one at
+  [app.tryunsora.com/api-keys](https://app.tryunsora.com/api-keys). Keys start
+  with `uns_`.
+- Credits for clipping and generation. Posting needs a paid plan and at least
+  one social account connected in the [Unsora web app](https://app.tryunsora.com).
+
+## Install the node
+
+1. Open a workflow and select **+** to add a node.
+2. Search for **Unsora** and select **Install**.
+
+On self-hosted n8n, you can also install it by package name:
+
+1. Open **Settings** > **Community Nodes** and select **Install**.
+2. Enter `n8n-nodes-unsora`, accept the risk notice, and select **Install**.
+
+## Add your API key
+
+1. Add an **Unsora** node and open **Credential to connect with**.
+2. Select **Create new credential**.
+3. Paste your API key into **API Key** and select **Save**. Leave **Base URL**
+   as it is.
+
+n8n tests the key when you save. Your connected social accounts, voices, and
+models then load into the node's dropdowns.
+
+<Note>
+  Connect social accounts in the Unsora web app. The node reads them, but it
+  can't add new ones.
+</Note>
+
+## Operations
+
+| Resource | Operations |
+| -------- | ---------- |
+| Clipping | Create, Get Status, Get, Get Many, Delete, Delete Clip |
+| Post | Create, Get, Get Many, Update, Publish Now, Retry, Delete, Get Analytics |
+| Account | Get Many, Get Pinterest Boards, Get TikTok Creator Info |
+| Upload | Upload From URL, Upload File, Get Many, Delete |
+| Video | Create, Get Status, Get Many, Delete |
+| Image | Create, Get, Get Status, Get Many, Delete |
+| Music | Create, Get Status, Get Many, Delete |
+| Voiceover | Create, Get Status, Get Many, Get Voices, Delete |
+| Thumbnail | Create, Get, Get Many, Delete |
+| AI Influencer | Create, Get Many, Delete |
+| User | Get Credits, Get Subscription |
+
+**Upload > Upload File** sends a binary file from an earlier node, such as Google
+Drive or Read Binary File, to your Unsora library. Each clip in a clipping
+result has a `clipUrl` field that you can map straight into **Post > Create**.
+
+Every create operation accepts an optional **Idempotency Key**. If a workflow
+retries with the same key, Unsora returns the original job instead of
+charging again.
+
+### Wait for completion
+
+Create operations for clipping, video, image, music, voiceover, thumbnail,
+and AI influencer have **Wait for Completion** on by default. The node checks
+the job until it finishes and outputs the result, so the next node can use
+the clips or the file URL straight away.
+
+| Job | Checks every | Gives up after |
+| --- | ------------ | -------------- |
+| Clipping | 15 seconds | 30 minutes |
+| Everything else | 10 seconds | 10 minutes |
+
+You can change both values on the node. If a job fails or times out, the
+node stops with the job ID. Turn **Wait for Completion** off to return the job
+ID immediately, then use **Get Status** or the trigger later.
+
+### Create a post
+
+**Post > Create** takes up to 10 accounts, a caption, and video, image, or
+text media. Under **When to Publish**, choose **Schedule**, **Publish Now**,
+or **Draft**. Schedule times without a UTC offset use the workflow's time
+zone.
+
+Under **Platform Options**, you can set:
+
+- **TikTok:** privacy level, comments, duets, stitches, branded content,
+  promotion of your own business, the AI-generated label, auto-added music,
+  photo post mode, and cover.
+- **YouTube:** privacy, tags, category ID, and made for kids.
+- **Instagram:** the Reel cover.
+- **Pinterest:** board, pin title, and destination link.
+- **Google Business Profile:** the button and its link.
+
+The YouTube title goes under **Per-Account Overrides** > **Title**, where you
+can also give one account its own caption. For anything else in the
+[Create Post API](/api-reference/posts/create_post), use **Additional Body
+(JSON)**.
+
+## Unsora Trigger
+
+The **Unsora Trigger** node starts a workflow when something finishes in
+Unsora. The Unsora API doesn't send webhooks, so the trigger polls on the
+interval you set.
+
+| Event | Fires when |
+| ----- | ---------- |
+| Clipping Completed | A clipping job finishes |
+| Post Published | A post is published |
+| Post Failed | A post fails |
+
+When you activate the workflow, the trigger skips events that already
+happened and fires only for new ones. A manual test run returns the newest
+event so you can map its fields.
+
+## Custom requests
+
+For an endpoint the node doesn't cover, add an **HTTP Request** node, set
+**Authentication** to **Predefined Credential Type**, and pick **Unsora
+API**. n8n adds your key to the request. See the
+[API reference](/api-reference/introduction) for every endpoint.
+
+## Example workflow
+
+**Clip a YouTube video and schedule it to TikTok:**
+
+1. **Manual Trigger** or **Schedule Trigger**.
+2. **Unsora** > **Clipping** > **Create**: paste a YouTube URL, set **Aspect
+   Ratio** to 9:16, and turn on **Enable Captions**. Leave **Wait for
+   Completion** on.
+3. **Split Out** on `clips`.
+4. **Unsora** > **Post** > **Create**: pick your TikTok account, set **Video
+   URL** to `{{ $json.clipUrl }}`, and choose **Schedule**.
+
+## Troubleshooting
+
+**The credential test fails.** Check that you pasted the whole key, starting
+with `uns_`, and that it hasn't been revoked at
+[app.tryunsora.com/api-keys](https://app.tryunsora.com/api-keys).
+
+**The node fails with error 402.** You're out of credits. Run **User >
+Get Credits** or top up in the [web app](https://app.tryunsora.com).
+
+**A post fails with `PLAN_REQUIRED` (HTTP 403).** Scheduling and publishing
+need a paid plan.
+
+**The node fails with error 429.** Each API key allows 60 requests per
+minute. The node retries automatically. If it keeps happening, run fewer
+workflows at once.
+
+**Wait for Completion times out.** The job is still running in Unsora. Use
+the job ID from the error with **Get Status**, or use the **Unsora Trigger**.
+
+**An account is missing from the dropdown.** Connect it in the Unsora web
+app, then reopen the dropdown.
+
+## Support
+
+Contact us at [tryunsora.com/contact](https://tryunsora.com/contact) or email
+[hi@tryunsora.com](mailto:hi@tryunsora.com).
