@@ -21,10 +21,9 @@ as the web app, authenticated with your API key.
 
 1. In the Zap editor, add a step and search for **Unsora**.
 2. Pick a trigger, action, or search, then select **Sign in**.
-3. Paste your API key into **API Key** and select **Yes, Continue**. Leave
-   **Base URL** as it is.
+3. Paste your API key into **API Key** and select **Yes, Continue**.
 
-Zapier tests the key and labels the connection with your credit balance.
+Zapier tests the key and labels the connection with your Unsora account email.
 Your connected social accounts, voices, and models then load into the
 dropdowns.
 
@@ -118,8 +117,9 @@ need a paid plan.
 **A step is throttled.** Each API key allows 60 requests per minute. Zapier
 retries throttled steps automatically.
 
-**Upload File fails on a large file.** Zapier holds the whole file in memory.
-For files over about 50 MB, host the file and use **Upload From URL**.
+**Upload File fails on a large file.** Upload File sends the file straight to
+Unsora's storage, but Zapier has to download it first. For very large videos,
+host the file and use **Upload From URL** (up to 200 MB).
 
 **An account is missing from the dropdown.** Connect it in the Unsora web
 app, then select **Refresh fields**.
