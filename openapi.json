@@ -3686,6 +3686,61 @@
     }
   },
   "paths": {
+    "/user/me": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get the account this key belongs to",
+        "description": "Returns the ID and email of the Unsora account that owns the API key or OAuth token. Integrations use it to label a connection.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "cm9user000001"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "you@example.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/user/credits": {
       "get": {
         "tags": [
@@ -5826,7 +5881,7 @@
           "Clipping"
         ],
         "summary": "List clipping jobs",
-        "description": "Every clipping job you own, newest first, each with its clips. Not paginated.",
+        "description": "Your clipping jobs, newest first, each with its clips. Without parameters, every job is returned (not paginated).",
         "security": [
           {
             "bearerAuth": []
@@ -5853,7 +5908,46 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Only jobs with this status.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "QUEUED",
+                "PROCESSING",
+                "COMPLETED",
+                "FAILED"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Return at most this many jobs.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "`created` (default) or `updated` (most recently changed first).",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created",
+                "updated"
+              ],
+              "default": "created"
+            }
+          }
+        ]
       }
     },
     "/clippings/status/{clippingId}": {
@@ -8417,6 +8511,19 @@
               "default": 20,
               "minimum": 1,
               "maximum": 100
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "`created` (default) orders by creation time. `updated` orders by last change, so posts that were just published or failed come first, which is what polling integrations need.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created",
+                "updated"
+              ],
+              "default": "created"
             }
           }
         ],

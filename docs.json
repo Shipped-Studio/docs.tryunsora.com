@@ -51,6 +51,7 @@
       {
         "group": "User",
         "pages": [
+          "api-reference/user/me",
           "api-reference/user/credits",
           "api-reference/user/subscription"
         ]
